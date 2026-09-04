@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "provenance": {
+    "filename": "gemini_music_to_architecture_44s.mp3",
+    "sha256": "b7ad95fa45a6d546149a4256eb6677ea3f147e0652151d6a0b783846a8695d39",
+    "duration_seconds": 43.9641,
+    "sample_rate_hz": 22050,
+    "channels": 1,
+    "extractor": "librosa",
+    "extractor_version": "mvp-1.0+librosa-0.11.0"
+  },
+  "tempo_bpm": {
+    "value": 64.5996,
+    "normalized": 0.038330078125,
+    "unit": "bpm",
+    "method": "librosa.beat.beat_track",
+    "confidence": 0.82
+  },
+  "rms_energy": {
+    "value": 0.119386,
+    "normalized": 0.4441977523742838,
+    "unit": "rms",
+    "method": "librosa.feature.rms",
+    "confidence": 0.95
+  },
+  "onset_density_hz": {
+    "value": 2.092617,
+    "normalized": 0.3814079468021896,
+    "unit": "onsets_per_second",
+    "method": "librosa.onset.onset_detect",
+    "confidence": 0.9
+  },
+  "spectral_centroid_hz": {
+    "value": 1289.104,
+    "normalized": 0.17535653992054742,
+    "unit": "hz",
+    "method": "librosa.feature.spectral_centroid",
+    "confidence": 0.9
+  },
+  "segments": [
+    {
+      "id": "segment-01",
+      "start_seconds": 0.0,
+      "end_seconds": 7.3273,
+      "rms_energy": 0.048114,
+      "onset_density_hz": 0.81885,
+      "spectral_centroid_hz": 886.01
+    },
+    {
+      "id": "segment-02",
+      "start_seconds": 7.3273,
+      "end_seconds": 14.6547,
+      "rms_energy": 0.040072,
+      "onset_density_hz": 0.5459,
+      "spectral_centroid_hz": 1040.258
+    },
+    {
+      "id": "segment-03",
+      "start_seconds": 14.6547,
+      "end_seconds": 21.982,
+      "rms_energy": 0.143611,
+      "onset_density_hz": 2.047126,
+      "spectral_centroid_hz": 1293.252
+    },
+    {
+      "id": "segment-04",
+      "start_seconds": 21.982,
+      "end_seconds": 29.3094,
+      "rms_energy": 0.151401,
+      "onset_density_hz": 3.821301,
+      "spectral_centroid_hz": 1250.703
+    },
+    {
+      "id": "segment-05",
+      "start_seconds": 29.3094,
+      "end_seconds": 36.6367,
+      "rms_energy": 0.174006,
+      "onset_density_hz": 4.367201,
+      "spectral_centroid_hz": 1397.294
+    },
+    {
+      "id": "segment-06",
+      "start_seconds": 36.6367,
+      "end_seconds": 43.9641,
+      "rms_energy": 0.158404,
+      "onset_density_hz": 2.183601,
+      "spectral_centroid_hz": 1874.406
+    }
+  ]
+}

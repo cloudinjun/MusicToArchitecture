@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2400" height="1350" viewBox="0 0 2400 1350" role="img" aria-labelledby="title desc">
+  <title id="title">一首歌，怎样长成一栋楼？</title>
+  <desc id="desc">五步图解：放入一首歌，听出音乐性格，做建筑选择，让空间、交通、结构和外墙一起生成，再经过检查得到可追溯的建筑。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071522"/>
+      <stop offset="0.55" stop-color="#0b2740"/>
+      <stop offset="1" stop-color="#06111c"/>
+    </linearGradient>
+    <linearGradient id="cyanGlow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6fe6ff"/>
+      <stop offset="1" stop-color="#2da8e8"/>
+    </linearGradient>
+    <linearGradient id="imageShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0.52" stop-color="#071522" stop-opacity="0"/>
+      <stop offset="1" stop-color="#071522" stop-opacity="0.92"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#8ddfff" stroke-opacity="0.055" stroke-width="1"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="clipSection"><rect x="1282" y="344" width="382" height="204" rx="18"/></clipPath>
+    <clipPath id="clipStructure"><rect x="1282" y="578" width="382" height="204" rx="18"/></clipPath>
+    <clipPath id="clipFacade"><rect x="1282" y="812" width="382" height="204" rx="18"/></clipPath>
+    <clipPath id="clipHero"><rect x="1746" y="344" width="570" height="610" rx="24"/></clipPath>
+    <style>
+      text { font-family: "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif; }
+      .card { fill:#0d2942; fill-opacity:.82; stroke:#8cdfff; stroke-opacity:.24; stroke-width:2; }
+      .stage { fill:#9cecff; font-size:23px; font-weight:700; letter-spacing:1px; }
+      .stageTitle { fill:#ffffff; font-size:34px; font-weight:800; }
+      .small { fill:#c9dbe7; font-size:23px; }
+      .tiny { fill:#a9c4d4; font-size:19px; }
+      .chip { fill:#143a58; stroke:#7bddf5; stroke-opacity:.36; stroke-width:1.5; }
+      .chipText { fill:#eefaff; font-size:23px; font-weight:700; }
+      .whiteLine { stroke:#d7f7ff; stroke-opacity:.68; fill:none; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="1350" fill="url(#bg)"/>
+  <rect width="2400" height="1350" fill="url(#grid)"/>
+  <circle cx="2160" cy="160" r="360" fill="#1c6f98" opacity="0.11"/>
+  <circle cx="80" cy="1260" r="420" fill="#1c6f98" opacity="0.08"/>
+
+  <text x="82" y="132" fill="#ffffff" font-size="72" font-weight="900">一首歌，怎样长成一栋楼？</text>
+  <path d="M84 172H2316" stroke="url(#cyanGlow)" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- Stage cards -->
+  <rect class="card" x="50" y="228" width="320" height="930" rx="26" filter="url(#shadow)"/>
+  <rect class="card" x="406" y="228" width="360" height="930" rx="26" filter="url(#shadow)"/>
+  <rect class="card" x="802" y="228" width="420" height="930" rx="26" filter="url(#shadow)"/>
+  <rect class="card" x="1258" y="228" width="430" height="930" rx="26" filter="url(#shadow)"/>
+  <rect class="card" x="1724" y="228" width="640" height="930" rx="26" filter="url(#shadow)"/>
+
+  <!-- Connectors -->
+  <g stroke="#7ce5ff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+    <path d="M375 694H395m-10-10 10 10-10 10"/>
+    <path d="M771 694H791m-10-10 10 10-10 10"/>
+    <path d="M1227 694H1247m-10-10 10 10-10 10"/>
+    <path d="M1693 694H1713m-10-10 10 10-10 10"/>
+  </g>
+
+  <!-- 1. Audio -->
+  <text class="stage" x="80" y="280">01</text>
+  <text class="stageTitle" x="80" y="328">放进一首歌</text>
+  <rect x="76" y="370" width="268" height="360" rx="22" fill="#061722" stroke="#6fe6ff" stroke-opacity="0.28"/>
+  <image x="86" y="430" width="248" height="210" xlink:href="waveform.png" preserveAspectRatio="none"/>
+  <circle cx="210" cy="550" r="56" fill="#e9fbff" fill-opacity="0.94" filter="url(#softGlow)"/>
+  <path d="M198 520 242 550 198 580Z" fill="#0a5f87"/>
+  <g opacity="0.75">
+    <rect x="97" y="671" width="28" height="17" rx="8" fill="#4ab8dc"/>
+    <rect x="132" y="657" width="28" height="31" rx="8" fill="#61c9e8"/>
+    <rect x="167" y="633" width="28" height="55" rx="8" fill="#7bddf5"/>
+    <rect x="202" y="645" width="28" height="43" rx="8" fill="#61c9e8"/>
+    <rect x="237" y="619" width="28" height="69" rx="8" fill="#98eaff"/>
+    <rect x="272" y="652" width="28" height="36" rx="8" fill="#61c9e8"/>
+  </g>
+  <rect class="chip" x="82" y="778" width="256" height="68" rx="34"/>
+  <text class="chipText" x="210" y="822" text-anchor="middle">真实 MP3 · 44 秒</text>
+  <text class="small" x="82" y="926">系统直接读取声音，</text>
+  <text class="small" x="82" y="965">不靠一句模糊提示词。</text>
+
+  <!-- 2. Score signature -->
+  <text class="stage" x="436" y="280">02</text>
+  <text class="stageTitle" x="436" y="328">听出它的性格</text>
+  <g opacity="0.72">
+    <polygon points="586,502 655,524 698,584 698,656 655,716 586,738 517,716 474,656 474,584 517,524" fill="#0a1e30" stroke="#8eeaff" stroke-width="2"/>
+    <polygon points="586,542 632,557 660,596 660,644 632,683 586,698 540,683 512,644 512,596 540,557" fill="none" stroke="#8eeaff" stroke-opacity="0.42" stroke-width="2"/>
+    <polygon points="586,581 609,588 623,608 623,632 609,652 586,659 563,652 549,632 549,608 563,588" fill="none" stroke="#8eeaff" stroke-opacity="0.28" stroke-width="2"/>
+    <g stroke="#8eeaff" stroke-opacity="0.28" stroke-width="1.5">
+      <path d="M586 620V502"/><path d="M586 620 655 524"/><path d="M586 620 698 584"/><path d="M586 620 698 656"/><path d="M586 620 655 716"/>
+      <path d="M586 620V738"/><path d="M586 620 517 716"/><path d="M586 620 474 656"/><path d="M586 620 474 584"/><path d="M586 620 517 524"/>
+    </g>
+  </g>
+  <polygon points="586,604 601,600 616,610 644,639 621,669 586,728 535,690 543,634 531,602 545,563" fill="#52d9ff" fill-opacity="0.45" stroke="#c7f7ff" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="586" cy="620" r="43" fill="#e9fbff"/>
+  <text x="586" y="635" text-anchor="middle" fill="#075378" font-size="43" font-weight="900">10</text>
+  <rect class="chip" x="458" y="782" width="256" height="68" rx="34"/>
+  <text class="chipText" x="586" y="826" text-anchor="middle">10 个设计旋钮</text>
+  <text class="small" x="440" y="914">快慢 · 强弱 · 重复</text>
+  <text class="small" x="440" y="953">变化 · 层次 · 连续…</text>
+  <text class="tiny" x="440" y="1026">每个读数都保留来源与可信度</text>
+
+  <!-- 3. Four decisions -->
+  <text class="stage" x="832" y="280">03</text>
+  <text class="stageTitle" x="832" y="328">做四个建筑选择</text>
+  <g stroke="#bfeefa" stroke-width="3" fill="none" opacity="0.78">
+    <path d="M1012 578V523M1012 578 906 651M1012 578 1118 651M1012 578 906 794M1012 578 1118 794"/>
+  </g>
+  <circle cx="1012" cy="568" r="70" fill="#e9fbff"/>
+  <path d="M982 582h60v-34l-30-22-30 22Z" fill="#16739c"/>
+  <path d="M994 582v-24h14v24m10 0v-24h14v24" stroke="#e9fbff" stroke-width="5"/>
+  <text x="1012" y="673" text-anchor="middle" fill="#dff8ff" font-size="24" font-weight="800">共同规则</text>
+
+  <g>
+    <rect class="chip" x="834" y="694" width="154" height="132" rx="20"/>
+    <path d="M878 752h66v36h-66Zm8-10 25-19 25 19" class="whiteLine" stroke-width="5"/>
+    <text class="chipText" x="911" y="862" text-anchor="middle">建筑类型</text>
+
+    <rect class="chip" x="1036" y="694" width="154" height="132" rx="20"/>
+    <g fill="none" stroke="#d7f7ff" stroke-width="4"><rect x="1071" y="730" width="65" height="22"/><rect x="1060" y="752" width="76" height="22"/><rect x="1049" y="774" width="87" height="22"/></g>
+    <text class="chipText" x="1113" y="862" text-anchor="middle">整体体形</text>
+
+    <rect class="chip" x="834" y="895" width="154" height="132" rx="20"/>
+    <rect x="868" y="929" width="84" height="58" fill="none" stroke="#d7f7ff" stroke-width="4"/>
+    <path d="M889 929v58m21-58v58m21-58v58" class="whiteLine" stroke-width="3"/>
+    <text class="chipText" x="911" y="1063" text-anchor="middle">外墙风格</text>
+
+    <rect class="chip" x="1036" y="895" width="154" height="132" rx="20"/>
+    <path d="M1065 985v-61h70v61m-70-5 70-50m-70 0 70 50" class="whiteLine" stroke-width="4"/>
+    <text class="chipText" x="1113" y="1063" text-anchor="middle">结构骨架</text>
+  </g>
+
+  <!-- 4. Coordinated systems -->
+  <text class="stage" x="1288" y="280">04</text>
+  <text class="stageTitle" x="1288" y="328">各部分一起长</text>
+  <g clip-path="url(#clipSection)">
+    <image x="1282" y="344" width="382" height="204" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/02_section_open_side.png" preserveAspectRatio="xMidYMid slice"/>
+    <rect x="1282" y="344" width="382" height="204" fill="url(#imageShade)"/>
+  </g>
+  <rect x="1282" y="344" width="382" height="204" rx="18" fill="none" stroke="#9defff" stroke-opacity="0.42" stroke-width="2"/>
+  <text x="1306" y="518" fill="#fff" font-size="24" font-weight="800">空间 + 交通</text>
+
+  <g clip-path="url(#clipStructure)">
+    <image x="1282" y="578" width="382" height="204" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/03_structure_closeup.png" preserveAspectRatio="xMidYMid slice"/>
+    <rect x="1282" y="578" width="382" height="204" fill="url(#imageShade)"/>
+  </g>
+  <rect x="1282" y="578" width="382" height="204" rx="18" fill="none" stroke="#9defff" stroke-opacity="0.42" stroke-width="2"/>
+  <text x="1306" y="752" fill="#fff" font-size="24" font-weight="800">结构骨架</text>
+
+  <g clip-path="url(#clipFacade)">
+    <image x="1282" y="812" width="382" height="204" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/04_south_elevation.png" preserveAspectRatio="xMidYMid slice"/>
+    <rect x="1282" y="812" width="382" height="204" fill="url(#imageShade)"/>
+  </g>
+  <rect x="1282" y="812" width="382" height="204" rx="18" fill="none" stroke="#9defff" stroke-opacity="0.42" stroke-width="2"/>
+  <text x="1306" y="986" fill="#fff" font-size="24" font-weight="800">外墙表情</text>
+  <text class="tiny" x="1284" y="1085">一处变化，会沿着规则传到全楼</text>
+
+  <!-- 5. Verified output -->
+  <text class="stage" x="1754" y="280">05</text>
+  <text class="stageTitle" x="1754" y="328">检查后交付</text>
+  <g clip-path="url(#clipHero)">
+    <image x="1746" y="344" width="570" height="610" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/01_three_quarter.png" preserveAspectRatio="xMidYMid slice"/>
+    <rect x="1746" y="344" width="570" height="610" fill="#0b2033" opacity="0.08"/>
+    <rect x="1746" y="344" width="570" height="610" fill="url(#imageShade)" opacity="0.45"/>
+  </g>
+  <rect x="1746" y="344" width="570" height="610" rx="24" fill="none" stroke="#b8f2ff" stroke-opacity="0.52" stroke-width="2"/>
+  <rect x="1772" y="372" width="174" height="48" rx="24" fill="#071522" fill-opacity="0.82" stroke="#9defff" stroke-opacity="0.5"/>
+  <text x="1859" y="404" text-anchor="middle" fill="#dff8ff" font-size="20" font-weight="700">真实项目输出</text>
+
+  <g>
+    <rect class="chip" x="1760" y="982" width="274" height="62" rx="18"/>
+    <circle cx="1796" cy="1013" r="16" fill="#78dfaa"/><path d="m1787 1013 7 7 13-16" fill="none" stroke="#06271a" stroke-width="5" stroke-linecap="round"/>
+    <text class="chipText" x="1824" y="1022">空间放得下</text>
+
+    <rect class="chip" x="2048" y="982" width="274" height="62" rx="18"/>
+    <circle cx="2084" cy="1013" r="16" fill="#78dfaa"/><path d="m2075 1013 7 7 13-16" fill="none" stroke="#06271a" stroke-width="5" stroke-linecap="round"/>
+    <text class="chipText" x="2112" y="1022">人能走得通</text>
+
+    <rect class="chip" x="1760" y="1058" width="274" height="62" rx="18"/>
+    <circle cx="1796" cy="1089" r="16" fill="#78dfaa"/><path d="m1787 1089 7 7 13-16" fill="none" stroke="#06271a" stroke-width="5" stroke-linecap="round"/>
+    <text class="chipText" x="1824" y="1098">构件找得到来源</text>
+
+    <rect x="2048" y="1058" width="274" height="62" rx="18" fill="#493a19" stroke="#ffd479" stroke-opacity="0.7"/>
+    <circle cx="2084" cy="1089" r="16" fill="#ffd479"/><text x="2084" y="1097" text-anchor="middle" fill="#4c3200" font-size="24" font-weight="900">!</text>
+    <text x="2112" y="1098" fill="#fff3d4" font-size="23" font-weight="700">关键项人工复核</text>
+  </g>
+
+  <!-- Shared-score ribbon -->
+  <rect x="50" y="1196" width="2314" height="104" rx="28" fill="#e9fbff"/>
+  <circle cx="112" cy="1248" r="31" fill="#0c6d95"/>
+  <path d="M96 1248h32m-22-18v36m12-27v18" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <text x="166" y="1262" fill="#07334a" font-size="31" font-weight="800">同一份“建筑乐谱”贯穿到底：空间 · 交通 · 结构 · 外墙</text>
+  <path d="M1910 1248H2280m-28-20 28 20-28 20" stroke="#0c6d95" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,2983 @@
+{
+  "schema_version": "mta.audio_saturation_report/1.0",
+  "experiment_id": "audio-saturation-corpus-2026-08-30",
+  "manifest_path": "docs/experiments/audio_saturation_corpus.json",
+  "excerpt": {
+    "strategy": "center_window",
+    "duration_seconds": 30.0,
+    "reason": "A fixed window removes track-duration as a confound and matches the duration of the shortest legitimate source recordings. This evaluates calibration, not full-song sectional form."
+  },
+  "near_endpoint_epsilon": 0.02,
+  "summary": {
+    "tracks_total": 14,
+    "tracks_succeeded": 14,
+    "tracks_failed": 0,
+    "pipeline_success_rate": 1.0,
+    "feature_observation_count": 168,
+    "feature_exact_endpoint_rate": 0.0,
+    "feature_near_endpoint_rate": 0.0,
+    "score_observation_count": 140,
+    "score_exact_endpoint_rate": 0.0,
+    "score_near_endpoint_rate": 0.0,
+    "datum_observation_count": 406,
+    "datum_exact_endpoint_rate": 0.0,
+    "datum_near_endpoint_rate": 0.0,
+    "score_signature_collision_rate": 0.0,
+    "model_signature_collision_rate": 0.0,
+    "program_fit_rate": 0.7857142857142857,
+    "minimum_variable_coverage": 1.0,
+    "total_runtime_seconds": 29.586000000000002,
+    "blender_render_count": 42
+  },
+  "acceptance": {
+    "all_passed": true,
+    "checks": {
+      "pipeline success rate": {
+        "passed": true,
+        "actual": 1.0,
+        "limit": 1.0,
+        "direction": "min"
+      },
+      "feature exact endpoint rate": {
+        "passed": true,
+        "actual": 0.0,
+        "limit": 0.05,
+        "direction": "max"
+      },
+      "feature near-endpoint rate": {
+        "passed": true,
+        "actual": 0.0,
+        "limit": 0.15,
+        "direction": "max"
+      },
+      "worst single-feature near-endpoint rate": {
+        "passed": true,
+        "actual": 0.0,
+        "limit": 0.25,
+        "direction": "max"
+      },
+      "score signature collision rate": {
+        "passed": true,
+        "actual": 0.0,
+        "limit": 0.0,
+        "direction": "max"
+      },
+      "model signature collision rate": {
+        "passed": true,
+        "actual": 0.0,
+        "limit": 0.0,
+        "direction": "max"
+      },
+      "minimum variable coverage": {
+        "passed": true,
+        "actual": 1.0,
+        "limit": 1.0,
+        "direction": "min"
+      }
+    }
+  },
+  "per_feature": {
+    "dynamic_range_db": {
+      "count": 14,
+      "min": 0.2402296236212044,
+      "max": 0.8746678066711067,
+      "mean": 0.5346753146637273,
+      "stdev": 0.16205115008067275,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 12
+    },
+    "harmonic_ratio": {
+      "count": 14,
+      "min": 0.2818453117462744,
+      "max": 0.7540374352266548,
+      "mean": 0.5741614750407962,
+      "stdev": 0.12505769485926096,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "novelty_peak_rate_per_min": {
+      "count": 14,
+      "min": 0.08620689655172414,
+      "max": 0.8189655172413793,
+      "mean": 0.4956896551724138,
+      "stdev": 0.20069074492281114,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 9
+    },
+    "onset_density_hz": {
+      "count": 14,
+      "min": 0.09655751469353485,
+      "max": 0.852225020990764,
+      "mean": 0.5184718723761544,
+      "stdev": 0.2039687012809673,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 13
+    },
+    "periodicity": {
+      "count": 14,
+      "min": 0.13504790355804938,
+      "max": 0.8657778705632297,
+      "mean": 0.5008773671529798,
+      "stdev": 0.23265173630189198,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "rms_energy": {
+      "count": 14,
+      "min": 0.12113052215559264,
+      "max": 0.8580042643749969,
+      "mean": 0.4635608935277634,
+      "stdev": 0.24026427565800895,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "spectral_centroid_hz": {
+      "count": 14,
+      "min": 0.40723868942450947,
+      "max": 0.7501082874683688,
+      "mean": 0.5739717983066548,
+      "stdev": 0.10342542228408558,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "spectral_contrast_db": {
+      "count": 14,
+      "min": 0.1765597088047774,
+      "max": 0.8475804984804102,
+      "mean": 0.4650046202889349,
+      "stdev": 0.17877057963849322,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "spectral_flatness": {
+      "count": 14,
+      "min": 0.20642083586411689,
+      "max": 0.772020680486284,
+      "mean": 0.49644823448261743,
+      "stdev": 0.16922017505229095,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "tempo_bpm": {
+      "count": 14,
+      "min": 0.2562934027777778,
+      "max": 0.7348090277777778,
+      "mean": 0.4659326561386768,
+      "stdev": 0.150883932454205,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 10
+    },
+    "timbre_variation": {
+      "count": 14,
+      "min": 0.05018187549179957,
+      "max": 0.7793884411192776,
+      "mean": 0.33818857898602894,
+      "stdev": 0.19533208981958627,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "zero_crossing_rate": {
+      "count": 14,
+      "min": 0.17349307259016944,
+      "max": 0.8716499742285487,
+      "mean": 0.54490514665618,
+      "stdev": 0.1674506479496043,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    }
+  },
+  "per_feature_raw": {
+    "dynamic_range_db": {
+      "count": 14,
+      "min": 2.006685,
+      "p05": 2.46359535,
+      "median": 13.27443,
+      "p95": 43.33648614999998,
+      "max": 78.753952,
+      "mean": 16.98583857142857,
+      "stdev": 18.581735273088444
+    },
+    "harmonic_ratio": {
+      "count": 14,
+      "min": 0.253224,
+      "p05": 0.51354705,
+      "median": 0.8781144999999999,
+      "p95": 0.97022765,
+      "max": 0.974088,
+      "mean": 0.8085111428571429,
+      "stdev": 0.1846321671919051
+    },
+    "novelty_peak_rate_per_min": {
+      "count": 14,
+      "min": 4.0,
+      "p05": 7.9,
+      "median": 26.0,
+      "p95": 35.4,
+      "max": 38.0,
+      "mean": 23.0,
+      "stdev": 9.312050564418437
+    },
+    "onset_density_hz": {
+      "count": 14,
+      "min": 0.766667,
+      "p05": 0.8099999,
+      "median": 4.550000000000001,
+      "p95": 5.899999899999999,
+      "max": 6.766667,
+      "mean": 4.1166665714285715,
+      "stdev": 1.6195115317858617
+    },
+    "periodicity": {
+      "count": 14,
+      "min": 0.625727,
+      "p05": 0.7315099500000001,
+      "median": 1.5638985,
+      "p95": 4.38492345,
+      "max": 5.07541,
+      "mean": 2.2102401428571428,
+      "stdev": 1.3966242368685622
+    },
+    "rms_energy": {
+      "count": 14,
+      "min": 0.068318,
+      "p05": 0.07125405,
+      "median": 0.2464785,
+      "p95": 0.45043184999999997,
+      "max": 0.483914,
+      "mean": 0.26144835714285714,
+      "stdev": 0.13550900493251739
+    },
+    "spectral_centroid_hz": {
+      "count": 14,
+      "min": 746.968098,
+      "p05": 766.2559561999999,
+      "median": 1933.0803585,
+      "p95": 3311.5698973,
+      "max": 4060.29005,
+      "mean": 1924.6646970714285,
+      "stdev": 922.1576918365153
+    },
+    "spectral_contrast_db": {
+      "count": 14,
+      "min": 20.516705,
+      "p05": 20.8732599,
+      "median": 22.781992000000002,
+      "p95": 25.7296397,
+      "max": 26.410048,
+      "mean": 22.92141,
+      "stdev": 1.5711287383793764
+    },
+    "spectral_flatness": {
+      "count": 14,
+      "min": 0.0001,
+      "p05": 0.000152,
+      "median": 0.003733,
+      "p95": 0.044255649999999994,
+      "max": 0.055019,
+      "mean": 0.010090928571428572,
+      "stdev": 0.01584454003057874
+    },
+    "tempo_bpm": {
+      "count": 14,
+      "min": 86.132812,
+      "p05": 90.1318356,
+      "median": 120.250355,
+      "p95": 172.265625,
+      "max": 172.265625,
+      "mean": 123.86787814285715,
+      "stdev": 27.159107946516595
+    },
+    "timbre_variation": {
+      "count": 14,
+      "min": 6.674189,
+      "p05": 12.861470100000002,
+      "median": 43.786883,
+      "p95": 81.36646449999998,
+      "max": 103.658663,
+      "mean": 44.979081071428574,
+      "stdev": 25.9791680454603
+    },
+    "zero_crossing_rate": {
+      "count": 14,
+      "min": 0.012432,
+      "p05": 0.02022355,
+      "median": 0.0906665,
+      "p95": 0.22394014999999995,
+      "max": 0.336396,
+      "mean": 0.10552442857142856,
+      "stdev": 0.07747950027745983
+    }
+  },
+  "per_dimension": {
+    "continuity": {
+      "count": 14,
+      "min": 0.40723868942450947,
+      "max": 0.7501082874683688,
+      "mean": 0.5739717983066548,
+      "stdev": 0.10342542228408558,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "density": {
+      "count": 14,
+      "min": 0.09655751469353485,
+      "max": 0.852225020990764,
+      "mean": 0.5184718723761544,
+      "stdev": 0.2039687012809673,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 13
+    },
+    "genre_style": {
+      "count": 14,
+      "min": 0.2780089211999267,
+      "max": 0.7523156628814736,
+      "mean": 0.512368078994811,
+      "stdev": 0.13419480198236713,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "hierarchy": {
+      "count": 14,
+      "min": 0.2402296236212044,
+      "max": 0.8746678066711067,
+      "mean": 0.5346753146637273,
+      "stdev": 0.16205115008067275,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 12
+    },
+    "interruption": {
+      "count": 14,
+      "min": 0.08620689655172414,
+      "max": 0.8189655172413793,
+      "mean": 0.4956896551724138,
+      "stdev": 0.20069074492281114,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 9
+    },
+    "polyphony": {
+      "count": 14,
+      "min": 0.28755020733616665,
+      "max": 0.7631612826441523,
+      "mean": 0.5086673621896795,
+      "stdev": 0.13659017990531022,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "repetition": {
+      "count": 14,
+      "min": 0.13504790355804938,
+      "max": 0.8657778705632297,
+      "mean": 0.5008773671529798,
+      "stdev": 0.23265173630189198,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "tempo_of_change": {
+      "count": 14,
+      "min": 0.2562934027777778,
+      "max": 0.7348090277777778,
+      "mean": 0.4659326561386768,
+      "stdev": 0.150883932454205,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 10
+    },
+    "tension_release": {
+      "count": 14,
+      "min": 0.12113052215559264,
+      "max": 0.8580042643749969,
+      "mean": 0.4635608935277634,
+      "stdev": 0.24026427565800895,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "variation": {
+      "count": 14,
+      "min": 0.05018187549179957,
+      "max": 0.7793884411192776,
+      "mean": 0.33818857898602894,
+      "stdev": 0.19533208981958627,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    }
+  },
+  "per_datum": {
+    "apse_radius_m": {
+      "count": 14,
+      "min": 0.4109,
+      "max": 0.7401,
+      "mean": 0.5710071428571428,
+      "stdev": 0.099298233794433,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "bay_x_m": {
+      "count": 14,
+      "min": 0.0966,
+      "max": 0.8522,
+      "mean": 0.5184714285714286,
+      "stdev": 0.20395112659854647,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 13
+    },
+    "bay_y_m": {
+      "count": 14,
+      "min": 0.0966,
+      "max": 0.8522,
+      "mean": 0.5184714285714286,
+      "stdev": 0.20395112659854647,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 13
+    },
+    "braced_bay_count": {
+      "count": 14,
+      "min": 0.3442,
+      "max": 0.693,
+      "mean": 0.50635,
+      "stdev": 0.10016975413195912,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "cantilever_m": {
+      "count": 14,
+      "min": 0.4109,
+      "max": 0.7401,
+      "mean": 0.5710071428571428,
+      "stdev": 0.099298233794433,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "circulation_allowance": {
+      "count": 14,
+      "min": 0.4109,
+      "max": 0.7401,
+      "mean": 0.5710071428571428,
+      "stdev": 0.099298233794433,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "entry_canopy_span_m": {
+      "count": 14,
+      "min": 0.2402,
+      "max": 0.8747,
+      "mean": 0.5346785714285714,
+      "stdev": 0.16205956214822212,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 12
+    },
+    "envelope_layer_count": {
+      "count": 14,
+      "min": 0.3442,
+      "max": 0.693,
+      "mean": 0.50635,
+      "stdev": 0.10016975413195912,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "envelope_offset_m": {
+      "count": 14,
+      "min": 0.3442,
+      "max": 0.693,
+      "mean": 0.50635,
+      "stdev": 0.10016975413195912,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "fin_depth_m": {
+      "count": 14,
+      "min": 0.3964,
+      "max": 0.6177,
+      "mean": 0.5057571428571428,
+      "stdev": 0.06260840557768256,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "flight_width_m": {
+      "count": 14,
+      "min": 0.4109,
+      "max": 0.7401,
+      "mean": 0.5710071428571428,
+      "stdev": 0.099298233794433,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "floor_to_floor_m": {
+      "count": 14,
+      "min": 0.1211,
+      "max": 0.858,
+      "mean": 0.46356428571428576,
+      "stdev": 0.24027326290569023,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "ground_open_height_m": {
+      "count": 14,
+      "min": 0.2402,
+      "max": 0.8747,
+      "mean": 0.5346785714285714,
+      "stdev": 0.16205956214822212,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 12
+    },
+    "joist_spacing_m": {
+      "count": 14,
+      "min": 0.0966,
+      "max": 0.8522,
+      "mean": 0.5184714285714286,
+      "stdev": 0.20395112659854647,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 13
+    },
+    "level_count": {
+      "count": 14,
+      "min": 0.2563,
+      "max": 0.7348,
+      "mean": 0.46593571428571423,
+      "stdev": 0.15087229986762626,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 10
+    },
+    "mullion_module_m": {
+      "count": 14,
+      "min": 0.135,
+      "max": 0.8658,
+      "mean": 0.5008928571428571,
+      "stdev": 0.23266026876814466,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "opaque_fraction": {
+      "count": 14,
+      "min": 0.3964,
+      "max": 0.6177,
+      "mean": 0.5057571428571428,
+      "stdev": 0.06260840557768256,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "plate_rotation_deg": {
+      "count": 14,
+      "min": 0.0502,
+      "max": 0.7794,
+      "mean": 0.33819285714285713,
+      "stdev": 0.19533207425994809,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "plate_step_m": {
+      "count": 14,
+      "min": 0.0502,
+      "max": 0.7794,
+      "mean": 0.33819285714285713,
+      "stdev": 0.19533207425994809,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "rail_post_spacing_m": {
+      "count": 14,
+      "min": 0.135,
+      "max": 0.8658,
+      "mean": 0.5008928571428571,
+      "stdev": 0.23266026876814466,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "shading_depth_m": {
+      "count": 14,
+      "min": 0.1211,
+      "max": 0.858,
+      "mean": 0.46356428571428576,
+      "stdev": 0.24027326290569023,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "shading_rows": {
+      "count": 14,
+      "min": 0.1211,
+      "max": 0.858,
+      "mean": 0.46356428571428576,
+      "stdev": 0.24027326290569023,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "spandrel_height_m": {
+      "count": 14,
+      "min": 0.135,
+      "max": 0.8658,
+      "mean": 0.5008928571428571,
+      "stdev": 0.23266026876814466,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 14
+    },
+    "terrace_count": {
+      "count": 14,
+      "min": 0.0917,
+      "max": 0.8147,
+      "mean": 0.4957357142857143,
+      "stdev": 0.1980191462862073,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 9
+    },
+    "transom_rows": {
+      "count": 14,
+      "min": 0.0966,
+      "max": 0.8522,
+      "mean": 0.5184714285714286,
+      "stdev": 0.20395112659854647,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 13
+    },
+    "truss_depth_m": {
+      "count": 14,
+      "min": 0.2402,
+      "max": 0.8747,
+      "mean": 0.5346785714285714,
+      "stdev": 0.16205956214822212,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 12
+    },
+    "truss_panels": {
+      "count": 14,
+      "min": 0.2402,
+      "max": 0.8747,
+      "mean": 0.5346785714285714,
+      "stdev": 0.16205956214822212,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 12
+    },
+    "void_count": {
+      "count": 14,
+      "min": 0.0917,
+      "max": 0.8147,
+      "mean": 0.4957357142857143,
+      "stdev": 0.1980191462862073,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 9
+    },
+    "void_scale": {
+      "count": 14,
+      "min": 0.0917,
+      "max": 0.8147,
+      "mean": 0.4957357142857143,
+      "stdev": 0.1980191462862073,
+      "exact_endpoint_count": 0,
+      "exact_endpoint_rate": 0.0,
+      "near_endpoint_count": 0,
+      "near_endpoint_rate": 0.0,
+      "unique_3dp": 9
+    }
+  },
+  "score_collision_groups": [],
+  "model_collision_groups": [],
+  "tracks": [
+    {
+      "id": "mozart-symphony-29",
+      "title": "Symphony No. 29 in A major, K. 201 (excerpt)",
+      "creator": "Wolfgang Amadeus Mozart; Commons uploader Noahby",
+      "style_family": "Classical orchestral",
+      "source_page_url": "https://commons.wikimedia.org/wiki/File:Symphonie_no_29_en_la_majeur,_KV_201-186-WA_Mozart.ogg",
+      "license": "CC0 1.0",
+      "source_sha256": "04db40a8cfa7060df3eab228b803953b9ac65505fa7200cb842e1a510c1e089b",
+      "excerpt_mp3_sha256": "60c5b7411c1a5f9785d2f5f437312cf638306e51b5bc8082a832313a65e4b197",
+      "source_duration_seconds": 30.0,
+      "excerpt_start_seconds": 0.0,
+      "runtime_seconds": 11.485,
+      "metrics": {
+        "tempo_bpm": 0.5753038194444444,
+        "rms_energy": 0.12113052215559264,
+        "onset_density_hz": 0.5835432409739715,
+        "spectral_centroid_hz": 0.5462911560409182,
+        "periodicity": 0.2157504501954496,
+        "timbre_variation": 0.7793884411192776,
+        "dynamic_range_db": 0.6670237476115161,
+        "novelty_peak_rate_per_min": 0.3879310344827586,
+        "spectral_contrast_db": 0.7401060004025386,
+        "harmonic_ratio": 0.7327285010895126,
+        "spectral_flatness": 0.41960129333062285,
+        "zero_crossing_rate": 0.5278514857179762
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 143.554688,
+        "rms_energy": 0.068318,
+        "onset_density_hz": 4.633333,
+        "spectral_centroid_hz": 1484.186131,
+        "periodicity": 0.78847,
+        "timbre_variation": 103.658663,
+        "dynamic_range_db": 23.694244,
+        "novelty_peak_rate_per_min": 18.0,
+        "spectral_contrast_db": 25.363266,
+        "harmonic_ratio": 0.968149,
+        "spectral_flatness": 0.001079,
+        "zero_crossing_rate": 0.075913
+      },
+      "dimensions": {
+        "tempo_of_change": 0.5753038194444444,
+        "tension_release": 0.12113052215559264,
+        "density": 0.5835432409739715,
+        "continuity": 0.5462911560409182,
+        "repetition": 0.2157504501954496,
+        "variation": 0.7793884411192776,
+        "hierarchy": 0.6670237476115161,
+        "interruption": 0.3879310344827586,
+        "polyphony": 0.7371550006773282,
+        "genre_style": 0.4469483647048608
+      },
+      "datums": {
+        "level_count": 0.5753,
+        "floor_to_floor_m": 0.1211,
+        "shading_rows": 0.1211,
+        "shading_depth_m": 0.1211,
+        "bay_x_m": 0.5835,
+        "bay_y_m": 0.5835,
+        "joist_spacing_m": 0.5835,
+        "transom_rows": 0.5835,
+        "cantilever_m": 0.5444,
+        "apse_radius_m": 0.5444,
+        "circulation_allowance": 0.5444,
+        "flight_width_m": 0.5444,
+        "mullion_module_m": 0.2158,
+        "spandrel_height_m": 0.2158,
+        "rail_post_spacing_m": 0.2158,
+        "plate_step_m": 0.7794,
+        "plate_rotation_deg": 0.7794,
+        "truss_depth_m": 0.667,
+        "truss_panels": 0.667,
+        "ground_open_height_m": 0.667,
+        "entry_canopy_span_m": 0.667,
+        "void_count": 0.3894,
+        "void_scale": 0.3894,
+        "terrace_count": 0.3894,
+        "envelope_offset_m": 0.6739,
+        "envelope_layer_count": 0.6739,
+        "braced_bay_count": 0.6739,
+        "opaque_fraction": 0.4752,
+        "fin_depth_m": 0.4752
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-60c5b7411c1a",
+      "element_count": 5435,
+      "element_kind_count": 32,
+      "layer_counts": {
+        "site": 5,
+        "structure": 905,
+        "envelope": 2677,
+        "circulation": 947,
+        "program": 901
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 1.0,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/mozart-symphony-29/renders/01_program.png",
+            "sha256": "199854cb10238dfe457b5c7695de5d6157cfde907046b20cc58a84f79b537bf9",
+            "bytes": 1997216
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/mozart-symphony-29/renders/02_facade.png",
+            "sha256": "510ed36fc1f1315a5aa5a93aaf6a7c4a6071af25671e5066f0d046fc7c2c2854",
+            "bytes": 1817692
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/mozart-symphony-29/renders/03_structure.png",
+            "sha256": "1d9f127eb95b82d93cfbdb979a4ec610470fee3a7eac519d3d2aa7d1c0c78e06",
+            "bytes": 2000406
+          }
+        ],
+        "blender_summary": "[v3] elements=5435 groups=57 merged_objects=27 faces=26575"
+      }
+    },
+    {
+      "id": "couperin-harpsichord",
+      "title": "L'Art de toucher le clavecin (recorded excerpt)",
+      "creator": "François Couperin; performed by David Joseph Stith",
+      "style_family": "Baroque harpsichord",
+      "source_page_url": "https://commons.wikimedia.org/wiki/File:L%27Art_de_toucher_le_Clavecin_Fran%C3%A7ois_Couperin.ogg",
+      "license": "CC0 1.0",
+      "source_sha256": "c1a8ee251c914135055c6acebd36b4949b66ce40dbf7494d85cacfbfdbe2a5fc",
+      "excerpt_mp3_sha256": "887e29547b494aa5a430a31c5c49f95e5270213fa5cdaca863e4bb2eb5c2e853",
+      "source_duration_seconds": 32.796,
+      "excerpt_start_seconds": 1.398,
+      "runtime_seconds": 1.437,
+      "metrics": {
+        "tempo_bpm": 0.4019285929951691,
+        "rms_energy": 0.12958500243670554,
+        "onset_density_hz": 0.4953820319059613,
+        "spectral_centroid_hz": 0.6315352581316397,
+        "periodicity": 0.2795582695270297,
+        "timbre_variation": 0.39156285001520524,
+        "dynamic_range_db": 0.5621771164662024,
+        "novelty_peak_rate_per_min": 0.560344827586207,
+        "spectral_contrast_db": 0.8475804984804102,
+        "harmonic_ratio": 0.6365324588897654,
+        "spectral_flatness": 0.5272820253086997,
+        "zero_crossing_rate": 0.6238332278782285
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 112.347147,
+        "rms_energy": 0.073086,
+        "onset_density_hz": 3.933333,
+        "spectral_centroid_hz": 2260.930299,
+        "periodicity": 0.946601,
+        "timbre_variation": 52.077859,
+        "dynamic_range_db": 12.919752,
+        "novelty_peak_rate_per_min": 26.0,
+        "spectral_contrast_db": 26.410048,
+        "harmonic_ratio": 0.920936,
+        "spectral_flatness": 0.003587,
+        "zero_crossing_rate": 0.120134
+      },
+      "dimensions": {
+        "tempo_of_change": 0.4019285929951691,
+        "tension_release": 0.12958500243670554,
+        "density": 0.4953820319059613,
+        "continuity": 0.6315352581316397,
+        "repetition": 0.2795582695270297,
+        "variation": 0.39156285001520524,
+        "hierarchy": 0.5621771164662024,
+        "interruption": 0.560344827586207,
+        "polyphony": 0.7631612826441523,
+        "genre_style": 0.5443351358044533
+      },
+      "datums": {
+        "level_count": 0.4019,
+        "floor_to_floor_m": 0.1296,
+        "shading_rows": 0.1296,
+        "shading_depth_m": 0.1296,
+        "bay_x_m": 0.4954,
+        "bay_y_m": 0.4954,
+        "joist_spacing_m": 0.4954,
+        "transom_rows": 0.4954,
+        "cantilever_m": 0.6263,
+        "apse_radius_m": 0.6263,
+        "circulation_allowance": 0.6263,
+        "flight_width_m": 0.6263,
+        "mullion_module_m": 0.2796,
+        "spandrel_height_m": 0.2796,
+        "rail_post_spacing_m": 0.2796,
+        "plate_step_m": 0.3916,
+        "plate_rotation_deg": 0.3916,
+        "truss_depth_m": 0.5622,
+        "truss_panels": 0.5622,
+        "ground_open_height_m": 0.5622,
+        "entry_canopy_span_m": 0.5622,
+        "void_count": 0.5595,
+        "void_scale": 0.5595,
+        "terrace_count": 0.5595,
+        "envelope_offset_m": 0.693,
+        "envelope_layer_count": 0.693,
+        "braced_bay_count": 0.693,
+        "opaque_fraction": 0.5207,
+        "fin_depth_m": 0.5207
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-887e29547b49",
+      "element_count": 4472,
+      "element_kind_count": 32,
+      "layer_counts": {
+        "site": 5,
+        "structure": 797,
+        "envelope": 1987,
+        "circulation": 818,
+        "program": 865
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 1.0,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/couperin-harpsichord/renders/01_program.png",
+            "sha256": "3d0bb8dfe6df15150fc593c9e38fdc2fd44782c6bbdb00208c305497a08e1352",
+            "bytes": 1973331
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/couperin-harpsichord/renders/02_facade.png",
+            "sha256": "d8dd7ad0e99ee6b7830c6fc894703cfad540bdb845cbb8e0c4477c728c67e13d",
+            "bytes": 1796096
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/couperin-harpsichord/renders/03_structure.png",
+            "sha256": "9cc33a8fb2077df6a000cd5171199d02fc1cb3e2e1747b1702bad4f4651983d0",
+            "bytes": 1984506
+          }
+        ],
+        "blender_summary": "[v3] elements=4472 groups=57 merged_objects=27 faces=22128"
+      }
+    },
+    {
+      "id": "dub-riots-silience-is-gold",
+      "title": "Silience Is Gold",
+      "creator": "Dub Riots",
+      "style_family": "Dub / roots reggae",
+      "source_page_url": "https://archive.org/details/DPH036",
+      "license": "CC BY-NC-ND 4.0",
+      "source_sha256": "0d20aec5adadecd683ba903ad168d6a8f15de716917a812f41c5d2a462130b07",
+      "excerpt_mp3_sha256": "2cbd89d77490da75c6a46d36fd9519b6e201c255d93594cffefca9d47e63b417",
+      "source_duration_seconds": 282.0,
+      "excerpt_start_seconds": 126.0,
+      "runtime_seconds": 1.424,
+      "metrics": {
+        "tempo_bpm": 0.6222171160130718,
+        "rms_energy": 0.3267979738137401,
+        "onset_density_hz": 0.4953820319059613,
+        "spectral_centroid_hz": 0.6527812929634466,
+        "periodicity": 0.4875713457202496,
+        "timbre_variation": 0.5215261091265762,
+        "dynamic_range_db": 0.6594540605573451,
+        "novelty_peak_rate_per_min": 0.560344827586207,
+        "spectral_contrast_db": 0.4199580620981892,
+        "harmonic_ratio": 0.47730628811058545,
+        "spectral_flatness": 0.6032292526976981,
+        "zero_crossing_rate": 0.6050374537645811
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 151.999081,
+        "rms_energy": 0.184314,
+        "onset_density_hz": 3.933333,
+        "spectral_centroid_hz": 2511.004598,
+        "periodicity": 1.717718,
+        "timbre_variation": 69.362973,
+        "dynamic_range_db": 22.679152,
+        "novelty_peak_rate_per_min": 26.0,
+        "spectral_contrast_db": 22.484591,
+        "harmonic_ratio": 0.704219,
+        "spectral_flatness": 0.00837,
+        "zero_crossing_rate": 0.110008
+      },
+      "dimensions": {
+        "tempo_of_change": 0.6222171160130718,
+        "tension_release": 0.3267979738137401,
+        "density": 0.4953820319059613,
+        "continuity": 0.6527812929634466,
+        "repetition": 0.4875713457202496,
+        "variation": 0.5215261091265762,
+        "hierarchy": 0.6594540605573451,
+        "interruption": 0.560344827586207,
+        "polyphony": 0.4428973525031477,
+        "genre_style": 0.597575012909256
+      },
+      "datums": {
+        "level_count": 0.6222,
+        "floor_to_floor_m": 0.3268,
+        "shading_rows": 0.3268,
+        "shading_depth_m": 0.3268,
+        "bay_x_m": 0.4954,
+        "bay_y_m": 0.4954,
+        "joist_spacing_m": 0.4954,
+        "transom_rows": 0.4954,
+        "cantilever_m": 0.6467,
+        "apse_radius_m": 0.6467,
+        "circulation_allowance": 0.6467,
+        "flight_width_m": 0.6467,
+        "mullion_module_m": 0.4876,
+        "spandrel_height_m": 0.4876,
+        "rail_post_spacing_m": 0.4876,
+        "plate_step_m": 0.5215,
+        "plate_rotation_deg": 0.5215,
+        "truss_depth_m": 0.6595,
+        "truss_panels": 0.6595,
+        "ground_open_height_m": 0.6595,
+        "entry_canopy_span_m": 0.6595,
+        "void_count": 0.5595,
+        "void_scale": 0.5595,
+        "terrace_count": 0.5595,
+        "envelope_offset_m": 0.4581,
+        "envelope_layer_count": 0.4581,
+        "braced_bay_count": 0.4581,
+        "opaque_fraction": 0.5455,
+        "fin_depth_m": 0.5455
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-2cbd89d77490",
+      "element_count": 4899,
+      "element_kind_count": 33,
+      "layer_counts": {
+        "site": 5,
+        "structure": 915,
+        "envelope": 1900,
+        "circulation": 1230,
+        "program": 849
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 1.0,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/dub-riots-silience-is-gold/renders/01_program.png",
+            "sha256": "8595ac3008eb6c6368d4689e2acdb0524d8c69628341e748fefd9f20efae6c23",
+            "bytes": 2000176
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/dub-riots-silience-is-gold/renders/02_facade.png",
+            "sha256": "3bea0fd222dfc11b8588aaf4c9913a3b156c076871e149f99daaf9607f3ddcf8",
+            "bytes": 1802070
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/dub-riots-silience-is-gold/renders/03_structure.png",
+            "sha256": "85d3a666302e82ab546845aae8569929a36fefed05f61957b1e821728cb9f820",
+            "bytes": 1951374
+          }
+        ],
+        "blender_summary": "[v3] elements=4899 groups=62 merged_objects=27 faces=25155"
+      }
+    },
+    {
+      "id": "deadbone-wake-up-call",
+      "title": "Wake-up Call Intro – 24 Hours",
+      "creator": "Deadbone",
+      "style_family": "Detroit techno",
+      "source_page_url": "https://archive.org/details/fud005",
+      "license": "CC BY-NC-SA 2.5",
+      "source_sha256": "fa88bb2404b36e8c947cb7547533a8959b7d28b3bd83a7fcc6886a9c1b7af1d8",
+      "excerpt_mp3_sha256": "6354f3fbea8058c8abcd8749b57a5e4d35a4866193ce430fb396e31e0a19bf5c",
+      "source_duration_seconds": 30.34,
+      "excerpt_start_seconds": 0.17,
+      "runtime_seconds": 1.392,
+      "metrics": {
+        "tempo_bpm": 0.4613715277777778,
+        "rms_energy": 0.5864226754675521,
+        "onset_density_hz": 0.6255247691015953,
+        "spectral_centroid_hz": 0.644273138124402,
+        "periodicity": 0.8657778705632297,
+        "timbre_variation": 0.507384138896053,
+        "dynamic_range_db": 0.8746678066711067,
+        "novelty_peak_rate_per_min": 0.21551724137931036,
+        "spectral_contrast_db": 0.4893439495178785,
+        "harmonic_ratio": 0.4869853754716658,
+        "spectral_flatness": 0.7399260251137418,
+        "zero_crossing_rate": 0.6818979062930666
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 123.046875,
+        "rms_energy": 0.330742,
+        "onset_density_hz": 4.966667,
+        "spectral_centroid_hz": 2407.700626,
+        "periodicity": 5.07541,
+        "timbre_variation": 67.48209,
+        "dynamic_range_db": 78.753952,
+        "novelty_peak_rate_per_min": 10.0,
+        "spectral_contrast_db": 23.079393,
+        "harmonic_ratio": 0.723918,
+        "spectral_flatness": 0.03846,
+        "zero_crossing_rate": 0.156592
+      },
+      "dimensions": {
+        "tempo_of_change": 0.4613715277777778,
+        "tension_release": 0.5864226754675521,
+        "density": 0.6255247691015953,
+        "continuity": 0.644273138124402,
+        "repetition": 0.8657778705632297,
+        "variation": 0.507384138896053,
+        "hierarchy": 0.8746678066711067,
+        "interruption": 0.21551724137931036,
+        "polyphony": 0.4884005198993935,
+        "genre_style": 0.6580047319525897
+      },
+      "datums": {
+        "level_count": 0.4614,
+        "floor_to_floor_m": 0.5864,
+        "shading_rows": 0.5864,
+        "shading_depth_m": 0.5864,
+        "bay_x_m": 0.6255,
+        "bay_y_m": 0.6255,
+        "joist_spacing_m": 0.6255,
+        "transom_rows": 0.6255,
+        "cantilever_m": 0.6385,
+        "apse_radius_m": 0.6385,
+        "circulation_allowance": 0.6385,
+        "flight_width_m": 0.6385,
+        "mullion_module_m": 0.8658,
+        "spandrel_height_m": 0.8658,
+        "rail_post_spacing_m": 0.8658,
+        "plate_step_m": 0.5074,
+        "plate_rotation_deg": 0.5074,
+        "truss_depth_m": 0.8747,
+        "truss_panels": 0.8747,
+        "ground_open_height_m": 0.8747,
+        "entry_canopy_span_m": 0.8747,
+        "void_count": 0.2193,
+        "void_scale": 0.2193,
+        "terrace_count": 0.2193,
+        "envelope_offset_m": 0.4915,
+        "envelope_layer_count": 0.4915,
+        "braced_bay_count": 0.4915,
+        "opaque_fraction": 0.5737,
+        "fin_depth_m": 0.5737
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-6354f3fbea80",
+      "element_count": 3999,
+      "element_kind_count": 35,
+      "layer_counts": {
+        "site": 5,
+        "structure": 596,
+        "envelope": 1699,
+        "circulation": 826,
+        "program": 873
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 0.9581,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/deadbone-wake-up-call/renders/01_program.png",
+            "sha256": "cab6d55b48872fbfb9f2c6a176abdbea6f00d06af8d020c0f1997e7a22cf738d",
+            "bytes": 1957007
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/deadbone-wake-up-call/renders/02_facade.png",
+            "sha256": "c598042d55e683beb02ddb9fb831785790633b43545318e42accca2767e489f6",
+            "bytes": 1868263
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/deadbone-wake-up-call/renders/03_structure.png",
+            "sha256": "76848bac2844aa8ca0b8a99179932f570fe965731c5dafbea9b15cc91dbc569a",
+            "bytes": 1847661
+          }
+        ],
+        "blender_summary": "[v3] elements=3999 groups=63 merged_objects=29 faces=14819"
+      }
+    },
+    {
+      "id": "lucas-darklord-hymne-iii",
+      "title": "Hymne III",
+      "creator": "Lucas Darklord",
+      "style_family": "Black metal / noise",
+      "source_page_url": "https://archive.org/details/Nattens_Madrigal",
+      "license": "CC BY-NC-SA 3.0",
+      "source_sha256": "c721070e7bf2e50220527e25cd9d826d336c3dd0386585de4a6ab5a895036036",
+      "excerpt_mp3_sha256": "bfbde72cc8505bb8f17e80bb26a4146b96596d167fbc64e4f582bce96e8707e2",
+      "source_duration_seconds": 250.303,
+      "excerpt_start_seconds": 110.151,
+      "runtime_seconds": 1.45,
+      "metrics": {
+        "tempo_bpm": 0.3094618055555556,
+        "rms_energy": 0.8580042643749969,
+        "onset_density_hz": 0.39462636439966414,
+        "spectral_centroid_hz": 0.7501082874683688,
+        "periodicity": 0.41867828577054655,
+        "timbre_variation": 0.05018187549179957,
+        "dynamic_range_db": 0.2402296236212044,
+        "novelty_peak_rate_per_min": 0.646551724137931,
+        "spectral_contrast_db": 0.1765597088047774,
+        "harmonic_ratio": 0.4540359551332505,
+        "spectral_flatness": 0.772020680486284,
+        "zero_crossing_rate": 0.8716499742285487
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 95.703125,
+        "rms_energy": 0.483914,
+        "onset_density_hz": 3.133333,
+        "spectral_centroid_hz": 4060.29005,
+        "periodicity": 1.410079,
+        "timbre_variation": 6.674189,
+        "dynamic_range_db": 2.006685,
+        "novelty_peak_rate_per_min": 30.0,
+        "spectral_contrast_db": 20.516705,
+        "harmonic_ratio": 0.653721,
+        "spectral_flatness": 0.055019,
+        "zero_crossing_rate": 0.336396
+      },
+      "dimensions": {
+        "tempo_of_change": 0.3094618055555556,
+        "tension_release": 0.8580042643749969,
+        "density": 0.39462636439966414,
+        "continuity": 0.7501082874683688,
+        "repetition": 0.41867828577054655,
+        "variation": 0.05018187549179957,
+        "hierarchy": 0.2402296236212044,
+        "interruption": 0.646551724137931,
+        "polyphony": 0.28755020733616665,
+        "genre_style": 0.7523156628814736
+      },
+      "datums": {
+        "level_count": 0.3095,
+        "floor_to_floor_m": 0.858,
+        "shading_rows": 0.858,
+        "shading_depth_m": 0.858,
+        "bay_x_m": 0.3946,
+        "bay_y_m": 0.3946,
+        "joist_spacing_m": 0.3946,
+        "transom_rows": 0.3946,
+        "cantilever_m": 0.7401,
+        "apse_radius_m": 0.7401,
+        "circulation_allowance": 0.7401,
+        "flight_width_m": 0.7401,
+        "mullion_module_m": 0.4187,
+        "spandrel_height_m": 0.4187,
+        "rail_post_spacing_m": 0.4187,
+        "plate_step_m": 0.0502,
+        "plate_rotation_deg": 0.0502,
+        "truss_depth_m": 0.2402,
+        "truss_panels": 0.2402,
+        "ground_open_height_m": 0.2402,
+        "entry_canopy_span_m": 0.2402,
+        "void_count": 0.6446,
+        "void_scale": 0.6446,
+        "terrace_count": 0.6446,
+        "envelope_offset_m": 0.3442,
+        "envelope_layer_count": 0.3442,
+        "braced_bay_count": 0.3442,
+        "opaque_fraction": 0.6177,
+        "fin_depth_m": 0.6177
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-bfbde72cc850",
+      "element_count": 4578,
+      "element_kind_count": 36,
+      "layer_counts": {
+        "site": 5,
+        "structure": 669,
+        "envelope": 1958,
+        "circulation": 1017,
+        "program": 929
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 1.0,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/lucas-darklord-hymne-iii/renders/01_program.png",
+            "sha256": "cf22b29c599aba44bf14308ed5f1da0ba966b398492f8a077bec51060c91e859",
+            "bytes": 1975585
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/lucas-darklord-hymne-iii/renders/02_facade.png",
+            "sha256": "d0b85ca126893bc56f4ba4a8801a684ca819bf5880c8a87fb739c180e49e5a1e",
+            "bytes": 1821662
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/lucas-darklord-hymne-iii/renders/03_structure.png",
+            "sha256": "825c70c91da6bc9abff441b2d4710f3d6986a2ab9aa1fdad8d773ca38b0b5fa8",
+            "bytes": 1853656
+          }
+        ],
+        "blender_summary": "[v3] elements=4578 groups=79 merged_objects=27 faces=15970"
+      }
+    },
+    {
+      "id": "jorgensen-guitar-soundscape-1",
+      "title": "Guitar Soundscape 1",
+      "creator": "Øystein Jørgensen",
+      "style_family": "Ambient guitar / drone",
+      "source_page_url": "https://archive.org/details/Guitar_Soundscapes",
+      "license": "CC BY-ND 3.0",
+      "source_sha256": "9f301bba8b33aca99c06284b5c98f01cee64186f07bff4a63addaf5818bba32b",
+      "excerpt_mp3_sha256": "3d99061e0059916bf8af69333f168b47b6261db22a76672319ff851df835aa6b",
+      "source_duration_seconds": 263.118,
+      "excerpt_start_seconds": 116.559,
+      "runtime_seconds": 1.472,
+      "metrics": {
+        "tempo_bpm": 0.7348090277777778,
+        "rms_energy": 0.12914046433800502,
+        "onset_density_hz": 0.41981528127623846,
+        "spectral_centroid_hz": 0.4427262140575856,
+        "periodicity": 0.34889401709613116,
+        "timbre_variation": 0.3632928375014685,
+        "dynamic_range_db": 0.5309730659914388,
+        "novelty_peak_rate_per_min": 0.21551724137931036,
+        "spectral_contrast_db": 0.3561969429495392,
+        "harmonic_ratio": 0.7275574277941302,
+        "spectral_flatness": 0.20642083586411689,
+        "zero_crossing_rate": 0.4624482701496607
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 172.265625,
+        "rms_energy": 0.072835,
+        "onset_density_hz": 3.333333,
+        "spectral_centroid_hz": 890.024711,
+        "periodicity": 1.154586,
+        "timbre_variation": 48.317947,
+        "dynamic_range_db": 10.786125,
+        "novelty_peak_rate_per_min": 10.0,
+        "spectral_contrast_db": 21.951532,
+        "harmonic_ratio": 0.96652,
+        "spectral_flatness": 0.0001,
+        "zero_crossing_rate": 0.054918
+      },
+      "dimensions": {
+        "tempo_of_change": 0.7348090277777778,
+        "tension_release": 0.12914046433800502,
+        "density": 0.41981528127623846,
+        "continuity": 0.4427262140575856,
+        "repetition": 0.34889401709613116,
+        "variation": 0.3632928375014685,
+        "hierarchy": 0.5309730659914388,
+        "interruption": 0.21551724137931036,
+        "polyphony": 0.5047411368873757,
+        "genre_style": 0.3436944890568244
+      },
+      "datums": {
+        "level_count": 0.7348,
+        "floor_to_floor_m": 0.1291,
+        "shading_rows": 0.1291,
+        "shading_depth_m": 0.1291,
+        "bay_x_m": 0.4198,
+        "bay_y_m": 0.4198,
+        "joist_spacing_m": 0.4198,
+        "transom_rows": 0.4198,
+        "cantilever_m": 0.445,
+        "apse_radius_m": 0.445,
+        "circulation_allowance": 0.445,
+        "flight_width_m": 0.445,
+        "mullion_module_m": 0.3489,
+        "spandrel_height_m": 0.3489,
+        "rail_post_spacing_m": 0.3489,
+        "plate_step_m": 0.3633,
+        "plate_rotation_deg": 0.3633,
+        "truss_depth_m": 0.531,
+        "truss_panels": 0.531,
+        "ground_open_height_m": 0.531,
+        "entry_canopy_span_m": 0.531,
+        "void_count": 0.2193,
+        "void_scale": 0.2193,
+        "terrace_count": 0.2193,
+        "envelope_offset_m": 0.5035,
+        "envelope_layer_count": 0.5035,
+        "braced_bay_count": 0.5035,
+        "opaque_fraction": 0.4271,
+        "fin_depth_m": 0.4271
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-3d99061e0059",
+      "element_count": 4700,
+      "element_kind_count": 35,
+      "layer_counts": {
+        "site": 5,
+        "structure": 825,
+        "envelope": 2089,
+        "circulation": 879,
+        "program": 902
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 0.9514,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/jorgensen-guitar-soundscape-1/renders/01_program.png",
+            "sha256": "ba1a54d38e0052635c3083b2466a58108800da4cdd45a136edfb59ba73350182",
+            "bytes": 1930532
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/jorgensen-guitar-soundscape-1/renders/02_facade.png",
+            "sha256": "0e8cf5f4af90f3223b5169f9258d15d7668f43e0272588136ee662504c4ac60a",
+            "bytes": 1819590
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/jorgensen-guitar-soundscape-1/renders/03_structure.png",
+            "sha256": "3623ec0dbeb72c46471d18115548f585be646a4e44a38a7d2809b3ead24efde7",
+            "bytes": 1894104
+          }
+        ],
+        "blender_summary": "[v3] elements=4700 groups=80 merged_objects=28 faces=23606"
+      }
+    },
+    {
+      "id": "krakenti-his-akorns",
+      "title": "His Akorns",
+      "creator": "Krakenti / Nickolai Varlamov",
+      "style_family": "Electronic industrial",
+      "source_page_url": "https://archive.org/details/foot111",
+      "license": "CC BY-NC-SA 3.0",
+      "source_sha256": "64735c8456ac91684503059fb99a02e22ba0f3085c944a40fc1907ef8fe0137c",
+      "excerpt_mp3_sha256": "7907d157831ad2ee03e66acef280b967d44d1a8730699c5bfa64f364fe8df42c",
+      "source_duration_seconds": 245.162,
+      "excerpt_start_seconds": 107.581,
+      "runtime_seconds": 1.372,
+      "metrics": {
+        "tempo_bpm": 0.2562934027777778,
+        "rms_energy": 0.2778047788227704,
+        "onset_density_hz": 0.6297229219143576,
+        "spectral_centroid_hz": 0.665018578082088,
+        "periodicity": 0.7520130815363115,
+        "timbre_variation": 0.1909414157532809,
+        "dynamic_range_db": 0.6711426180517183,
+        "novelty_peak_rate_per_min": 0.7327586206896552,
+        "spectral_contrast_db": 0.41597020138974666,
+        "harmonic_ratio": 0.2818453117462744,
+        "spectral_flatness": 0.5901137242162314,
+        "zero_crossing_rate": 0.6261540613277186
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 86.132812,
+        "rms_energy": 0.156682,
+        "onset_density_hz": 5.0,
+        "spectral_centroid_hz": 2667.407306,
+        "periodicity": 3.663858,
+        "timbre_variation": 25.395208,
+        "dynamic_range_db": 24.265543,
+        "novelty_peak_rate_per_min": 34.0,
+        "spectral_contrast_db": 22.450875,
+        "harmonic_ratio": 0.253224,
+        "spectral_flatness": 0.00723,
+        "zero_crossing_rate": 0.121438
+      },
+      "dimensions": {
+        "tempo_of_change": 0.2562934027777778,
+        "tension_release": 0.2778047788227704,
+        "density": 0.6297229219143576,
+        "continuity": 0.665018578082088,
+        "repetition": 0.7520130815363115,
+        "variation": 0.1909414157532809,
+        "hierarchy": 0.6711426180517183,
+        "interruption": 0.7327586206896552,
+        "polyphony": 0.36232024553235775,
+        "genre_style": 0.6415149889303478
+      },
+      "datums": {
+        "level_count": 0.2563,
+        "floor_to_floor_m": 0.2778,
+        "shading_rows": 0.2778,
+        "shading_depth_m": 0.2778,
+        "bay_x_m": 0.6297,
+        "bay_y_m": 0.6297,
+        "joist_spacing_m": 0.6297,
+        "transom_rows": 0.6297,
+        "cantilever_m": 0.6584,
+        "apse_radius_m": 0.6584,
+        "circulation_allowance": 0.6584,
+        "flight_width_m": 0.6584,
+        "mullion_module_m": 0.752,
+        "spandrel_height_m": 0.752,
+        "rail_post_spacing_m": 0.752,
+        "plate_step_m": 0.1909,
+        "plate_rotation_deg": 0.1909,
+        "truss_depth_m": 0.6711,
+        "truss_panels": 0.6711,
+        "ground_open_height_m": 0.6711,
+        "entry_canopy_span_m": 0.6711,
+        "void_count": 0.7297,
+        "void_scale": 0.7297,
+        "terrace_count": 0.7297,
+        "envelope_offset_m": 0.399,
+        "envelope_layer_count": 0.399,
+        "braced_bay_count": 0.399,
+        "opaque_fraction": 0.566,
+        "fin_depth_m": 0.566
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-7907d157831a",
+      "element_count": 3710,
+      "element_kind_count": 35,
+      "layer_counts": {
+        "site": 5,
+        "structure": 637,
+        "envelope": 1350,
+        "circulation": 845,
+        "program": 873
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 0.9591,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/krakenti-his-akorns/renders/01_program.png",
+            "sha256": "9944c2aee2abc559d6ab82770e885d2a84e096e0fc093cd5c03786684ae69ec6",
+            "bytes": 1963623
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/krakenti-his-akorns/renders/02_facade.png",
+            "sha256": "583e412e30b9f2987001453441643ed9de1d51d2d81e40d241a1704d14faa734",
+            "bytes": 1828584
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/krakenti-his-akorns/renders/03_structure.png",
+            "sha256": "fe1617051b69c2a393b853e522ce4c19fa3d7246297c714e93615371a6a3a8a7",
+            "bytes": 1868419
+          }
+        ],
+        "blender_summary": "[v3] elements=3710 groups=63 merged_objects=29 faces=14801"
+      }
+    },
+    {
+      "id": "affen-like-life-easily-ended",
+      "title": "Like Life Easily Ended",
+      "creator": "A.F.F.E.N",
+      "style_family": "Indie rock",
+      "source_page_url": "https://archive.org/details/AFFEN-LikeLifeEasilyEnded",
+      "license": "CC BY-NC-ND 3.0",
+      "source_sha256": "6884b149c2b5c16a3b46c934d1fda40046514b6ddd8262b3483c0d4c8353ad6d",
+      "excerpt_mp3_sha256": "6673b85caa7f3bcf40cdc7425017fc1d466b517c34b094d679edb9e8d8b40fe7",
+      "source_duration_seconds": 242.494,
+      "excerpt_start_seconds": 106.247,
+      "runtime_seconds": 1.338,
+      "metrics": {
+        "tempo_bpm": 0.2904730902777778,
+        "rms_energy": 0.7454570092207997,
+        "onset_density_hz": 0.10495382031905962,
+        "spectral_centroid_hz": 0.6161176843303346,
+        "periodicity": 0.13504790355804938,
+        "timbre_variation": 0.2951565312263661,
+        "dynamic_range_db": 0.29214954206089605,
+        "novelty_peak_rate_per_min": 0.08620689655172414,
+        "spectral_contrast_db": 0.5090278726722096,
+        "harmonic_ratio": 0.5859299524803091,
+        "spectral_flatness": 0.5730131250879634,
+        "zero_crossing_rate": 0.5753699776300751
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 92.285156,
+        "rms_energy": 0.420438,
+        "onset_density_hz": 0.833333,
+        "spectral_centroid_hz": 2095.199993,
+        "periodicity": 0.625727,
+        "timbre_variation": 39.255819,
+        "dynamic_range_db": 2.709624,
+        "novelty_peak_rate_per_min": 4.0,
+        "spectral_contrast_db": 23.250978,
+        "harmonic_ratio": 0.875508,
+        "spectral_flatness": 0.005975,
+        "zero_crossing_rate": 0.095549
+      },
+      "dimensions": {
+        "tempo_of_change": 0.2904730902777778,
+        "tension_release": 0.7454570092207997,
+        "density": 0.10495382031905962,
+        "continuity": 0.6161176843303346,
+        "repetition": 0.13504790355804938,
+        "variation": 0.2951565312263661,
+        "hierarchy": 0.29214954206089605,
+        "interruption": 0.08620689655172414,
+        "polyphony": 0.5397887045954495,
+        "genre_style": 0.5505524771854167
+      },
+      "datums": {
+        "level_count": 0.2905,
+        "floor_to_floor_m": 0.7455,
+        "shading_rows": 0.7455,
+        "shading_depth_m": 0.7455,
+        "bay_x_m": 0.105,
+        "bay_y_m": 0.105,
+        "joist_spacing_m": 0.105,
+        "transom_rows": 0.105,
+        "cantilever_m": 0.6115,
+        "apse_radius_m": 0.6115,
+        "circulation_allowance": 0.6115,
+        "flight_width_m": 0.6115,
+        "mullion_module_m": 0.135,
+        "spandrel_height_m": 0.135,
+        "rail_post_spacing_m": 0.135,
+        "plate_step_m": 0.2952,
+        "plate_rotation_deg": 0.2952,
+        "truss_depth_m": 0.2921,
+        "truss_panels": 0.2921,
+        "ground_open_height_m": 0.2921,
+        "entry_canopy_span_m": 0.2921,
+        "void_count": 0.0917,
+        "void_scale": 0.0917,
+        "terrace_count": 0.0917,
+        "envelope_offset_m": 0.5292,
+        "envelope_layer_count": 0.5292,
+        "braced_bay_count": 0.5292,
+        "opaque_fraction": 0.5236,
+        "fin_depth_m": 0.5236
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-6673b85caa7f",
+      "element_count": 2848,
+      "element_kind_count": 36,
+      "layer_counts": {
+        "site": 5,
+        "structure": 436,
+        "envelope": 1046,
+        "circulation": 571,
+        "program": 790
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 0.8944,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/affen-like-life-easily-ended/renders/01_program.png",
+            "sha256": "5e24ea0e99b3d729bf049ca5ab4c9a631d7a12f910bc328c8339452260e2d587",
+            "bytes": 1931542
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/affen-like-life-easily-ended/renders/02_facade.png",
+            "sha256": "ad24fab4d8e22c42db67e87d7676983f0d4a95da0f84c6290d80e801f9f4f7f3",
+            "bytes": 1804541
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/affen-like-life-easily-ended/renders/03_structure.png",
+            "sha256": "41874675df63a23235345a8cfa7a1ff6c86769240c756b0ed2544e2761f30962",
+            "bytes": 1831666
+          }
+        ],
+        "blender_summary": "[v3] elements=2848 groups=75 merged_objects=27 faces=9956"
+      }
+    },
+    {
+      "id": "nienvox-visions",
+      "title": "Visions",
+      "creator": "Nienvox",
+      "style_family": "Trip-hop / breakbeats / jazz",
+      "source_page_url": "https://archive.org/details/foot099",
+      "license": "CC BY-NC-SA 3.0",
+      "source_sha256": "6d56b8266d1afb08c880aa700b6fc291418024951a86e4f43dbd447a2085058e",
+      "excerpt_mp3_sha256": "0cdcb2d42f1de36bd60f52ad6f12bb94e2419c749715138c00b541b54429b228",
+      "source_duration_seconds": 165.646,
+      "excerpt_start_seconds": 67.823,
+      "runtime_seconds": 1.312,
+      "metrics": {
+        "tempo_bpm": 0.7348090277777778,
+        "rms_energy": 0.40235180169978046,
+        "onset_density_hz": 0.6842989084802686,
+        "spectral_centroid_hz": 0.48669826863774956,
+        "periodicity": 0.783798697908983,
+        "timbre_variation": 0.12175250137061404,
+        "dynamic_range_db": 0.5815162493453934,
+        "novelty_peak_rate_per_min": 0.8189655172413793,
+        "spectral_contrast_db": 0.49007146721885686,
+        "harmonic_ratio": 0.5972072957205438,
+        "spectral_flatness": 0.39271486400974187,
+        "zero_crossing_rate": 0.3876873013902736
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 172.265625,
+        "rms_energy": 0.226926,
+        "onset_density_hz": 5.433333,
+        "spectral_centroid_hz": 1105.850544,
+        "periodicity": 4.013123,
+        "timbre_variation": 16.193083,
+        "dynamic_range_db": 14.448962,
+        "novelty_peak_rate_per_min": 38.0,
+        "spectral_contrast_db": 23.085712,
+        "harmonic_ratio": 0.887256,
+        "spectral_flatness": 0.000799,
+        "zero_crossing_rate": 0.037646
+      },
+      "dimensions": {
+        "tempo_of_change": 0.7348090277777778,
+        "tension_release": 0.40235180169978046,
+        "density": 0.6842989084802686,
+        "continuity": 0.48669826863774956,
+        "repetition": 0.783798697908983,
+        "variation": 0.12175250137061404,
+        "hierarchy": 0.5815162493453934,
+        "interruption": 0.8189655172413793,
+        "polyphony": 0.5329257986195316,
+        "genre_style": 0.4120188442034458
+      },
+      "datums": {
+        "level_count": 0.7348,
+        "floor_to_floor_m": 0.4024,
+        "shading_rows": 0.4024,
+        "shading_depth_m": 0.4024,
+        "bay_x_m": 0.6843,
+        "bay_y_m": 0.6843,
+        "joist_spacing_m": 0.6843,
+        "transom_rows": 0.6843,
+        "cantilever_m": 0.4872,
+        "apse_radius_m": 0.4872,
+        "circulation_allowance": 0.4872,
+        "flight_width_m": 0.4872,
+        "mullion_module_m": 0.7838,
+        "spandrel_height_m": 0.7838,
+        "rail_post_spacing_m": 0.7838,
+        "plate_step_m": 0.1218,
+        "plate_rotation_deg": 0.1218,
+        "truss_depth_m": 0.5815,
+        "truss_panels": 0.5815,
+        "ground_open_height_m": 0.5815,
+        "entry_canopy_span_m": 0.5815,
+        "void_count": 0.8147,
+        "void_scale": 0.8147,
+        "terrace_count": 0.8147,
+        "envelope_offset_m": 0.5241,
+        "envelope_layer_count": 0.5241,
+        "braced_bay_count": 0.5241,
+        "opaque_fraction": 0.4589,
+        "fin_depth_m": 0.4589
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-0cdcb2d42f1d",
+      "element_count": 2600,
+      "element_kind_count": 35,
+      "layer_counts": {
+        "site": 5,
+        "structure": 361,
+        "envelope": 805,
+        "circulation": 916,
+        "program": 513
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 0.3146,
+      "program_fits": false,
+      "program_unplaced": [
+        "Open stacks",
+        "Quiet reading room",
+        "Special collections",
+        "Adult reading room",
+        "Periodicals and media",
+        "Seminar rooms",
+        "Staff workroom"
+      ],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/nienvox-visions/renders/01_program.png",
+            "sha256": "04f5ad87a67faa4190d820d98b0b12fab9235f16193b66d2c42276aa12855031",
+            "bytes": 1935927
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/nienvox-visions/renders/02_facade.png",
+            "sha256": "6be8848c111e2765184ed3b24658ff87061349d2b140d507e8d3768a086c675a",
+            "bytes": 1768250
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/nienvox-visions/renders/03_structure.png",
+            "sha256": "90f372a4fac57777933cb15cf649f83a10c8debeab5486977a865605875aebc3",
+            "bytes": 1821422
+          }
+        ],
+        "blender_summary": "[v3] elements=2600 groups=55 merged_objects=25 faces=10535"
+      }
+    },
+    {
+      "id": "charrier-accorte",
+      "title": "Accorte",
+      "creator": "Charles Eric Charrier",
+      "style_family": "Acousmatic / electroacoustic improvisation",
+      "source_page_url": "https://archive.org/details/isor009Accortiste",
+      "license": "CC BY-NC-ND 3.0",
+      "source_sha256": "d6bb97b632c39ba763f0f2f6a8dfe4aa2efcffc8da3a9cf2f5a47d9768b08d7a",
+      "excerpt_mp3_sha256": "f74b049c0fd3c38faa5188b4628475ab4079a48afadf6defaed6ad48a109276b",
+      "source_duration_seconds": 206.4,
+      "excerpt_start_seconds": 88.2,
+      "runtime_seconds": 1.43,
+      "metrics": {
+        "tempo_bpm": 0.5333287646198831,
+        "rms_energy": 0.3983893874266469,
+        "onset_density_hz": 0.852225020990764,
+        "spectral_centroid_hz": 0.4151283279905453,
+        "periodicity": 0.2926266286463984,
+        "timbre_variation": 0.1454337910004427,
+        "dynamic_range_db": 0.5714175767869687,
+        "novelty_peak_rate_per_min": 0.646551724137931,
+        "spectral_contrast_db": 0.3283913277002045,
+        "harmonic_ratio": 0.6741029180252335,
+        "spectral_flatness": 0.25918639143271166,
+        "zero_crossing_rate": 0.17349307259016944
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 135.999178,
+        "rms_energy": 0.224692,
+        "onset_density_hz": 6.766667,
+        "spectral_centroid_hz": 776.641726,
+        "periodicity": 0.982709,
+        "timbre_variation": 19.342694,
+        "dynamic_range_db": 13.629108,
+        "novelty_peak_rate_per_min": 30.0,
+        "spectral_contrast_db": 21.723045,
+        "harmonic_ratio": 0.944262,
+        "spectral_flatness": 0.00018,
+        "zero_crossing_rate": 0.012432
+      },
+      "dimensions": {
+        "tempo_of_change": 0.5333287646198831,
+        "tension_release": 0.3983893874266469,
+        "density": 0.852225020990764,
+        "continuity": 0.4151283279905453,
+        "repetition": 0.2926266286463984,
+        "variation": 0.1454337910004427,
+        "hierarchy": 0.5714175767869687,
+        "interruption": 0.646551724137931,
+        "polyphony": 0.46667596383021615,
+        "genre_style": 0.2780089211999267
+      },
+      "datums": {
+        "level_count": 0.5333,
+        "floor_to_floor_m": 0.3984,
+        "shading_rows": 0.3984,
+        "shading_depth_m": 0.3984,
+        "bay_x_m": 0.8522,
+        "bay_y_m": 0.8522,
+        "joist_spacing_m": 0.8522,
+        "transom_rows": 0.8522,
+        "cantilever_m": 0.4185,
+        "apse_radius_m": 0.4185,
+        "circulation_allowance": 0.4185,
+        "flight_width_m": 0.4185,
+        "mullion_module_m": 0.2926,
+        "spandrel_height_m": 0.2926,
+        "rail_post_spacing_m": 0.2926,
+        "plate_step_m": 0.1454,
+        "plate_rotation_deg": 0.1454,
+        "truss_depth_m": 0.5714,
+        "truss_panels": 0.5714,
+        "ground_open_height_m": 0.5714,
+        "entry_canopy_span_m": 0.5714,
+        "void_count": 0.6446,
+        "void_scale": 0.6446,
+        "terrace_count": 0.6446,
+        "envelope_offset_m": 0.4756,
+        "envelope_layer_count": 0.4756,
+        "braced_bay_count": 0.4756,
+        "opaque_fraction": 0.3964,
+        "fin_depth_m": 0.3964
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-f74b049c0fd3",
+      "element_count": 5485,
+      "element_kind_count": 36,
+      "layer_counts": {
+        "site": 5,
+        "structure": 1566,
+        "envelope": 1948,
+        "circulation": 1043,
+        "program": 923
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 1.0,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/charrier-accorte/renders/01_program.png",
+            "sha256": "b10e82d33eea675d1abb68b8af8053b2af80ecbb6b7945dc411d56280022ea78",
+            "bytes": 2025776
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/charrier-accorte/renders/02_facade.png",
+            "sha256": "446026e04ffaf80c20d7fabafc39ff82b0b61cce70e84154bfdbc08e63a9f060",
+            "bytes": 1995158
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/charrier-accorte/renders/03_structure.png",
+            "sha256": "c16aebd6e3c43cba29c771f6de10e4e228f1dea4ad39dc4c10b2f4e98f5ce4b3",
+            "bytes": 2037982
+          }
+        ],
+        "blender_summary": "[v3] elements=5485 groups=64 merged_objects=30 faces=24161"
+      }
+    },
+    {
+      "id": "m-pex-bueid",
+      "title": "Bueid",
+      "creator": "M-PeX",
+      "style_family": "Portuguese guitar / electronic world music",
+      "source_page_url": "https://archive.org/details/enrmp511_m-pex_-_cynetik-1",
+      "license": "CC BY-NC-SA 4.0",
+      "source_sha256": "9ce36a20dc62ecf04dddeb40c26af9c05b21131d8642707fda96ee7c4b017e5a",
+      "excerpt_mp3_sha256": "2501213507243273a0452359ab5a950aee2303356de4ccf2a9411e5428f6e652",
+      "source_duration_seconds": 132.93,
+      "excerpt_start_seconds": 51.465,
+      "runtime_seconds": 1.419,
+      "metrics": {
+        "tempo_bpm": 0.4613715277777778,
+        "rms_energy": 0.4716853723458365,
+        "onset_density_hz": 0.09655751469353485,
+        "spectral_centroid_hz": 0.5130832476068736,
+        "periodicity": 0.3425989668861373,
+        "timbre_variation": 0.43918814790577515,
+        "dynamic_range_db": 0.4523516526830153,
+        "novelty_peak_rate_per_min": 0.4310344827586207,
+        "spectral_contrast_db": 0.660452106222576,
+        "harmonic_ratio": 0.7540374352266548,
+        "spectral_flatness": 0.3016113570170867,
+        "zero_crossing_rate": 0.5529766399327233
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 123.046875,
+        "rms_energy": 0.266031,
+        "onset_density_hz": 0.766667,
+        "spectral_centroid_hz": 1259.728061,
+        "periodicity": 1.133952,
+        "timbre_variation": 58.412024,
+        "dynamic_range_db": 6.844757,
+        "novelty_peak_rate_per_min": 20.0,
+        "spectral_contrast_db": 24.614314,
+        "harmonic_ratio": 0.974088,
+        "spectral_flatness": 0.000289,
+        "zero_crossing_rate": 0.085784
+      },
+      "dimensions": {
+        "tempo_of_change": 0.4613715277777778,
+        "tension_release": 0.4716853723458365,
+        "density": 0.09655751469353485,
+        "continuity": 0.5130832476068736,
+        "repetition": 0.3425989668861373,
+        "variation": 0.43918814790577515,
+        "hierarchy": 0.4523516526830153,
+        "interruption": 0.4310344827586207,
+        "polyphony": 0.6978862378242076,
+        "genre_style": 0.40818556156098673
+      },
+      "datums": {
+        "level_count": 0.4614,
+        "floor_to_floor_m": 0.4717,
+        "shading_rows": 0.4717,
+        "shading_depth_m": 0.4717,
+        "bay_x_m": 0.0966,
+        "bay_y_m": 0.0966,
+        "joist_spacing_m": 0.0966,
+        "transom_rows": 0.0966,
+        "cantilever_m": 0.5126,
+        "apse_radius_m": 0.5126,
+        "circulation_allowance": 0.5126,
+        "flight_width_m": 0.5126,
+        "mullion_module_m": 0.3426,
+        "spandrel_height_m": 0.3426,
+        "rail_post_spacing_m": 0.3426,
+        "plate_step_m": 0.4392,
+        "plate_rotation_deg": 0.4392,
+        "truss_depth_m": 0.4524,
+        "truss_panels": 0.4524,
+        "ground_open_height_m": 0.4524,
+        "entry_canopy_span_m": 0.4524,
+        "void_count": 0.432,
+        "void_scale": 0.432,
+        "terrace_count": 0.432,
+        "envelope_offset_m": 0.6451,
+        "envelope_layer_count": 0.6451,
+        "braced_bay_count": 0.6451,
+        "opaque_fraction": 0.4572,
+        "fin_depth_m": 0.4572
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-250121350724",
+      "element_count": 4555,
+      "element_kind_count": 31,
+      "layer_counts": {
+        "site": 5,
+        "structure": 645,
+        "envelope": 2269,
+        "circulation": 973,
+        "program": 663
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 0.9259,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/m-pex-bueid/renders/01_program.png",
+            "sha256": "9eb5ae09d477e4c91beb1b1f19bbb48cf230c66ad3d1fad92dbf0299690f4da1",
+            "bytes": 1931523
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/m-pex-bueid/renders/02_facade.png",
+            "sha256": "6a5a849dcfaa79215d2fd105dd3a4f9472f4b5b0e0ea84eb850c308c9830fe5c",
+            "bytes": 1764556
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/m-pex-bueid/renders/03_structure.png",
+            "sha256": "6a410b124ce06c7daa26a1386f9fd887eadc68422e82c10db1b52ef6ebd6a36f",
+            "bytes": 1834164
+          }
+        ],
+        "blender_summary": "[v3] elements=4555 groups=59 merged_objects=28 faces=22610"
+      }
+    },
+    {
+      "id": "kevin-bryce-rainfields",
+      "title": "Rainfields",
+      "creator": "Kevin Bryce",
+      "style_family": "Electropop / IDM / ambient",
+      "source_page_url": "https://archive.org/details/foot217",
+      "license": "CC BY-NC-SA 3.0",
+      "source_sha256": "e3da3862800f6731840b63b7b9fc9794ce0ff7fd0e6411f5d35633645f808d96",
+      "excerpt_mp3_sha256": "ac899390a0d46d80adf8ab166ae76b361d4b06579232f5feea9d9adc5550b64d",
+      "source_duration_seconds": 209.107,
+      "excerpt_start_seconds": 89.553,
+      "runtime_seconds": 1.386,
+      "metrics": {
+        "tempo_bpm": 0.4019285929951691,
+        "rms_energy": 0.6785072016377822,
+        "onset_density_hz": 0.5625524769101595,
+        "spectral_centroid_hz": 0.40723868942450947,
+        "periodicity": 0.7444518049618911,
+        "timbre_variation": 0.5112365837383988,
+        "dynamic_range_db": 0.5818987740089135,
+        "novelty_peak_rate_per_min": 0.560344827586207,
+        "spectral_contrast_db": 0.3336541961873748,
+        "harmonic_ratio": 0.5908153754238945,
+        "spectral_flatness": 0.37138974074861963,
+        "zero_crossing_rate": 0.3033350016814904
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 112.347147,
+        "rms_energy": 0.382678,
+        "onset_density_hz": 4.466667,
+        "spectral_centroid_hz": 746.968098,
+        "periodicity": 3.585352,
+        "timbre_variation": 67.994466,
+        "dynamic_range_db": 14.480968,
+        "novelty_peak_rate_per_min": 26.0,
+        "spectral_contrast_db": 21.766108,
+        "harmonic_ratio": 0.880721,
+        "spectral_flatness": 0.00063,
+        "zero_crossing_rate": 0.024419
+      },
+      "dimensions": {
+        "tempo_of_change": 0.4019285929951691,
+        "tension_release": 0.6785072016377822,
+        "density": 0.5625524769101595,
+        "continuity": 0.40723868942450947,
+        "repetition": 0.7444518049618911,
+        "variation": 0.5112365837383988,
+        "hierarchy": 0.5818987740089135,
+        "interruption": 0.560344827586207,
+        "polyphony": 0.4365186678819827,
+        "genre_style": 0.365702085529156
+      },
+      "datums": {
+        "level_count": 0.4019,
+        "floor_to_floor_m": 0.6785,
+        "shading_rows": 0.6785,
+        "shading_depth_m": 0.6785,
+        "bay_x_m": 0.5626,
+        "bay_y_m": 0.5626,
+        "joist_spacing_m": 0.5626,
+        "transom_rows": 0.5626,
+        "cantilever_m": 0.4109,
+        "apse_radius_m": 0.4109,
+        "circulation_allowance": 0.4109,
+        "flight_width_m": 0.4109,
+        "mullion_module_m": 0.7445,
+        "spandrel_height_m": 0.7445,
+        "rail_post_spacing_m": 0.7445,
+        "plate_step_m": 0.5112,
+        "plate_rotation_deg": 0.5112,
+        "truss_depth_m": 0.5819,
+        "truss_panels": 0.5819,
+        "ground_open_height_m": 0.5819,
+        "entry_canopy_span_m": 0.5819,
+        "void_count": 0.5595,
+        "void_scale": 0.5595,
+        "terrace_count": 0.5595,
+        "envelope_offset_m": 0.4534,
+        "envelope_layer_count": 0.4534,
+        "braced_bay_count": 0.4534,
+        "opaque_fraction": 0.4373,
+        "fin_depth_m": 0.4373
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-ac899390a0d4",
+      "element_count": 4541,
+      "element_kind_count": 36,
+      "layer_counts": {
+        "site": 5,
+        "structure": 1006,
+        "envelope": 1588,
+        "circulation": 1134,
+        "program": 808
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 0.9682,
+      "program_fits": true,
+      "program_unplaced": [],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/kevin-bryce-rainfields/renders/01_program.png",
+            "sha256": "ec22122ac9659118f1b90055e3e27af420250ecdd451df430bfca24cd580c8a5",
+            "bytes": 1972467
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/kevin-bryce-rainfields/renders/02_facade.png",
+            "sha256": "a3b74ae3c7c3290dc623713fdbc1f5ff116257cf1f5dc1fceded506ab88d3031",
+            "bytes": 1795156
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/kevin-bryce-rainfields/renders/03_structure.png",
+            "sha256": "a37c196aa9eba26a890f4204d8d67752854a4084300deb2abb4ad8b318178793",
+            "bytes": 1927941
+          }
+        ],
+        "blender_summary": "[v3] elements=4541 groups=79 merged_objects=28 faces=18255"
+      }
+    },
+    {
+      "id": "walcker-crew-blind-istanbul",
+      "title": "Blind Istanbul",
+      "creator": "The Walcker Crew",
+      "style_family": "Alternative hip-hop / jazz-funk / dub",
+      "source_page_url": "https://archive.org/details/fsz023",
+      "license": "CC BY-NC 2.5",
+      "source_sha256": "62f69a5f1a0d5daaa4dae44662eefd14d8953dc4e5403ae85249fb4269efe908",
+      "excerpt_mp3_sha256": "e1128f5ea97d0da1358b38e474e7ebb406d5b8447d039d7335ecfd4c1543b1b3",
+      "source_duration_seconds": 87.333,
+      "excerpt_start_seconds": 28.666,
+      "runtime_seconds": 1.331,
+      "metrics": {
+        "tempo_bpm": 0.4302990845959596,
+        "rms_energy": 0.5979047599413717,
+        "onset_density_hz": 0.6591099916036943,
+        "spectral_centroid_hz": 0.5820680600624959,
+        "periodicity": 0.6890593764027281,
+        "timbre_variation": 0.278359013512021,
+        "dynamic_range_db": 0.4519589130434623,
+        "novelty_peak_rate_per_min": 0.5172413793103449,
+        "spectral_contrast_db": 0.4960747166942018,
+        "harmonic_ratio": 0.5314506719182728,
+        "spectral_flatness": 0.5342883652025395,
+        "zero_crossing_rate": 0.5454860184858669
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 117.453835,
+        "rms_energy": 0.337218,
+        "onset_density_hz": 5.233333,
+        "spectral_centroid_hz": 1770.960724,
+        "periodicity": 3.05928,
+        "timbre_variation": 37.021749,
+        "dynamic_range_db": 6.829225,
+        "novelty_peak_rate_per_min": 24.0,
+        "spectral_contrast_db": 23.137922,
+        "harmonic_ratio": 0.803347,
+        "spectral_flatness": 0.003879,
+        "zero_crossing_rate": 0.082726
+      },
+      "dimensions": {
+        "tempo_of_change": 0.4302990845959596,
+        "tension_release": 0.5979047599413717,
+        "density": 0.6591099916036943,
+        "continuity": 0.5820680600624959,
+        "repetition": 0.6890593764027281,
+        "variation": 0.278359013512021,
+        "hierarchy": 0.4519589130434623,
+        "interruption": 0.5172413793103449,
+        "polyphony": 0.5102250987838302,
+        "genre_style": 0.5340557927353665
+      },
+      "datums": {
+        "level_count": 0.4303,
+        "floor_to_floor_m": 0.5979,
+        "shading_rows": 0.5979,
+        "shading_depth_m": 0.5979,
+        "bay_x_m": 0.6591,
+        "bay_y_m": 0.6591,
+        "joist_spacing_m": 0.6591,
+        "transom_rows": 0.6591,
+        "cantilever_m": 0.5788,
+        "apse_radius_m": 0.5788,
+        "circulation_allowance": 0.5788,
+        "flight_width_m": 0.5788,
+        "mullion_module_m": 0.6891,
+        "spandrel_height_m": 0.6891,
+        "rail_post_spacing_m": 0.6891,
+        "plate_step_m": 0.2784,
+        "plate_rotation_deg": 0.2784,
+        "truss_depth_m": 0.452,
+        "truss_panels": 0.452,
+        "ground_open_height_m": 0.452,
+        "entry_canopy_span_m": 0.452,
+        "void_count": 0.517,
+        "void_scale": 0.517,
+        "terrace_count": 0.517,
+        "envelope_offset_m": 0.5075,
+        "envelope_layer_count": 0.5075,
+        "braced_bay_count": 0.5075,
+        "opaque_fraction": 0.5159,
+        "fin_depth_m": 0.5159
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-e1128f5ea97d",
+      "element_count": 2642,
+      "element_kind_count": 35,
+      "layer_counts": {
+        "site": 5,
+        "structure": 289,
+        "envelope": 966,
+        "circulation": 866,
+        "program": 516
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 0.2871,
+      "program_fits": false,
+      "program_unplaced": [
+        "Open stacks",
+        "Quiet reading room",
+        "Special collections",
+        "Mechanical plant",
+        "Adult reading room",
+        "Periodicals and media",
+        "Seminar rooms",
+        "Staff workroom"
+      ],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/walcker-crew-blind-istanbul/renders/01_program.png",
+            "sha256": "37d4703a2e6c882949e362525cd290b492b4e32c159fb0e0cd4c2372b9e0278a",
+            "bytes": 1933775
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/walcker-crew-blind-istanbul/renders/02_facade.png",
+            "sha256": "3cf6cd73230e2553ca77024c475b02589d683f7dc271138492c72b25238b3c59",
+            "bytes": 1789630
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/walcker-crew-blind-istanbul/renders/03_structure.png",
+            "sha256": "66f8107789003190792d0cee27e46ae10114309067ae28c9755fac7f90763f91",
+            "bytes": 1783418
+          }
+        ],
+        "blender_summary": "[v3] elements=2642 groups=52 merged_objects=26 faces=9640"
+      }
+    },
+    {
+      "id": "hurle-cancer",
+      "title": "Cancer",
+      "creator": "Hürle",
+      "style_family": "Hardcore punk / thrash / crust",
+      "source_page_url": "https://archive.org/details/NXL038",
+      "license": "CC BY-NC-ND 3.0",
+      "source_sha256": "4caa1114814136a6861eb8991230ae09e82aeb6676179b374759e8a7899e26d7",
+      "excerpt_mp3_sha256": "483cf79c50ca902e92db316bdce56128ab26d68c1431af4a0e0a52d40c383db3",
+      "source_duration_seconds": 79.099,
+      "excerpt_start_seconds": 24.549,
+      "runtime_seconds": 1.338,
+      "metrics": {
+        "tempo_bpm": 0.3094618055555556,
+        "rms_energy": 0.7666712957071075,
+        "onset_density_hz": 0.654911838790932,
+        "spectral_centroid_hz": 0.6825369733722104,
+        "periodicity": 0.6564564413685822,
+        "timbre_variation": 0.1392358691471262,
+        "dynamic_range_db": 0.3484936583930015,
+        "novelty_peak_rate_per_min": 0.560344827586207,
+        "spectral_contrast_db": 0.2466776337065858,
+        "harmonic_ratio": 0.5077256835410535,
+        "spectral_flatness": 0.6594776022405864,
+        "zero_crossing_rate": 0.69145166211614
+      },
+      "metric_raw_values": {
+        "tempo_bpm": 95.703125,
+        "rms_energy": 0.432403,
+        "onset_density_hz": 5.2,
+        "spectral_centroid_hz": 2908.412892,
+        "periodicity": 2.786497,
+        "timbre_variation": 18.518371,
+        "dynamic_range_db": 3.753643,
+        "novelty_peak_rate_per_min": 26.0,
+        "spectral_contrast_db": 21.065251,
+        "harmonic_ratio": 0.763287,
+        "spectral_flatness": 0.015676,
+        "zero_crossing_rate": 0.163387
+      },
+      "dimensions": {
+        "tempo_of_change": 0.3094618055555556,
+        "tension_release": 0.7666712957071075,
+        "density": 0.654911838790932,
+        "continuity": 0.6825369733722104,
+        "repetition": 0.6564564413685822,
+        "variation": 0.1392358691471262,
+        "hierarchy": 0.3484936583930015,
+        "interruption": 0.560344827586207,
+        "polyphony": 0.3510968536403729,
+        "genre_style": 0.6402410372732493
+      },
+      "datums": {
+        "level_count": 0.3095,
+        "floor_to_floor_m": 0.7667,
+        "shading_rows": 0.7667,
+        "shading_depth_m": 0.7667,
+        "bay_x_m": 0.6549,
+        "bay_y_m": 0.6549,
+        "joist_spacing_m": 0.6549,
+        "transom_rows": 0.6549,
+        "cantilever_m": 0.6752,
+        "apse_radius_m": 0.6752,
+        "circulation_allowance": 0.6752,
+        "flight_width_m": 0.6752,
+        "mullion_module_m": 0.6565,
+        "spandrel_height_m": 0.6565,
+        "rail_post_spacing_m": 0.6565,
+        "plate_step_m": 0.1392,
+        "plate_rotation_deg": 0.1392,
+        "truss_depth_m": 0.3485,
+        "truss_panels": 0.3485,
+        "ground_open_height_m": 0.3485,
+        "entry_canopy_span_m": 0.3485,
+        "void_count": 0.5595,
+        "void_scale": 0.5595,
+        "terrace_count": 0.5595,
+        "envelope_offset_m": 0.3908,
+        "envelope_layer_count": 0.3908,
+        "braced_bay_count": 0.3908,
+        "opaque_fraction": 0.5654,
+        "fin_depth_m": 0.5654
+      },
+      "metric_exact_endpoints": [],
+      "metric_near_endpoints": [],
+      "dimension_exact_endpoints": [],
+      "dimension_near_endpoints": [],
+      "datum_exact_endpoints": [],
+      "datum_near_endpoints": [],
+      "model_id": "building-v3-483cf79c50ca",
+      "element_count": 2428,
+      "element_kind_count": 35,
+      "layer_counts": {
+        "site": 5,
+        "structure": 228,
+        "envelope": 817,
+        "circulation": 895,
+        "program": 483
+      },
+      "coverage": 0.8529,
+      "variable_coverage": 1.0,
+      "clamped_datum_count": 12,
+      "program_fulfilment": 0.3091,
+      "program_fits": false,
+      "program_unplaced": [
+        "Open stacks",
+        "Children reading",
+        "Quiet reading room",
+        "Adult reading room",
+        "Periodicals and media",
+        "Seminar rooms",
+        "Staff workroom"
+      ],
+      "translation_grades": {
+        "working": 1,
+        "strong": 5,
+        "proxy": 2,
+        "constrained": 1,
+        "proxy_clamped": 1
+      },
+      "render_evidence": {
+        "authority": "presentation_only",
+        "adapter": "blender/import_building_model_v3.py",
+        "blender_executable": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe",
+        "render_mode": "semantic_layers",
+        "render_visibility": {
+          "01_program.png": [
+            "program",
+            "circulation"
+          ],
+          "02_facade.png": [
+            "envelope"
+          ],
+          "03_structure.png": [
+            "structure"
+          ]
+        },
+        "renders": [
+          {
+            "name": "01_program.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/hurle-cancer/renders/01_program.png",
+            "sha256": "2c91c27879b256499e699a81303effe419f256289e6aeed10bcb01bbd81c76c3",
+            "bytes": 1934972
+          },
+          {
+            "name": "02_facade.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/hurle-cancer/renders/02_facade.png",
+            "sha256": "d8da9639589216cce210bb827e8753396c5fb8d3725248e225a878240d8e1e16",
+            "bytes": 1767573
+          },
+          {
+            "name": "03_structure.png",
+            "relative_path": "artifacts/audio_saturation/corpus-2026-08-31-semantic-rerun/tracks/hurle-cancer/renders/03_structure.png",
+            "sha256": "7d51fdc3de13265ea7abb30af7d6deab204c090ff5fc4fdd86bf86374f1297aa",
+            "bytes": 1747594
+          }
+        ],
+        "blender_summary": "[v3] elements=2428 groups=54 merged_objects=27 faces=8229"
+      }
+    }
+  ],
+  "failures": [],
+  "limitations": [
+    "Fixed 30-second centre excerpts test calibration, not whole-track sectional form.",
+    "Curated style labels come from source metadata; genre_style remains a low-confidence timbral proxy.",
+    "Code tables are placeholders and structural outputs require professional review.",
+    "A corpus of fourteen recordings is a calibration probe, not a population estimate."
+  ]
+}

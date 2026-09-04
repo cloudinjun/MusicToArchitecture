@@ -1,0 +1,29 @@
+{
+  "producer": "blender_headless_5",
+  "format": "glb",
+  "asset_url": "/models/generated/building-b7ad95fa45a6-library-steel-international-v1.glb?v=1787899331755033900",
+  "manifest_url": "/models/generated/building-b7ad95fa45a6-library-steel-international-v1.manifest.json?v=1787899331758034600",
+  "native_blend_path": "blender/generated/building-b7ad95fa45a6-library-steel-international-v1.blend",
+  "scene_state_path": "artifacts/native_models/generated/building-b7ad95fa45a6-library-steel-international-v1.scene.json",
+  "asset_sha256": "83426227af5e1d78b26d865d323f30c3d2d13bc323d24afc0415d4b9b0351b1f",
+  "manifest_sha256": "2d9335f0aa1c4ac1280b5dff4d0d40e2f1a9f976499b7beb48e721dc115312d3",
+  "native_blend_sha256": "9497680f220bf87d3e06960755f4faf4d04fc8123c57643803a1c85a1c54bbc0",
+  "scene_state_sha256": "c4bc90cf7c9f7b04765ecd1c2e58ca906e278e11b520b01a6869da3c6251ed17",
+  "authority_status": "presentation_only",
+  "semantic_layers": [
+    "program_massing",
+    "facade",
+    "columns",
+    "beams",
+    "slabs",
+    "foundations",
+    "bracing",
+    "cores",
+    "interior_sequence",
+    "site",
+    "site_context",
+    "context_tree",
+    "context_vehicle",
+    "context_person"
+  ]
+}

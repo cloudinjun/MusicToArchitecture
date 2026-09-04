@@ -1,0 +1,574 @@
+{
+  "schema_version": "mta.render-manifest/1.0",
+  "system_id": "mta-render-presets-1.0",
+  "authority": "presentation_only",
+  "source_blend": "project://artifacts/v3_demo/model_v3.blend",
+  "source_sha256": "a6b3850d8c02f7d0bbeb883f8f51f4dbe350a73a0e4b7efc50b607c3daa772d1",
+  "template_blend": "project://artifacts/render_presets/model_v3/MTA_Render_Ready.blend",
+  "blender_version": "5.0.1",
+  "engine": "BLENDER_EEVEE",
+  "resolution": [
+    1400,
+    900
+  ],
+  "samples": 64,
+  "bounds": {
+    "min": [
+      -25.4914,
+      -30.09987,
+      -0.9
+    ],
+    "max": [
+      30.5,
+      11.1,
+      26.3052
+    ],
+    "size": [
+      55.9914,
+      41.19987,
+      27.2052
+    ]
+  },
+  "scene_bounds": {
+    "min": [
+      -71.0,
+      -65.0,
+      -1.1
+    ],
+    "max": [
+      79.0,
+      65.0,
+      26.3052
+    ],
+    "size": [
+      150.0,
+      130.0,
+      27.4052
+    ]
+  },
+  "mesh_object_count": 34,
+  "framing_object_count": 31,
+  "styles": {
+    "photoreal": {
+      "label": "Photorealism",
+      "engine": "CYCLES",
+      "world": "MTA_RS__WORLD__photoreal",
+      "materials": [
+        "MTA_RS__MAT__photoreal__concrete",
+        "MTA_RS__MAT__photoreal__metal",
+        "MTA_RS__MAT__photoreal__glass",
+        "MTA_RS__MAT__photoreal__timber",
+        "MTA_RS__MAT__photoreal__ground",
+        "MTA_RS__MAT__photoreal__accent",
+        "MTA_RS__MAT__photoreal__vegetation"
+      ],
+      "material_role_counts": {
+        "concrete": 13,
+        "metal": 13,
+        "glass": 2,
+        "timber": 2,
+        "ground": 3,
+        "accent": 1,
+        "vegetation": 0
+      },
+      "lights": [
+        "MTA_RS__LIGHT__photoreal__01",
+        "MTA_RS__LIGHT__photoreal__02",
+        "MTA_RS__LIGHT__photoreal__03",
+        "MTA_RS__LIGHT__photoreal__interior__04",
+        "MTA_RS__LIGHT__photoreal__interior__05",
+        "MTA_RS__LIGHT__photoreal__interior__06",
+        "MTA_RS__LIGHT__photoreal__interior__07",
+        "MTA_RS__LIGHT__photoreal__interior__08",
+        "MTA_RS__LIGHT__photoreal__interior__09",
+        "MTA_RS__LIGHT__photoreal__interior__10",
+        "MTA_RS__LIGHT__photoreal__interior__11",
+        "MTA_RS__LIGHT__photoreal__interior__12",
+        "MTA_RS__LIGHT__photoreal__interior__13",
+        "MTA_RS__LIGHT__photoreal__interior__14",
+        "MTA_RS__LIGHT__photoreal__interior__15"
+      ],
+      "compositor": "MTA_RS__COMP__photoreal",
+      "hidden_source_objects": [
+        "program__scale_reference__public",
+        "program__zones__circulation",
+        "program__zones__private",
+        "program__zones__public",
+        "program__zones__service"
+      ],
+      "shader_node_types": [
+        "ShaderNodeBevel",
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeBsdfTransparent",
+        "ShaderNodeBump",
+        "ShaderNodeMixShader",
+        "ShaderNodeObjectInfo",
+        "ShaderNodeOutputMaterial",
+        "ShaderNodeTexCoord",
+        "ShaderNodeTexNoise",
+        "ShaderNodeValToRGB"
+      ],
+      "compositor_node_types": [
+        "CompositorNodeGlare",
+        "CompositorNodeHueSat",
+        "CompositorNodeRLayers",
+        "NodeGroupOutput"
+      ],
+      "render_seconds": 250.882
+    },
+    "post_digital": {
+      "label": "Post-Digital Collage",
+      "engine": "BLENDER_EEVEE",
+      "world": "MTA_RS__WORLD__post_digital",
+      "materials": [
+        "MTA_RS__MAT__post_digital__concrete",
+        "MTA_RS__MAT__post_digital__metal",
+        "MTA_RS__MAT__post_digital__glass",
+        "MTA_RS__MAT__post_digital__timber",
+        "MTA_RS__MAT__post_digital__ground",
+        "MTA_RS__MAT__post_digital__accent",
+        "MTA_RS__MAT__post_digital__vegetation"
+      ],
+      "material_role_counts": {
+        "concrete": 13,
+        "metal": 13,
+        "glass": 2,
+        "timber": 2,
+        "ground": 3,
+        "accent": 1,
+        "vegetation": 0
+      },
+      "lights": [
+        "MTA_RS__LIGHT__post_digital__01",
+        "MTA_RS__LIGHT__post_digital__02"
+      ],
+      "compositor": "MTA_RS__COMP__post_digital",
+      "hidden_source_objects": [],
+      "shader_node_types": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeBump",
+        "ShaderNodeOutputMaterial",
+        "ShaderNodeTexCoord",
+        "ShaderNodeTexNoise",
+        "ShaderNodeValToRGB"
+      ],
+      "compositor_node_types": [
+        "CompositorNodePosterize",
+        "CompositorNodeRLayers",
+        "NodeGroupOutput"
+      ],
+      "render_seconds": 34.083
+    },
+    "cinematic": {
+      "label": "Cinematic / Atmospheric",
+      "engine": "BLENDER_EEVEE",
+      "world": "MTA_RS__WORLD__cinematic",
+      "materials": [
+        "MTA_RS__MAT__cinematic__concrete",
+        "MTA_RS__MAT__cinematic__metal",
+        "MTA_RS__MAT__cinematic__glass",
+        "MTA_RS__MAT__cinematic__timber",
+        "MTA_RS__MAT__cinematic__ground",
+        "MTA_RS__MAT__cinematic__accent",
+        "MTA_RS__MAT__cinematic__vegetation"
+      ],
+      "material_role_counts": {
+        "concrete": 13,
+        "metal": 13,
+        "glass": 2,
+        "timber": 2,
+        "ground": 3,
+        "accent": 1,
+        "vegetation": 0
+      },
+      "lights": [
+        "MTA_RS__LIGHT__cinematic__01",
+        "MTA_RS__LIGHT__cinematic__02",
+        "MTA_RS__LIGHT__cinematic__03",
+        "MTA_RS__LIGHT__cinematic__interior__04",
+        "MTA_RS__LIGHT__cinematic__interior__05",
+        "MTA_RS__LIGHT__cinematic__interior__06",
+        "MTA_RS__LIGHT__cinematic__interior__07",
+        "MTA_RS__LIGHT__cinematic__interior__08",
+        "MTA_RS__LIGHT__cinematic__interior__09",
+        "MTA_RS__LIGHT__cinematic__interior__10",
+        "MTA_RS__LIGHT__cinematic__interior__11",
+        "MTA_RS__LIGHT__cinematic__interior__12",
+        "MTA_RS__LIGHT__cinematic__interior__13",
+        "MTA_RS__LIGHT__cinematic__interior__14",
+        "MTA_RS__LIGHT__cinematic__interior__15"
+      ],
+      "compositor": "MTA_RS__COMP__cinematic",
+      "hidden_source_objects": [
+        "program__scale_reference__public",
+        "program__zones__circulation",
+        "program__zones__private",
+        "program__zones__public",
+        "program__zones__service"
+      ],
+      "shader_node_types": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeBump",
+        "ShaderNodeOutputMaterial",
+        "ShaderNodeTexCoord",
+        "ShaderNodeTexNoise",
+        "ShaderNodeValToRGB"
+      ],
+      "compositor_node_types": [
+        "CompositorNodeGlare",
+        "CompositorNodeRLayers",
+        "NodeGroupOutput"
+      ],
+      "render_seconds": 21.99
+    },
+    "minimalist": {
+      "label": "Conceptual / Minimalist",
+      "engine": "BLENDER_EEVEE",
+      "world": "MTA_RS__WORLD__minimalist",
+      "materials": [
+        "MTA_RS__MAT__minimalist__concrete",
+        "MTA_RS__MAT__minimalist__metal",
+        "MTA_RS__MAT__minimalist__glass",
+        "MTA_RS__MAT__minimalist__timber",
+        "MTA_RS__MAT__minimalist__ground",
+        "MTA_RS__MAT__minimalist__accent",
+        "MTA_RS__MAT__minimalist__vegetation"
+      ],
+      "material_role_counts": {
+        "concrete": 13,
+        "metal": 13,
+        "glass": 2,
+        "timber": 2,
+        "ground": 3,
+        "accent": 1,
+        "vegetation": 0
+      },
+      "lights": [
+        "MTA_RS__LIGHT__minimalist__01",
+        "MTA_RS__LIGHT__minimalist__02"
+      ],
+      "compositor": "MTA_RS__COMP__minimalist",
+      "hidden_source_objects": [],
+      "shader_node_types": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeOutputMaterial"
+      ],
+      "compositor_node_types": [
+        "CompositorNodeHueSat",
+        "CompositorNodeRLayers",
+        "NodeGroupOutput"
+      ],
+      "render_seconds": 4.399
+    },
+    "watercolor": {
+      "label": "Hand-drawn / Watercolor",
+      "engine": "BLENDER_EEVEE",
+      "world": "MTA_RS__WORLD__watercolor",
+      "materials": [
+        "MTA_RS__MAT__watercolor__concrete",
+        "MTA_RS__MAT__watercolor__metal",
+        "MTA_RS__MAT__watercolor__glass",
+        "MTA_RS__MAT__watercolor__timber",
+        "MTA_RS__MAT__watercolor__ground",
+        "MTA_RS__MAT__watercolor__accent",
+        "MTA_RS__MAT__watercolor__vegetation"
+      ],
+      "material_role_counts": {
+        "concrete": 13,
+        "metal": 13,
+        "glass": 2,
+        "timber": 2,
+        "ground": 3,
+        "accent": 1,
+        "vegetation": 0
+      },
+      "lights": [
+        "MTA_RS__LIGHT__watercolor__01",
+        "MTA_RS__LIGHT__watercolor__02"
+      ],
+      "compositor": "MTA_RS__COMP__watercolor",
+      "hidden_source_objects": [],
+      "shader_node_types": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeBump",
+        "ShaderNodeOutputMaterial",
+        "ShaderNodeTexCoord",
+        "ShaderNodeTexNoise",
+        "ShaderNodeValToRGB"
+      ],
+      "compositor_node_types": [
+        "CompositorNodeHueSat",
+        "CompositorNodeKuwahara",
+        "CompositorNodeRLayers",
+        "NodeGroupOutput"
+      ],
+      "render_seconds": 34.078
+    }
+  },
+  "views": {
+    "hero": {
+      "label": "Hero three-quarter",
+      "offset": [
+        1.2,
+        -1.62,
+        0.24
+      ]
+    },
+    "reverse": {
+      "label": "Opposite front three-quarter",
+      "offset": [
+        -1.34,
+        -1.28,
+        0.27
+      ]
+    },
+    "low": {
+      "label": "Low architectural view",
+      "offset": [
+        0.72,
+        -1.68,
+        0.1
+      ]
+    }
+  },
+  "renders": [
+    {
+      "style": "photoreal",
+      "view": "hero",
+      "path": "photoreal/hero.png",
+      "sha256": "02d3243715ba6d37f1cd9095d3b92071ad0aac4e0edd32eb3697994eae306d90",
+      "seconds": 77.693,
+      "camera_type": "PERSP",
+      "camera_location": [
+        40.0727,
+        -60.2172,
+        16.9516
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "photoreal",
+      "view": "reverse",
+      "path": "photoreal/reverse.png",
+      "sha256": "086539b9c5b75b024c314557921084ddc435a676d89f1a377e61ae2e45843237",
+      "seconds": 88.379,
+      "camera_type": "PERSP",
+      "camera_location": [
+        -47.5068,
+        -57.2718,
+        19.7869
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "photoreal",
+      "view": "low",
+      "path": "photoreal/low.png",
+      "sha256": "d4aa6bf8b8990d31566818edaab665c6300591800536f3e5f49abee7cfa28b67",
+      "seconds": 84.736,
+      "camera_type": "PERSP",
+      "camera_location": [
+        25.8433,
+        -63.9577,
+        12.6795
+      ],
+      "lens_mm": 32.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "post_digital",
+      "view": "hero",
+      "path": "post_digital/hero.png",
+      "sha256": "79db52a54afcd7e32b7eeeef0dd42420c475bce505dc612f7345caab5d5f983f",
+      "seconds": 11.83,
+      "camera_type": "PERSP",
+      "camera_location": [
+        49.4647,
+        -72.8965,
+        18.8301
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "post_digital",
+      "view": "reverse",
+      "path": "post_digital/reverse.png",
+      "sha256": "4b413d1873c048e4e735eca2bb1b7a3cd8ce8e63e4d6b5bc8d8be1039a0f734e",
+      "seconds": 11.858,
+      "camera_type": "PERSP",
+      "camera_location": [
+        -58.4849,
+        -67.7583,
+        21.9989
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "post_digital",
+      "view": "low",
+      "path": "post_digital/low.png",
+      "sha256": "49256739dde2794b161b3acf0e7e2fb2da0d848ea1dcee3e13f34c41b2336b11",
+      "seconds": 10.337,
+      "camera_type": "PERSP",
+      "camera_location": [
+        30.9665,
+        -75.9118,
+        13.3911
+      ],
+      "lens_mm": 32.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "cinematic",
+      "view": "hero",
+      "path": "cinematic/hero.png",
+      "sha256": "fd4901e3a6376bc5e33d07ba52c9c3c679a685b3a90104b5282357cbc4cdc4c5",
+      "seconds": 6.263,
+      "camera_type": "PERSP",
+      "camera_location": [
+        49.4647,
+        -72.8965,
+        18.8301
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "cinematic",
+      "view": "reverse",
+      "path": "cinematic/reverse.png",
+      "sha256": "8898766dad1106d9f8d616ead15eb8d3b80444c6b3fa12be52131a207e5b48fa",
+      "seconds": 8.181,
+      "camera_type": "PERSP",
+      "camera_location": [
+        -58.4849,
+        -67.7583,
+        21.9989
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "cinematic",
+      "view": "low",
+      "path": "cinematic/low.png",
+      "sha256": "3a2c1cb4a1e839ad1b9a820af110fe15a53926baffb519f6aae3c3aff33549af",
+      "seconds": 7.489,
+      "camera_type": "PERSP",
+      "camera_location": [
+        30.9665,
+        -75.9118,
+        13.3911
+      ],
+      "lens_mm": 32.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "minimalist",
+      "view": "hero",
+      "path": "minimalist/hero.png",
+      "sha256": "88dd178515bf233360454594389c670a86167b15312c7f0505265a30201a6b64",
+      "seconds": 1.397,
+      "camera_type": "ORTHO",
+      "camera_location": [
+        81.924,
+        -116.7165,
+        25.3219
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": 57.06
+    },
+    {
+      "style": "minimalist",
+      "view": "reverse",
+      "path": "minimalist/reverse.png",
+      "sha256": "3ac542521cdf47dcc1523b9ad7203301097b8eee1ed2d885b220de71bbfcfab5",
+      "seconds": 1.23,
+      "camera_type": "ORTHO",
+      "camera_location": [
+        -93.6446,
+        -101.3436,
+        29.0833
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": 57.07
+    },
+    {
+      "style": "minimalist",
+      "view": "low",
+      "path": "minimalist/low.png",
+      "sha256": "f99c6b5163c6a4205ab56b6e0debafd1bf00fef980fc98590871b8490f9dcd61",
+      "seconds": 1.715,
+      "camera_type": "ORTHO",
+      "camera_location": [
+        55.356,
+        -132.8206,
+        16.7785
+      ],
+      "lens_mm": 32.0,
+      "ortho_scale": 55.465
+    },
+    {
+      "style": "watercolor",
+      "view": "hero",
+      "path": "watercolor/hero.png",
+      "sha256": "4cd29d5c91e8b8febc346f5255942417fafde7cc3b95de5546fea73821562dc1",
+      "seconds": 11.863,
+      "camera_type": "PERSP",
+      "camera_location": [
+        49.4647,
+        -72.8965,
+        18.8301
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "watercolor",
+      "view": "reverse",
+      "path": "watercolor/reverse.png",
+      "sha256": "54dc8e42aba1d9200390d9b1ece4567a4b0b14934768774c689674a7ecfa7ee7",
+      "seconds": 12.202,
+      "camera_type": "PERSP",
+      "camera_location": [
+        -58.4849,
+        -67.7583,
+        21.9989
+      ],
+      "lens_mm": 36.0,
+      "ortho_scale": null
+    },
+    {
+      "style": "watercolor",
+      "view": "low",
+      "path": "watercolor/low.png",
+      "sha256": "7b059b69899603409fce57e4d6717fb739c846b3eb83b8989ec0233ce6509b18",
+      "seconds": 9.951,
+      "camera_type": "PERSP",
+      "camera_location": [
+        30.9665,
+        -75.9118,
+        13.3911
+      ],
+      "lens_mm": 32.0,
+      "ortho_scale": null
+    }
+  ],
+  "assumptions": [
+    "Unknown materials default to warm concrete.",
+    "Material roles are inferred per material slot from object, collection, metadata, material names, and transmissive shader nodes.",
+    "Mixed-material meshes preserve polygon material indices when style materials are assigned.",
+    "Presentation lights, ground, cameras, and materials do not alter source geometry.",
+    "All textures and post-processing are procedural Blender-native nodes."
+  ],
+  "template_sha256": "14117d8cc94f10bba42bcb5a2fa53c4876bf96a0483b9fc0304925b6fd270570",
+  "render_count": 15,
+  "expected_render_count": 15,
+  "complete": true,
+  "input_overwritten": false,
+  "geometry_mutated": false
+}

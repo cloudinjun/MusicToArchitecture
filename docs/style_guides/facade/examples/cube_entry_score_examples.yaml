@@ -1,0 +1,192 @@
+schema_version: mta-facade-entry-score-study/0.1
+study_id: cube-entry-grammar-comparison-01
+status: concept_only
+provenance:
+  method: manual
+  confidence: 1.0
+  author_role: project_designer
+  created: 2026-08-27
+common_control:
+  massing: cube
+  width_m: 12.0
+  depth_m: 12.0
+  height_m: 12.0
+  entry_orientation: south
+  entry_centered: true
+  base_entry_width_m: 3.0
+  camera: fixed_three_quarter_southwest
+  tectonic_status: schematic_frame_reference
+  comparison_rule: >-
+    Keep massing, camera, site plane, scale figure and neutral daylight constant.
+    Change only the qualified facade grammar and the declared entry score mapping.
+score_scale:
+  minimum: 0.0
+  maximum: 1.0
+  note: Manually authored normalized design-intent values; no MP3 inference.
+
+examples:
+  - id: entry-01-international
+    grammar_id: international_style_informed
+    scores:
+      hierarchy: 0.80
+      repetition: 0.72
+      variation: 0.20
+      density: 0.50
+      continuity: 0.90
+      interruption: 0.30
+      polyphony: 0.45
+      tension_release: 0.55
+      tempo_of_change: 0.25
+    entry_mapping: >-
+      Double-width glazed bay on a regular orthogonal grid; one recessed plane and a
+      continuous horizontal datum; low-amplitude mullion variation.
+
+  - id: entry-02-bauhaus
+    grammar_id: bauhaus_informed
+    scores:
+      hierarchy: 0.75
+      repetition: 0.78
+      variation: 0.45
+      density: 0.55
+      continuity: 0.70
+      interruption: 0.40
+      polyphony: 0.70
+      tension_release: 0.50
+      tempo_of_change: 0.45
+    entry_mapping: >-
+      Entry reads as a transparent circulation module between opaque functional volumes;
+      cobalt/red orientation accents have explicit circulation roles.
+
+  - id: entry-03-brutalism
+    grammar_id: brutalism_informed
+    scores:
+      hierarchy: 0.90
+      repetition: 0.55
+      variation: 0.30
+      density: 0.70
+      continuity: 0.45
+      interruption: 0.82
+      polyphony: 0.55
+      tension_release: 0.92
+      tempo_of_change: 0.35
+    entry_mapping: >-
+      A deep board-formed concrete cut interrupts a heavy repeated facade; compressed
+      shadow at approach releases into a tall public threshold.
+
+  - id: entry-04-organic
+    grammar_id: organic_architecture_informed
+    scores:
+      hierarchy: 0.78
+      repetition: 0.60
+      variation: 0.72
+      density: 0.48
+      continuity: 0.92
+      interruption: 0.42
+      polyphony: 0.68
+      tension_release: 0.75
+      tempo_of_change: 0.55
+    entry_mapping: >-
+      A shared horizontal module grows into a timber canopy, stone plinth and framed
+      planted threshold; opening depth adapts while the cube mass remains unchanged.
+
+  - id: entry-05-high-tech
+    grammar_id: high_tech_informed
+    scores:
+      hierarchy: 0.85
+      repetition: 0.86
+      variation: 0.55
+      density: 0.78
+      continuity: 0.72
+      interruption: 0.45
+      polyphony: 0.95
+      tension_release: 0.65
+      tempo_of_change: 0.70
+    entry_mapping: >-
+      An external steel entry frame, glazed infill, visible circulation and color-coded
+      technical routes remain separate, functional and repeatable systems.
+
+  - id: entry-06-postmodern
+    grammar_id: postmodernism_informed
+    scores:
+      hierarchy: 0.95
+      repetition: 0.55
+      variation: 0.70
+      density: 0.60
+      continuity: 0.50
+      interruption: 0.80
+      polyphony: 0.85
+      tension_release: 0.75
+      tempo_of_change: 0.58
+    entry_mapping: >-
+      An oversized flattened portal/frame communicates civic entry over a regular
+      background facade; symbolic and technical layers remain separate.
+
+  - id: entry-07-deconstructivism
+    grammar_id: deconstructivism_informed
+    scores:
+      hierarchy: 0.90
+      repetition: 0.40
+      variation: 0.85
+      density: 0.72
+      continuity: 0.35
+      interruption: 0.95
+      polyphony: 0.90
+      tension_release: 0.98
+      tempo_of_change: 0.85
+    entry_mapping: >-
+      Two coherent grids collide around the entrance through bounded shear, split and
+      displacement; a recessed glazed weather enclosure remains continuous behind them.
+
+  - id: entry-08-minimalism
+    grammar_id: minimalism_informed
+    scores:
+      hierarchy: 0.98
+      repetition: 0.65
+      variation: 0.12
+      density: 0.15
+      continuity: 0.95
+      interruption: 0.65
+      polyphony: 0.25
+      tension_release: 0.88
+      tempo_of_change: 0.08
+    entry_mapping: >-
+      One precisely proportioned, deep shadow portal interrupts a continuous pale
+      concrete plane; all secondary joints align and visual noise remains very low.
+
+  - id: entry-09-critical-regionalism-context-placeholder
+    grammar_id: critical_regionalism_informed
+    grammar_status: blocked_missing_cultural_and_material_context
+    assumed_test_context:
+      location: Los Angeles basin
+      climate: hot_dry_summer_test_assumption
+      exposed_orientation: south_west
+    scores:
+      hierarchy: 0.82
+      repetition: 0.72
+      variation: 0.55
+      density: 0.65
+      continuity: 0.82
+      interruption: 0.48
+      polyphony: 0.70
+      tension_release: 0.70
+      tempo_of_change: 0.40
+    entry_mapping: >-
+      A deep shaded threshold and terracotta screen respond provisionally to solar
+      exposure. This remains a climate-only placeholder and cannot pass the full grammar.
+
+  - id: entry-10-parametricism
+    grammar_id: parametricism_informed
+    scores:
+      hierarchy: 0.88
+      repetition: 0.75
+      variation: 0.92
+      density: 0.82
+      continuity: 0.88
+      interruption: 0.60
+      polyphony: 0.95
+      tension_release: 0.85
+      tempo_of_change: 0.90
+    entry_mapping: >-
+      A rationalized panel genotype changes aperture, depth and fin density through a
+      smooth entry-centered field while panel size and neighboring jumps remain bounded.
+

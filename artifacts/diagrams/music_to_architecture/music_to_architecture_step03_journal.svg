@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="180mm" height="102.86mm" viewBox="0 0 2800 1600" role="img" aria-labelledby="title desc">
+  <title id="title">音乐到建筑选择的期刊方法图</title>
+  <desc id="desc">四阶段方法图：音乐特征读取、四项设计偏好、约束筛选、可核查建筑结果。图中使用真实运行的波形、平面、体量、立面、结构和最终建筑图像。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8.5" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L9,5 L0,10 z" fill="#1b1b1b"/></marker>
+    <clipPath id="clipWave"><rect x="60" y="162" width="420" height="126"/></clipPath>
+    <clipPath id="clipFinal"><rect x="2090" y="162" width="650" height="420"/></clipPath>
+    <clipPath id="clipPlan"><rect x="2090" y="682" width="310" height="220"/></clipPath>
+    <clipPath id="clipMassing"><rect x="2430" y="682" width="310" height="220"/></clipPath>
+    <clipPath id="clipFacade"><rect x="2090" y="1002" width="310" height="220"/></clipPath>
+    <clipPath id="clipStructure"><rect x="2430" y="1002" width="310" height="220"/></clipPath>
+    <style>
+      text { font-family:"Noto Serif SC", "SimSun", "Times New Roman", serif; fill:#111; }
+      .stage { font-size:38px; font-weight:700; }
+      .body { font-size:27px; }
+      .small { font-size:21px; }
+      .bold { font-weight:700; }
+      .muted { fill:#555; }
+      .blue { fill:#2c718d; }
+      .orange { fill:#b34f25; }
+      .line { fill:none; stroke:#1b1b1b; stroke-width:2.4; }
+      .dash { fill:none; stroke:#1b1b1b; stroke-width:2.4; stroke-dasharray:14 10; }
+      .hair { fill:none; stroke:#7c8589; stroke-width:1.6; }
+      .arrow { fill:none; stroke:#1b1b1b; stroke-width:2.5; marker-end:url(#arrow); }
+      .box { fill:#fff; stroke:#1b1b1b; stroke-width:2.4; }
+      .pale { fill:#e8f4f8; stroke:#1b1b1b; stroke-width:2.4; }
+    </style>
+  </defs>
+  <rect width="2800" height="1600" fill="#fff"/>
+
+  <text x="42" y="63" class="stage">1. 音乐特征读取</text>
+  <text x="565" y="63" class="stage">2. 四项设计偏好</text>
+  <text x="1515" y="63" class="stage">3. 约束筛选</text>
+  <text x="2085" y="63" class="stage">4. 可核查结果</text>
+  <rect x="20" y="98" width="500" height="1440" class="dash"/>
+  <rect x="545" y="98" width="915" height="1440" class="dash"/>
+  <rect x="1485" y="98" width="545" height="1440" class="dash"/>
+  <rect x="2055" y="98" width="725" height="1440" class="dash"/>
+
+  <g id="stage-1">
+    <text x="60" y="142" class="body bold">输入音乐</text>
+    <g clip-path="url(#clipWave)"><image x="60" y="162" width="420" height="126" xlink:href="waveform.png" preserveAspectRatio="none"/></g>
+    <rect x="60" y="162" width="420" height="126" class="hair"/>
+    <text x="270" y="318" text-anchor="middle" class="small">音频波形</text>
+    <text x="60" y="380" class="body bold">与选择有关的读数</text>
+    <g class="small">
+      <text x="60" y="438">主次</text><line x1="170" y1="430" x2="410" y2="430" stroke="#c8d4d9" stroke-width="13"/><line x1="170" y1="430" x2="345" y2="430" stroke="#2c718d" stroke-width="13"/><text x="430" y="438" class="blue bold">0.73</text>
+      <text x="60" y="500">实虚</text><line x1="170" y1="492" x2="410" y2="492" stroke="#c8d4d9" stroke-width="13"/><line x1="170" y1="492" x2="215" y2="492" stroke="#2c718d" stroke-width="13"/><text x="430" y="500" class="blue bold">0.19</text>
+      <text x="60" y="562">层次</text><line x1="170" y1="554" x2="410" y2="554" stroke="#c8d4d9" stroke-width="13"/><line x1="170" y1="554" x2="288" y2="554" stroke="#2c718d" stroke-width="13"/><text x="430" y="562" class="blue bold">0.49</text>
+      <text x="60" y="624">重复</text><line x1="170" y1="616" x2="410" y2="616" stroke="#c8d4d9" stroke-width="13"/><line x1="170" y1="616" x2="292" y2="616" stroke="#2c718d" stroke-width="13"/><text x="430" y="624" class="blue bold">0.51</text>
+      <text x="60" y="686">变化</text><line x1="170" y1="678" x2="410" y2="678" stroke="#c8d4d9" stroke-width="13"/><line x1="170" y1="678" x2="391" y2="678" stroke="#2c718d" stroke-width="13"/><text x="430" y="686" class="blue bold">0.92</text>
+    </g>
+    <path d="M270 725V775" class="arrow"/>
+    <text x="60" y="828" class="body bold">单轴问题</text>
+    <rect x="60" y="860" width="420" height="90" class="box"/><text x="270" y="916" text-anchor="middle" class="body">有没有一个主导事件？</text>
+    <rect x="60" y="976" width="420" height="90" class="box"/><text x="270" y="1032" text-anchor="middle" class="body">整体更实，还是更透？</text>
+    <rect x="60" y="1092" width="420" height="90" class="box"/><text x="270" y="1148" text-anchor="middle" class="body">层次与重复有多强？</text>
+    <rect x="60" y="1208" width="420" height="90" class="box"/><text x="270" y="1264" text-anchor="middle" class="body">变化是否需要显露构架？</text>
+    <path d="M270 1320V1380" class="arrow"/>
+    <text x="270" y="1425" text-anchor="middle" class="small">每个问题只读取一个维度</text>
+  </g>
+
+  <g id="stage-2">
+    <rect x="575" y="135" width="855" height="305" class="box"/><text x="605" y="180" class="body bold">A. 建筑类型</text>
+    <rect x="605" y="215" width="225" height="74" class="pale"/><text x="718" y="262" text-anchor="middle" class="small bold">主次 0.73</text>
+    <path d="M850 252H930" class="arrow"/><text x="970" y="245" class="small">一个主导事件</text><text x="970" y="277" class="small">对应一个核心空间</text><path d="M1155 252H1225" class="arrow"/>
+    <g transform="translate(1250 190)"><rect x="0" y="0" width="130" height="120" class="line"/><rect x="31" y="24" width="68" height="72" fill="#2c718d" stroke="#111" stroke-width="2"/><rect x="7" y="24" width="19" height="72" fill="#d8dde0" stroke="#111" stroke-width="1.5"/><rect x="104" y="24" width="19" height="72" fill="#d8dde0" stroke="#111" stroke-width="1.5"/></g>
+    <text x="1315" y="348" text-anchor="middle" class="body bold">剧场</text>
+
+    <rect x="575" y="465" width="855" height="305" class="box"/><text x="605" y="510" class="body bold">B. 整体体形</text>
+    <rect x="605" y="545" width="225" height="74" class="pale"/><text x="718" y="592" text-anchor="middle" class="small bold">主次 0.73</text>
+    <path d="M850 582H930" class="arrow"/><text x="970" y="575" class="small">上部集中</text><text x="970" y="607" class="small">底层容纳完整面积</text><path d="M1155 582H1225" class="arrow"/>
+    <g transform="translate(1235 530)"><polygon points="8,94 132,94 164,112 38,112" fill="#b8c5cb" stroke="#111" stroke-width="2"/><polygon points="45,40 132,40 151,57 63,57" fill="#2c718d" stroke="#111" stroke-width="2"/><polygon points="63,57 151,57 151,91 63,91" fill="#8fb5c4" stroke="#111" stroke-width="2"/><rect x="25" y="91" width="150" height="29" fill="#d8dde0" stroke="#111" stroke-width="2"/></g>
+    <text x="1315" y="680" text-anchor="middle" class="small bold">条形体量 + 大底座</text>
+
+    <rect x="575" y="795" width="855" height="305" class="box"/><text x="605" y="840" class="body bold">C. 外墙风格</text>
+    <rect x="605" y="875" width="225" height="74" class="pale"/><text x="718" y="907" text-anchor="middle" class="small bold">层次 0.49</text><text x="718" y="937" text-anchor="middle" class="small bold">变化 0.92</text>
+    <path d="M850 912H930" class="arrow"/><text x="970" y="905" class="small">构架和连接</text><text x="970" y="937" class="small">成为立面表达</text><path d="M1155 912H1225" class="arrow"/>
+    <g transform="translate(1240 850)" stroke="#111" stroke-width="2" fill="none"><rect x="0" y="0" width="150" height="124"/><path d="M20 0V124M55 0V124M95 0V124M130 0V124M0 32H150M0 70H150M0 102H150"/><path d="M0 124L150 0M0 0L150 124" stroke="#2c718d" stroke-width="5"/></g>
+    <text x="1315" y="1013" text-anchor="middle" class="body bold">高技派</text>
+
+    <rect x="575" y="1125" width="855" height="305" class="box"/><text x="605" y="1170" class="body bold">D. 结构骨架</text>
+    <rect x="605" y="1205" width="225" height="74" class="pale"/><text x="718" y="1237" text-anchor="middle" class="small bold">系统亲和度</text><text x="718" y="1267" text-anchor="middle" class="small bold">0.75</text>
+    <path d="M850 1242H930" class="arrow"/><text x="970" y="1235" class="small">音乐提出</text><text x="970" y="1267" class="small">木梁柱偏好</text><path d="M1155 1242H1225" class="arrow"/>
+    <g transform="translate(1235 1188)" fill="none" stroke="#8a5d37" stroke-width="9" stroke-linecap="square"><path d="M15 120V10M145 120V10M15 24H145M15 24L80 75L145 24"/></g>
+    <text x="1315" y="1370" text-anchor="middle" class="body bold">木梁柱</text>
+  </g>
+
+  <path d="M1460 288H1482" class="arrow"/><path d="M1460 618H1482" class="arrow"/><path d="M1460 948H1482" class="arrow"/><path d="M1460 1278H1482" class="arrow"/>
+
+  <g id="stage-3">
+    <text x="1525" y="150" class="body bold">筛选依据</text>
+    <rect x="1525" y="180" width="220" height="70" class="box"/><text x="1635" y="224" text-anchor="middle" class="small">面积与项目简报</text>
+    <rect x="1765" y="180" width="220" height="70" class="box"/><text x="1875" y="224" text-anchor="middle" class="small">场地参数</text>
+    <rect x="1525" y="272" width="220" height="70" class="box"/><text x="1635" y="316" text-anchor="middle" class="small">基础规则输入</text>
+    <rect x="1765" y="272" width="220" height="70" class="box"/><text x="1875" y="316" text-anchor="middle" class="small">生成器能力</text>
+    <path d="M1755 370V430" class="arrow"/>
+    <path d="M1525 450H1985L1920 552V640L1785 706V552Z" fill="#e8f4f8" stroke="#111" stroke-width="2.5"/>
+    <text x="1755" y="510" text-anchor="middle" class="body bold">候选筛选器</text>
+    <text x="1755" y="560" text-anchor="middle" class="small">只淘汰有明确依据的候选</text>
+    <text x="1755" y="600" text-anchor="middle" class="small">缺失输入保持“待复核”</text>
+    <text x="1525" y="785" class="body bold">本次运行</text>
+    <rect x="1525" y="820" width="460" height="100" class="box"/><text x="1560" y="860" class="small">类型 / 体形 / 立面</text><text x="1950" y="895" text-anchor="end" class="body bold blue">保留</text>
+    <rect x="1525" y="950" width="460" height="260" fill="#fff4ee" stroke="#b34f25" stroke-width="2.5"/>
+    <text x="1560" y="996" class="body bold orange">结构偏好被改写</text><text x="1560" y="1048" class="small">音乐偏好</text><text x="1950" y="1048" text-anchor="end" class="small bold">木梁柱</text>
+    <line x1="1560" y1="1072" x2="1950" y2="1072" class="hair"/><text x="1560" y="1112" class="small">筛选结果</text><text x="1950" y="1112" text-anchor="end" class="small bold orange">未进入可行集</text>
+    <line x1="1560" y1="1136" x2="1950" y2="1136" class="hair"/><text x="1560" y="1176" class="small">最终系统</text><text x="1950" y="1176" text-anchor="end" class="small bold">钢框架</text>
+    <rect x="1525" y="1250" width="460" height="190" class="box"/><text x="1560" y="1296" class="body bold">保留审计记录</text><text x="1560" y="1340" class="small">音乐来源 · 判断问题</text><text x="1560" y="1380" class="small">筛选理由 · 人工确认</text>
+  </g>
+
+  <path d="M2030 782H2052" class="arrow"/>
+
+  <g id="stage-4">
+    <text x="2090" y="142" class="body bold">完整建筑</text>
+    <g clip-path="url(#clipFinal)"><image x="2090" y="162" width="650" height="420" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/01_three_quarter.png" preserveAspectRatio="xMidYMid slice"/></g>
+    <rect x="2090" y="162" width="650" height="420" class="hair"/>
+    <text x="2415" y="620" text-anchor="middle" class="small bold">剧场 · 条形体量 + 大底座 · 高技派 · 钢框架</text>
+    <g clip-path="url(#clipPlan)"><image x="2090" y="682" width="310" height="220" xlink:href="../../drawings/native/building-v3-b7ad95fa45a6/DWG-PLAN-L02.png" preserveAspectRatio="xMidYMid meet"/></g>
+    <rect x="2090" y="682" width="310" height="220" class="hair"/><text x="2245" y="938" text-anchor="middle" class="small">建筑类型｜二层平面</text>
+    <g clip-path="url(#clipMassing)"><image x="2430" y="682" width="310" height="220" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/05_massing_south_west.png" preserveAspectRatio="xMidYMid slice"/></g>
+    <rect x="2430" y="682" width="310" height="220" class="hair"/><text x="2585" y="938" text-anchor="middle" class="small">整体体形｜西南视图</text>
+    <g clip-path="url(#clipFacade)"><image x="2090" y="1002" width="310" height="220" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/04_south_elevation.png" preserveAspectRatio="xMidYMid slice"/></g>
+    <rect x="2090" y="1002" width="310" height="220" class="hair"/><text x="2245" y="1258" text-anchor="middle" class="small">外墙风格｜南立面</text>
+    <g clip-path="url(#clipStructure)"><image x="2430" y="1002" width="310" height="220" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/03_structure_closeup.png" preserveAspectRatio="xMidYMid slice"/></g>
+    <rect x="2430" y="1002" width="310" height="220" class="hair"/><text x="2585" y="1258" text-anchor="middle" class="small">结构骨架｜节点近景</text>
+    <rect x="2090" y="1310" width="650" height="150" class="box"/><text x="2120" y="1355" class="small muted">记录内容</text><text x="2250" y="1355" class="small">输入值 → 选择 → 筛选 → 修改理由</text>
+    <line x1="2120" y1="1378" x2="2710" y2="1378" class="hair"/><text x="2120" y="1420" class="small muted">运行编号</text><text x="2250" y="1420" class="small">building-v3-b7ad95fa45a6</text>
+  </g>
+
+  <text x="1400" y="1582" text-anchor="middle" class="small muted">筛选状态不等同于法规批准；场地与法规输入仍需人工复核。</text>
+</svg>

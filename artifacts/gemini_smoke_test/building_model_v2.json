@@ -1,0 +1,555 @@
+{
+  "schema_version": "2.0",
+  "model_id": "building-b7ad95fa45a6",
+  "score_id": "score-b7ad95fa45a6",
+  "typology": "small_exhibition_pavilion",
+  "tectonic_system": "orthogonal_frame",
+  "units": "meters",
+  "coordinate_system": "right_handed_z_up",
+  "site": {
+    "width": 38.0,
+    "length": 24.0,
+    "max_height": 8.0
+  },
+  "grid": {
+    "spacing_x": 4.3609,
+    "spacing_y": 7.8349,
+    "column_size": 0.24
+  },
+  "parameters": {
+    "module_count": 3,
+    "bay_spacing": 4.3609,
+    "module_gap": 1.2983,
+    "primary_height": 5.1768,
+    "primary_depth": 7.8349,
+    "visual_continuity": 0.1754
+  },
+  "elements": [
+    {
+      "id": "gallery-01",
+      "kind": "massing",
+      "program": "gallery",
+      "category": "public",
+      "position": {
+        "x": -7.0547,
+        "y": -1.0308,
+        "z": 2.4192
+      },
+      "dimensions": {
+        "x": 5.7564,
+        "y": 7.3621,
+        "z": 4.8384
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "tempo_of_change",
+          "source_value": 0.03833,
+          "target_parameter": "sequence.module_count",
+          "applied_value": 3.0,
+          "rule_id": "TEMPO_TO_EPISODES"
+        },
+        {
+          "source_dimension": "tension_release",
+          "source_value": 0.444198,
+          "target_parameter": "massing.primary_height",
+          "applied_value": 4.838447,
+          "rule_id": "ENERGY_TO_HEIGHT"
+        },
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "massing.primary_depth",
+          "applied_value": 7.362109,
+          "rule_id": "DENSITY_TO_DEPTH"
+        },
+        {
+          "source_dimension": "continuity",
+          "source_value": 0.175357,
+          "target_parameter": "sequence.module_gap",
+          "applied_value": 1.29834,
+          "rule_id": "CONTINUITY_TO_GAP"
+        }
+      ]
+    },
+    {
+      "id": "gallery-02",
+      "kind": "massing",
+      "program": "gallery",
+      "category": "public",
+      "position": {
+        "x": 0.0,
+        "y": 1.0308,
+        "z": 2.4042
+      },
+      "dimensions": {
+        "x": 5.7564,
+        "y": 7.3108,
+        "z": 4.8085
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "tempo_of_change",
+          "source_value": 0.03833,
+          "target_parameter": "sequence.module_count",
+          "applied_value": 3.0,
+          "rule_id": "TEMPO_TO_EPISODES"
+        },
+        {
+          "source_dimension": "tension_release",
+          "source_value": 0.444198,
+          "target_parameter": "massing.primary_height",
+          "applied_value": 4.808472,
+          "rule_id": "ENERGY_TO_HEIGHT"
+        },
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "massing.primary_depth",
+          "applied_value": 7.310784,
+          "rule_id": "DENSITY_TO_DEPTH"
+        },
+        {
+          "source_dimension": "continuity",
+          "source_value": 0.175357,
+          "target_parameter": "sequence.module_gap",
+          "applied_value": 1.29834,
+          "rule_id": "CONTINUITY_TO_GAP"
+        }
+      ]
+    },
+    {
+      "id": "gallery-03",
+      "kind": "massing",
+      "program": "gallery",
+      "category": "public",
+      "position": {
+        "x": 7.0547,
+        "y": -1.0308,
+        "z": 2.5972
+      },
+      "dimensions": {
+        "x": 5.7564,
+        "y": 7.5931,
+        "z": 5.1944
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "tempo_of_change",
+          "source_value": 0.03833,
+          "target_parameter": "sequence.module_count",
+          "applied_value": 3.0,
+          "rule_id": "TEMPO_TO_EPISODES"
+        },
+        {
+          "source_dimension": "tension_release",
+          "source_value": 0.444198,
+          "target_parameter": "massing.primary_height",
+          "applied_value": 5.194392,
+          "rule_id": "ENERGY_TO_HEIGHT"
+        },
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "massing.primary_depth",
+          "applied_value": 7.593072,
+          "rule_id": "DENSITY_TO_DEPTH"
+        },
+        {
+          "source_dimension": "continuity",
+          "source_value": 0.175357,
+          "target_parameter": "sequence.module_gap",
+          "applied_value": 1.29834,
+          "rule_id": "CONTINUITY_TO_GAP"
+        }
+      ]
+    },
+    {
+      "id": "entry-01",
+      "kind": "massing",
+      "program": "entry",
+      "category": "circulation",
+      "position": {
+        "x": -11.9329,
+        "y": 0.0,
+        "z": 1.7
+      },
+      "dimensions": {
+        "x": 3.2,
+        "y": 5.4,
+        "z": 3.4
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "continuity",
+          "source_value": 0.175357,
+          "target_parameter": "sequence.entry_gap",
+          "applied_value": 0.4,
+          "rule_id": "CONTINUITY_TO_GAP"
+        }
+      ]
+    },
+    {
+      "id": "service-01",
+      "kind": "massing",
+      "program": "service",
+      "category": "private",
+      "position": {
+        "x": 4.9665,
+        "y": 6.0175,
+        "z": 1.65
+      },
+      "dimensions": {
+        "x": 6.5,
+        "y": 3.2,
+        "z": 3.3
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "service.module_width",
+          "applied_value": 6.5,
+          "rule_id": "DENSITY_TO_DEPTH"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-01-0-0",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": -9.7529,
+        "y": -4.5318,
+        "z": 2.4192
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 4.8384
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-01-0-1",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": -9.7529,
+        "y": 2.4703,
+        "z": 2.4192
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 4.8384
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-01-1-0",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": -4.3565,
+        "y": -4.5318,
+        "z": 2.4192
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 4.8384
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-01-1-1",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": -4.3565,
+        "y": 2.4703,
+        "z": 2.4192
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 4.8384
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-02-0-0",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": -2.6982,
+        "y": -2.4446,
+        "z": 2.4043
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 4.8085
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-02-0-1",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": -2.6982,
+        "y": 4.5062,
+        "z": 2.4043
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 4.8085
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-02-1-0",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": 2.6982,
+        "y": -2.4446,
+        "z": 2.4043
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 4.8085
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-02-1-1",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": 2.6982,
+        "y": 4.5062,
+        "z": 2.4043
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 4.8085
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-03-0-0",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": 4.3565,
+        "y": -4.6473,
+        "z": 2.5972
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 5.1944
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-03-0-1",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": 4.3565,
+        "y": 2.5857,
+        "z": 2.5972
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 5.1944
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-03-1-0",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": 9.7529,
+        "y": -4.6473,
+        "z": 2.5972
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 5.1944
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    },
+    {
+      "id": "column-gallery-03-1-1",
+      "kind": "column",
+      "program": "structure",
+      "category": "public",
+      "position": {
+        "x": 9.7529,
+        "y": 2.5857,
+        "z": 2.5972
+      },
+      "dimensions": {
+        "x": 0.24,
+        "y": 0.24,
+        "z": 5.1944
+      },
+      "score_bindings": [
+        {
+          "source_dimension": "density",
+          "source_value": 0.381408,
+          "target_parameter": "structure.bay_spacing",
+          "applied_value": 4.360903,
+          "rule_id": "DENSITY_TO_GRID"
+        }
+      ]
+    }
+  ],
+  "validation": [
+    {
+      "id": "TYPOLOGY_REQUIRED_PROGRAMS",
+      "status": "pass",
+      "message": "Entry, gallery, and service programs are present.",
+      "affected_ids": []
+    },
+    {
+      "id": "SITE_ENVELOPE",
+      "status": "pass",
+      "message": "All generated elements remain inside the MVP site envelope.",
+      "affected_ids": []
+    },
+    {
+      "id": "MINIMUM_MASSING_HEIGHT",
+      "status": "pass",
+      "message": "All occupied massing elements meet the 3.0 m MVP minimum height.",
+      "affected_ids": []
+    },
+    {
+      "id": "FRAME_GRID_RANGE",
+      "status": "pass",
+      "message": "Frame grid spacing is 4.36 m within the declared MVP range.",
+      "affected_ids": []
+    },
+    {
+      "id": "PROVENANCE_COVERAGE",
+      "status": "pass",
+      "message": "Every element records at least one score binding.",
+      "affected_ids": []
+    },
+    {
+      "id": "PROGRAM_CATEGORY_COVERAGE",
+      "status": "pass",
+      "message": "Every element declares a public, private, or circulation category.",
+      "affected_ids": []
+    }
+  ]
+}

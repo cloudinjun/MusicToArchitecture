@@ -1,0 +1,15 @@
+id,title,style_family,runtime_seconds,element_count,feature_near_count,score_near_count,datum_near_count,variable_coverage,program_fits,model_id
+mozart-symphony-29,"Symphony No. 29 in A major, K. 201 (excerpt)",Classical orchestral,11.485,5435,0,0,0,1.0,True,building-v3-60c5b7411c1a
+couperin-harpsichord,L'Art de toucher le clavecin (recorded excerpt),Baroque harpsichord,1.437,4472,0,0,0,1.0,True,building-v3-887e29547b49
+dub-riots-silience-is-gold,Silience Is Gold,Dub / roots reggae,1.424,4899,0,0,0,1.0,True,building-v3-2cbd89d77490
+deadbone-wake-up-call,Wake-up Call Intro – 24 Hours,Detroit techno,1.392,3999,0,0,0,1.0,True,building-v3-6354f3fbea80
+lucas-darklord-hymne-iii,Hymne III,Black metal / noise,1.45,4578,0,0,0,1.0,True,building-v3-bfbde72cc850
+jorgensen-guitar-soundscape-1,Guitar Soundscape 1,Ambient guitar / drone,1.472,4700,0,0,0,1.0,True,building-v3-3d99061e0059
+krakenti-his-akorns,His Akorns,Electronic industrial,1.372,3710,0,0,0,1.0,True,building-v3-7907d157831a
+affen-like-life-easily-ended,Like Life Easily Ended,Indie rock,1.338,2848,0,0,0,1.0,True,building-v3-6673b85caa7f
+nienvox-visions,Visions,Trip-hop / breakbeats / jazz,1.312,2600,0,0,0,1.0,False,building-v3-0cdcb2d42f1d
+charrier-accorte,Accorte,Acousmatic / electroacoustic improvisation,1.43,5485,0,0,0,1.0,True,building-v3-f74b049c0fd3
+m-pex-bueid,Bueid,Portuguese guitar / electronic world music,1.419,4555,0,0,0,1.0,True,building-v3-250121350724
+kevin-bryce-rainfields,Rainfields,Electropop / IDM / ambient,1.386,4541,0,0,0,1.0,True,building-v3-ac899390a0d4
+walcker-crew-blind-istanbul,Blind Istanbul,Alternative hip-hop / jazz-funk / dub,1.331,2642,0,0,0,1.0,False,building-v3-e1128f5ea97d
+hurle-cancer,Cancer,Hardcore punk / thrash / crust,1.338,2428,0,0,0,1.0,False,building-v3-483cf79c50ca

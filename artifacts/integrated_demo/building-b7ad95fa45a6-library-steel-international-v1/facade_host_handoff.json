@@ -1,0 +1,955 @@
+{
+  "schema_version": "mta.facade_host_handoff/1.0",
+  "handoff_id": "facade-host-b7ad95fa45a6-library-steel-international-v1",
+  "model_id": "building-b7ad95fa45a6-library-steel-international-v1",
+  "score_id": "score-b7ad95fa45a6",
+  "authority_status": "preview_only",
+  "maturity": "MTA-F2",
+  "score_dimensions": [
+    {
+      "id": "genre_style",
+      "status": "unknown",
+      "value": null,
+      "confidence": null,
+      "source_type": "unknown",
+      "source_ref": null,
+      "reason": "The current MP3 extractor does not implement this Shared Score dimension.",
+      "required_for_handoff": false
+    },
+    {
+      "id": "hierarchy",
+      "status": "unknown",
+      "value": null,
+      "confidence": null,
+      "source_type": "unknown",
+      "source_ref": null,
+      "reason": "The current MP3 extractor does not implement this Shared Score dimension.",
+      "required_for_handoff": false
+    },
+    {
+      "id": "repetition",
+      "status": "unknown",
+      "value": null,
+      "confidence": null,
+      "source_type": "unknown",
+      "source_ref": null,
+      "reason": "The current MP3 extractor does not implement this Shared Score dimension.",
+      "required_for_handoff": false
+    },
+    {
+      "id": "variation",
+      "status": "unknown",
+      "value": null,
+      "confidence": null,
+      "source_type": "unknown",
+      "source_ref": null,
+      "reason": "The current MP3 extractor does not implement this Shared Score dimension.",
+      "required_for_handoff": false
+    },
+    {
+      "id": "density",
+      "status": "known",
+      "value": 0.3814079468021896,
+      "confidence": 0.9,
+      "source_type": "observed",
+      "source_ref": "architectural_score:score-b7ad95fa45a6#density",
+      "reason": null,
+      "required_for_handoff": false
+    },
+    {
+      "id": "continuity",
+      "status": "known",
+      "value": 0.17535653992054742,
+      "confidence": 0.72,
+      "source_type": "inferred",
+      "source_ref": "architectural_score:score-b7ad95fa45a6#continuity",
+      "reason": null,
+      "required_for_handoff": false
+    },
+    {
+      "id": "interruption",
+      "status": "unknown",
+      "value": null,
+      "confidence": null,
+      "source_type": "unknown",
+      "source_ref": null,
+      "reason": "The current MP3 extractor does not implement this Shared Score dimension.",
+      "required_for_handoff": false
+    },
+    {
+      "id": "polyphony",
+      "status": "unknown",
+      "value": null,
+      "confidence": null,
+      "source_type": "unknown",
+      "source_ref": null,
+      "reason": "The current MP3 extractor does not implement this Shared Score dimension.",
+      "required_for_handoff": false
+    },
+    {
+      "id": "tension_release",
+      "status": "known",
+      "value": 0.4441977523742838,
+      "confidence": 0.95,
+      "source_type": "observed",
+      "source_ref": "architectural_score:score-b7ad95fa45a6#tension_release",
+      "reason": null,
+      "required_for_handoff": false
+    },
+    {
+      "id": "tempo_of_change",
+      "status": "known",
+      "value": 0.038330078125,
+      "confidence": 0.82,
+      "source_type": "observed",
+      "source_ref": "architectural_score:score-b7ad95fa45a6#tempo_of_change",
+      "reason": null,
+      "required_for_handoff": false
+    }
+  ],
+  "host_surfaces": [
+    {
+      "id": "host-SP-L01-COMMUNITY-001-south",
+      "source_element_id": "SP-L01-COMMUNITY-001",
+      "source_element_kind": "massing",
+      "orientation": "south",
+      "program_owner": "community_room",
+      "program_category": "public",
+      "origin": {
+        "x": -12.0,
+        "y": -8.0,
+        "z": 2.3
+      },
+      "normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 6.0,
+      "height": 4.6,
+      "level_min": 0.0,
+      "level_max": 4.6,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-COMMUNITY-001-west",
+      "source_element_id": "SP-L01-COMMUNITY-001",
+      "source_element_kind": "massing",
+      "orientation": "west",
+      "program_owner": "community_room",
+      "program_category": "public",
+      "origin": {
+        "x": -15.0,
+        "y": -5.7,
+        "z": 2.3
+      },
+      "normal": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 4.6,
+      "height": 4.6,
+      "level_min": 0.0,
+      "level_max": 4.6,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-VESTIBULE-001-south",
+      "source_element_id": "SP-L01-VESTIBULE-001",
+      "source_element_kind": "massing",
+      "orientation": "south",
+      "program_owner": "entry_vestibule",
+      "program_category": "circulation",
+      "origin": {
+        "x": -8.0,
+        "y": -8.0,
+        "z": 2.4
+      },
+      "normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 2.0,
+      "height": 4.8,
+      "level_min": 0.0,
+      "level_max": 4.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-LOBBY-001-south",
+      "source_element_id": "SP-L01-LOBBY-001",
+      "source_element_kind": "massing",
+      "orientation": "south",
+      "program_owner": "lobby_welcome_checkout",
+      "program_category": "circulation",
+      "origin": {
+        "x": -5.0,
+        "y": -8.0,
+        "z": 2.6
+      },
+      "normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 4.0,
+      "height": 5.2,
+      "level_min": 0.0,
+      "level_max": 5.2,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-CHILDREN-001-south",
+      "source_element_id": "SP-L01-CHILDREN-001",
+      "source_element_kind": "massing",
+      "orientation": "south",
+      "program_owner": "children_reading",
+      "program_category": "public",
+      "origin": {
+        "x": 0.5,
+        "y": -8.0,
+        "z": 2.4
+      },
+      "normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 7.0,
+      "height": 4.8,
+      "level_min": 0.0,
+      "level_max": 4.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-GROUP-001-south",
+      "source_element_id": "SP-L01-GROUP-001",
+      "source_element_kind": "massing",
+      "orientation": "south",
+      "program_owner": "group_study",
+      "program_category": "public",
+      "origin": {
+        "x": 6.5,
+        "y": -8.0,
+        "z": 2.2
+      },
+      "normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 5.0,
+      "height": 4.4,
+      "level_min": 0.0,
+      "level_max": 4.4,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-DIGITAL-001-south",
+      "source_element_id": "SP-L01-DIGITAL-001",
+      "source_element_kind": "massing",
+      "orientation": "south",
+      "program_owner": "digital_learning",
+      "program_category": "public",
+      "origin": {
+        "x": 12.0,
+        "y": -8.0,
+        "z": 2.4
+      },
+      "normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 6.0,
+      "height": 4.8,
+      "level_min": 0.0,
+      "level_max": 4.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-DIGITAL-001-east",
+      "source_element_id": "SP-L01-DIGITAL-001",
+      "source_element_kind": "massing",
+      "orientation": "east",
+      "program_owner": "digital_learning",
+      "program_category": "public",
+      "origin": {
+        "x": 15.0,
+        "y": -5.7,
+        "z": 2.4
+      },
+      "normal": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 4.6,
+      "height": 4.8,
+      "level_min": 0.0,
+      "level_max": 4.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-SPINE-001-west",
+      "source_element_id": "SP-L01-SPINE-001",
+      "source_element_kind": "massing",
+      "orientation": "west",
+      "program_owner": "primary_circulation",
+      "program_category": "circulation",
+      "origin": {
+        "x": -15.0,
+        "y": -2.0,
+        "z": 1.8
+      },
+      "normal": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 1.9403,
+      "height": 3.6,
+      "level_min": 0.0,
+      "level_max": 3.6,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-SPINE-001-east",
+      "source_element_id": "SP-L01-SPINE-001",
+      "source_element_kind": "massing",
+      "orientation": "east",
+      "program_owner": "primary_circulation",
+      "program_category": "circulation",
+      "origin": {
+        "x": 15.0,
+        "y": -2.0,
+        "z": 1.8
+      },
+      "normal": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 1.9403,
+      "height": 3.6,
+      "level_min": 0.0,
+      "level_max": 3.6,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-ADULT-001-west",
+      "source_element_id": "SP-L01-ADULT-001",
+      "source_element_kind": "massing",
+      "orientation": "west",
+      "program_owner": "adult_reading",
+      "program_category": "public",
+      "origin": {
+        "x": -15.0,
+        "y": 2.7,
+        "z": 3.0998
+      },
+      "normal": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 6.6,
+      "height": 6.1996,
+      "level_min": 0.0,
+      "level_max": 6.1996,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-QUIET-001-east",
+      "source_element_id": "SP-L01-QUIET-001",
+      "source_element_kind": "massing",
+      "orientation": "east",
+      "program_owner": "quiet_reading",
+      "program_category": "public",
+      "origin": {
+        "x": 15.0,
+        "y": 2.7,
+        "z": 3.0998
+      },
+      "normal": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 6.6,
+      "height": 6.1996,
+      "level_min": 0.0,
+      "level_max": 6.1996,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-STAFF-001-north",
+      "source_element_id": "SP-L01-STAFF-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "staff_workroom",
+      "program_category": "private",
+      "origin": {
+        "x": -12.5,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 5.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-STAFF-001-west",
+      "source_element_id": "SP-L01-STAFF-001",
+      "source_element_kind": "massing",
+      "orientation": "west",
+      "program_owner": "staff_workroom",
+      "program_category": "private",
+      "origin": {
+        "x": -15.0,
+        "y": 7.5,
+        "z": 1.9
+      },
+      "normal": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 3.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-ADMIN-001-north",
+      "source_element_id": "SP-L01-ADMIN-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "administration",
+      "program_category": "private",
+      "origin": {
+        "x": -8.5,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 3.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-PROCESSING-001-north",
+      "source_element_id": "SP-L01-PROCESSING-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "collection_processing",
+      "program_category": "service",
+      "origin": {
+        "x": -4.5,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 5.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-STORAGE-001-north",
+      "source_element_id": "SP-L01-STORAGE-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "secure_storage",
+      "program_category": "service",
+      "origin": {
+        "x": -0.5,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 3.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-RESTROOM-PUBLIC-001-north",
+      "source_element_id": "SP-L01-RESTROOM-PUBLIC-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "public_restroom",
+      "program_category": "service",
+      "origin": {
+        "x": 3.0,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 4.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-RESTROOM-STAFF-001-north",
+      "source_element_id": "SP-L01-RESTROOM-STAFF-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "staff_restroom",
+      "program_category": "service",
+      "origin": {
+        "x": 6.0,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 2.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-JANITOR-001-north",
+      "source_element_id": "SP-L01-JANITOR-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "janitor",
+      "program_category": "service",
+      "origin": {
+        "x": 8.0,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 2.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-ELECTRICAL-001-north",
+      "source_element_id": "SP-L01-ELECTRICAL-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "electrical_it",
+      "program_category": "service",
+      "origin": {
+        "x": 10.0,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 2.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-MECHANICAL-001-north",
+      "source_element_id": "SP-L01-MECHANICAL-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "mechanical_room",
+      "program_category": "service",
+      "origin": {
+        "x": 12.0,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 2.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-RECEIVING-001-north",
+      "source_element_id": "SP-L01-RECEIVING-001",
+      "source_element_kind": "massing",
+      "orientation": "north",
+      "program_owner": "loading_receiving",
+      "program_category": "service",
+      "origin": {
+        "x": 14.0,
+        "y": 9.0,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 2.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    },
+    {
+      "id": "host-SP-L01-RECEIVING-001-east",
+      "source_element_id": "SP-L01-RECEIVING-001",
+      "source_element_kind": "massing",
+      "orientation": "east",
+      "program_owner": "loading_receiving",
+      "program_category": "service",
+      "origin": {
+        "x": 15.0,
+        "y": 7.5,
+        "z": 1.9
+      },
+      "normal": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "u_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "v_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "width": 3.0,
+      "height": 3.8,
+      "level_min": 0.0,
+      "level_max": 3.8,
+      "authority_status": "preview_host"
+    }
+  ],
+  "gates": [
+    {
+      "id": "PROGRAM_HOST_OWNERSHIP",
+      "status": "pass",
+      "authority": "preview_only",
+      "message": "Every exterior host resolves to a room-level space type, access class, program category, and stable source element.",
+      "blocked_by": [],
+      "evidence_refs": [
+        "building-b7ad95fa45a6-library-steel-international-v1"
+      ]
+    },
+    {
+      "id": "TECTONIC_SUPPORT_CONTRACT",
+      "status": "pass",
+      "authority": "preview_only",
+      "message": "Every facade support returns to the explicit steel-frame candidate graph; engineering reactions and connection sizing remain pending.",
+      "blocked_by": [],
+      "evidence_refs": [
+        "building-b7ad95fa45a6-library-steel-international-v1"
+      ]
+    },
+    {
+      "id": "FACADE_GRAMMAR_SELECTION",
+      "status": "pass",
+      "authority": "preview_only",
+      "message": "International Style-informed grammar is selected for this integrated demonstration only.",
+      "blocked_by": [],
+      "evidence_refs": [
+        "integrated-demo-selection",
+        "facade-selected-guideline"
+      ]
+    },
+    {
+      "id": "FACADE_GEOMETRY_HANDOFF",
+      "status": "pass",
+      "authority": "preview_only",
+      "message": "Portable MTA-F2 facade elements, stable hosts, ordered rules, and support references are ready for modular Grasshopper reconstruction and Rhino review.",
+      "blocked_by": [],
+      "evidence_refs": [
+        "building-b7ad95fa45a6-library-steel-international-v1"
+      ]
+    }
+  ],
+  "ready_for_candidate_planning": true,
+  "ready_for_geometry_handoff": true,
+  "blocked_by": [],
+  "limitations": [
+    "The integrated demonstration selection does not replace the user-owned final typology, tectonic, or two-grammar decisions.",
+    "Facade geometry is a candidate MTA-F2 coordination model without resolved environmental performance, anchors, or professional review.",
+    "Only Rhino may record accepted geometry; Blender and Web remain presentation and inspection environments."
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "schema_version": "mta.audio_saturation_corpus/1.0",
+  "experiment_id": "audio-saturation-corpus-2026-08-30",
+  "purpose": "Test whether the current audio normalisation, ten-dimension Shared Score, and v3 datum/model chain collapse stylistically different real recordings onto range endpoints or repeated outputs.",
+  "excerpt": {
+    "strategy": "center_window",
+    "duration_seconds": 30.0,
+    "reason": "A fixed window removes track-duration as a confound and matches the duration of the shortest legitimate source recordings. This evaluates calibration, not full-song sectional form."
+  },
+  "saturation_definition": {
+    "near_endpoint_epsilon": 0.02,
+    "exact_endpoint": "normalised value equals 0.0 or 1.0 within 1e-9",
+    "near_endpoint": "normalised value is within 0.02 of either endpoint"
+  },
+  "acceptance": {
+    "pipeline_success_rate_min": 1.0,
+    "feature_exact_endpoint_rate_max": 0.05,
+    "feature_near_endpoint_rate_max": 0.15,
+    "single_feature_near_endpoint_rate_max": 0.25,
+    "score_signature_collision_rate_max": 0.0,
+    "model_signature_collision_rate_max": 0.0,
+    "variable_coverage_min": 1.0
+  },
+  "tracks": [
+    {
+      "id": "mozart-symphony-29",
+      "title": "Symphony No. 29 in A major, K. 201 (excerpt)",
+      "creator": "Wolfgang Amadeus Mozart; Commons uploader Noahby",
+      "style_family": "Classical orchestral",
+      "source_page_url": "https://commons.wikimedia.org/wiki/File:Symphonie_no_29_en_la_majeur,_KV_201-186-WA_Mozart.ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Symphonie_no_29_en_la_majeur%2C_KV_201-186-WA_Mozart.ogg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "cache_name": "01_mozart.ogg"
+    },
+    {
+      "id": "couperin-harpsichord",
+      "title": "L'Art de toucher le clavecin (recorded excerpt)",
+      "creator": "François Couperin; performed by David Joseph Stith",
+      "style_family": "Baroque harpsichord",
+      "source_page_url": "https://commons.wikimedia.org/wiki/File:L%27Art_de_toucher_le_Clavecin_Fran%C3%A7ois_Couperin.ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/d/db/L%27Art_de_toucher_le_Clavecin_Fran%C3%A7ois_Couperin.ogg",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "cache_name": "02_couperin.ogg"
+    },
+    {
+      "id": "dub-riots-silience-is-gold",
+      "title": "Silience Is Gold",
+      "creator": "Dub Riots",
+      "style_family": "Dub / roots reggae",
+      "source_page_url": "https://archive.org/details/DPH036",
+      "download_url": "https://archive.org/download/DPH036/03_Dub_Riots_-%20_Silience_is_Gold.mp3",
+      "license": "CC BY-NC-ND 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+      "cache_name": "03_dub.mp3"
+    },
+    {
+      "id": "deadbone-wake-up-call",
+      "title": "Wake-up Call Intro – 24 Hours",
+      "creator": "Deadbone",
+      "style_family": "Detroit techno",
+      "source_page_url": "https://archive.org/details/fud005",
+      "download_url": "https://archive.org/download/fud005/fud_005_01_deadbone_-_wake-up_call_intro_-_24_hours.mp3",
+      "license": "CC BY-NC-SA 2.5",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/2.5/",
+      "cache_name": "04_techno.mp3"
+    },
+    {
+      "id": "lucas-darklord-hymne-iii",
+      "title": "Hymne III",
+      "creator": "Lucas Darklord",
+      "style_family": "Black metal / noise",
+      "source_page_url": "https://archive.org/details/Nattens_Madrigal",
+      "download_url": "https://archive.org/download/Nattens_Madrigal/HymneIii.wav",
+      "license": "CC BY-NC-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/3.0/",
+      "cache_name": "05_black_metal.wav"
+    },
+    {
+      "id": "jorgensen-guitar-soundscape-1",
+      "title": "Guitar Soundscape 1",
+      "creator": "Øystein Jørgensen",
+      "style_family": "Ambient guitar / drone",
+      "source_page_url": "https://archive.org/details/Guitar_Soundscapes",
+      "download_url": "https://archive.org/download/Guitar_Soundscapes/01_-_Oystein_Jorgensen_-_Guitar_Soundscape_1.mp3",
+      "license": "CC BY-ND 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-nd/3.0/",
+      "cache_name": "06_ambient_guitar.mp3"
+    },
+    {
+      "id": "krakenti-his-akorns",
+      "title": "His Akorns",
+      "creator": "Krakenti / Nickolai Varlamov",
+      "style_family": "Electronic industrial",
+      "source_page_url": "https://archive.org/details/foot111",
+      "download_url": "https://archive.org/download/foot111/foot111_06-krakenti-his_akorns.mp3",
+      "license": "CC BY-NC-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/3.0/",
+      "cache_name": "07_industrial.mp3"
+    },
+    {
+      "id": "affen-like-life-easily-ended",
+      "title": "Like Life Easily Ended",
+      "creator": "A.F.F.E.N",
+      "style_family": "Indie rock",
+      "source_page_url": "https://archive.org/details/AFFEN-LikeLifeEasilyEnded",
+      "download_url": "https://archive.org/download/AFFEN-LikeLifeEasilyEnded/AFFEN-LikeLifeEasilyEnded.mp3",
+      "license": "CC BY-NC-ND 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-nd/3.0/",
+      "cache_name": "08_indie_rock.mp3"
+    },
+    {
+      "id": "nienvox-visions",
+      "title": "Visions",
+      "creator": "Nienvox",
+      "style_family": "Trip-hop / breakbeats / jazz",
+      "source_page_url": "https://archive.org/details/foot099",
+      "download_url": "https://archive.org/download/foot099/foot099_01-nienvox-visions.mp3",
+      "license": "CC BY-NC-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/3.0/",
+      "cache_name": "09_trip_hop_jazz.mp3"
+    },
+    {
+      "id": "charrier-accorte",
+      "title": "Accorte",
+      "creator": "Charles Eric Charrier",
+      "style_family": "Acousmatic / electroacoustic improvisation",
+      "source_page_url": "https://archive.org/details/isor009Accortiste",
+      "download_url": "https://archive.org/download/isor009Accortiste/04.CharlesEricCharrier-Accorte.flac",
+      "license": "CC BY-NC-ND 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-nd/3.0/",
+      "cache_name": "10_electroacoustic.flac"
+    },
+    {
+      "id": "m-pex-bueid",
+      "title": "Bueid",
+      "creator": "M-PeX",
+      "style_family": "Portuguese guitar / electronic world music",
+      "source_page_url": "https://archive.org/details/enrmp511_m-pex_-_cynetik-1",
+      "download_url": "https://archive.org/download/enrmp511_m-pex_-_cynetik-1/10_m-pex_-_bueid.mp3",
+      "license": "CC BY-NC-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "cache_name": "11_world_guitar.mp3"
+    },
+    {
+      "id": "kevin-bryce-rainfields",
+      "title": "Rainfields",
+      "creator": "Kevin Bryce",
+      "style_family": "Electropop / IDM / ambient",
+      "source_page_url": "https://archive.org/details/foot217",
+      "download_url": "https://archive.org/download/foot217/foot217_09-kevin_bryce-rainfields.mp3",
+      "license": "CC BY-NC-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/3.0/",
+      "cache_name": "12_electropop.mp3"
+    },
+    {
+      "id": "walcker-crew-blind-istanbul",
+      "title": "Blind Istanbul",
+      "creator": "The Walcker Crew",
+      "style_family": "Alternative hip-hop / jazz-funk / dub",
+      "source_page_url": "https://archive.org/details/fsz023",
+      "download_url": "https://archive.org/download/fsz023/fsz023_08-the_walcker_crew-blind_istanbul.mp3",
+      "license": "CC BY-NC 2.5",
+      "license_url": "https://creativecommons.org/licenses/by-nc/2.5/",
+      "cache_name": "13_alt_hiphop.mp3"
+    },
+    {
+      "id": "hurle-cancer",
+      "title": "Cancer",
+      "creator": "Hürle",
+      "style_family": "Hardcore punk / thrash / crust",
+      "source_page_url": "https://archive.org/details/NXL038",
+      "download_url": "https://archive.org/download/NXL038/8.Cancer.mp3",
+      "license": "CC BY-NC-ND 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-nd/3.0/",
+      "cache_name": "14_hardcore_punk.mp3"
+    }
+  ]
+}

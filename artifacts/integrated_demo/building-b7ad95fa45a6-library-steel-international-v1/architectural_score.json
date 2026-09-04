@@ -1,0 +1,127 @@
+{
+  "schema_version": "1.0",
+  "score_id": "score-b7ad95fa45a6",
+  "source_audio_sha256": "b7ad95fa45a6d546149a4256eb6677ea3f147e0652151d6a0b783846a8695d39",
+  "typology": "library",
+  "tectonic_system": "frame",
+  "dimensions": [
+    {
+      "id": "tempo_of_change",
+      "value": 0.038330078125,
+      "source_feature": "tempo_bpm",
+      "extraction_method": "observed",
+      "confidence": 0.82,
+      "architectural_proposal": "Increase the frequency of changes along the fixed library interior and facade sequence."
+    },
+    {
+      "id": "tension_release",
+      "value": 0.4441977523742838,
+      "source_feature": "rms_energy",
+      "extraction_method": "observed",
+      "confidence": 0.95,
+      "architectural_proposal": "Increase the reading-room spatial climax while preserving the library constitution and height limit."
+    },
+    {
+      "id": "density",
+      "value": 0.3814079468021896,
+      "source_feature": "onset_density_hz",
+      "extraction_method": "observed",
+      "confidence": 0.9,
+      "architectural_proposal": "Tighten the steel frame and increase legal facade subdivision within fixed support and program limits."
+    },
+    {
+      "id": "continuity",
+      "value": 0.17535653992054742,
+      "source_feature": "spectral_centroid_hz",
+      "extraction_method": "inferred",
+      "confidence": 0.72,
+      "architectural_proposal": "Widen the continuous public spine and reduce facade datum discontinuity."
+    }
+  ],
+  "mapping_rules": [
+    {
+      "id": "TEMPO_TO_EPISODES",
+      "source_dimension": "tempo_of_change",
+      "target_parameter": "sequence.episode_count",
+      "output_range": [
+        4.0,
+        7.0
+      ],
+      "direction": "direct",
+      "priority": 10,
+      "owner": "music"
+    },
+    {
+      "id": "ENERGY_TO_READING_HEIGHT",
+      "source_dimension": "tension_release",
+      "target_parameter": "program.reading_height",
+      "output_range": [
+        5.4,
+        7.2
+      ],
+      "direction": "direct",
+      "priority": 20,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_GRID",
+      "source_dimension": "density",
+      "target_parameter": "structure.bay_spacing",
+      "output_range": [
+        5.2,
+        4.4
+      ],
+      "direction": "inverse",
+      "priority": 30,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_FACADE",
+      "source_dimension": "density",
+      "target_parameter": "facade.submodule_count",
+      "output_range": [
+        2.0,
+        5.0
+      ],
+      "direction": "direct",
+      "priority": 40,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_SERVICE_DEPTH",
+      "source_dimension": "density",
+      "target_parameter": "program.service_depth",
+      "output_range": [
+        2.6,
+        3.4
+      ],
+      "direction": "direct",
+      "priority": 45,
+      "owner": "music"
+    },
+    {
+      "id": "CONTINUITY_TO_SPINE",
+      "source_dimension": "continuity",
+      "target_parameter": "circulation.spine_width",
+      "output_range": [
+        1.8,
+        2.6
+      ],
+      "direction": "direct",
+      "priority": 50,
+      "owner": "music"
+    },
+    {
+      "id": "CONTINUITY_TO_DATUM",
+      "source_dimension": "continuity",
+      "target_parameter": "facade.datum_offset",
+      "output_range": [
+        0.18,
+        0.04
+      ],
+      "direction": "inverse",
+      "priority": 60,
+      "owner": "music"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": "mta.semantic-layer-evidence.v1",
+  "experiment_id": "corpus-2026-08-31-semantic-rerun",
+  "authority": "presentation_only",
+  "track_count": 14,
+  "source_render_count": 42,
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "panel_width": 480,
+    "panel_height": 330,
+    "sheet_width": 1920,
+    "sheet_height": 1320
+  },
+  "track_order": [
+    "mozart-symphony-29",
+    "couperin-harpsichord",
+    "dub-riots-silience-is-gold",
+    "deadbone-wake-up-call",
+    "lucas-darklord-hymne-iii",
+    "jorgensen-guitar-soundscape-1",
+    "krakenti-his-akorns",
+    "affen-like-life-easily-ended",
+    "nienvox-visions",
+    "charrier-accorte",
+    "m-pex-bueid",
+    "kevin-bryce-rainfields",
+    "walcker-crew-blind-istanbul",
+    "hurle-cancer"
+  ],
+  "sheets": [
+    {
+      "path": "contact_sheet_program.png",
+      "visible_semantic_layers": ["program", "circulation"],
+      "program_zone_legend": {
+        "public": "blue",
+        "private": "orange",
+        "circulation": "green",
+        "service": "purple"
+      },
+      "sha256": "4705f5c08a15d991cbbf1b3241bc27a3164994cca98c2993572ee6e40a4ca9b4"
+    },
+    {
+      "path": "contact_sheet_facade.png",
+      "visible_semantic_layers": ["envelope"],
+      "sha256": "0c726d1d5be5003ad79c68b56c4ffc6d5eaebba46808cba62bbb8576b52b4b6"
+    },
+    {
+      "path": "contact_sheet_structure.png",
+      "visible_semantic_layers": ["structure"],
+      "sha256": "66790b60968745533f04dbfe4f24b2cc8012a5f6e82dd0f5ac6e2d449d832944"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0",
+  "score_id": "score-b7ad95fa45a6",
+  "source_audio_sha256": "b7ad95fa45a6d546149a4256eb6677ea3f147e0652151d6a0b783846a8695d39",
+  "typology": "small_exhibition_pavilion",
+  "tectonic_system": "orthogonal_frame",
+  "dimensions": [
+    {
+      "id": "tempo_of_change",
+      "value": 0.038330078125,
+      "source_feature": "tempo_bpm",
+      "extraction_method": "observed",
+      "confidence": 0.82,
+      "architectural_proposal": "Increase the frequency of spatial episodes within a fixed pavilion program."
+    },
+    {
+      "id": "tension_release",
+      "value": 0.4441977523742838,
+      "source_feature": "rms_energy",
+      "extraction_method": "observed",
+      "confidence": 0.95,
+      "architectural_proposal": "Increase primary gallery volume while preserving height and site limits."
+    },
+    {
+      "id": "density",
+      "value": 0.3814079468021896,
+      "source_feature": "onset_density_hz",
+      "extraction_method": "observed",
+      "confidence": 0.9,
+      "architectural_proposal": "Tighten the structural grid and deepen the occupied spatial field."
+    },
+    {
+      "id": "continuity",
+      "value": 0.17535653992054742,
+      "source_feature": "spectral_centroid_hz",
+      "extraction_method": "inferred",
+      "confidence": 0.72,
+      "architectural_proposal": "Reduce separation between episodes and increase visual continuity."
+    }
+  ],
+  "mapping_rules": [
+    {
+      "id": "TEMPO_TO_EPISODES",
+      "source_dimension": "tempo_of_change",
+      "target_parameter": "sequence.module_count",
+      "output_range": [
+        3.0,
+        7.0
+      ],
+      "direction": "direct",
+      "priority": 10,
+      "owner": "music"
+    },
+    {
+      "id": "ENERGY_TO_HEIGHT",
+      "source_dimension": "tension_release",
+      "target_parameter": "massing.primary_height",
+      "output_range": [
+        3.4,
+        7.4
+      ],
+      "direction": "direct",
+      "priority": 20,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_GRID",
+      "source_dimension": "density",
+      "target_parameter": "structure.bay_spacing",
+      "output_range": [
+        5.2,
+        3.0
+      ],
+      "direction": "inverse",
+      "priority": 30,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_DEPTH",
+      "source_dimension": "density",
+      "target_parameter": "massing.primary_depth",
+      "output_range": [
+        6.5,
+        10.0
+      ],
+      "direction": "direct",
+      "priority": 40,
+      "owner": "music"
+    },
+    {
+      "id": "CONTINUITY_TO_GAP",
+      "source_dimension": "continuity",
+      "target_parameter": "sequence.module_gap",
+      "output_range": [
+        1.5,
+        0.35
+      ],
+      "direction": "inverse",
+      "priority": 50,
+      "owner": "music"
+    }
+  ]
+}

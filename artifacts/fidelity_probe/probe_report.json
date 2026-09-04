@@ -1,0 +1,340 @@
+{
+  "probe": "student_model_fidelity_probe",
+  "target_register": "architecture studio physical study model",
+  "score": {
+    "tempo_of_change": 0.62,
+    "tension_release": 0.68,
+    "density": 0.58,
+    "continuity": 0.44,
+    "hierarchy": 0.7,
+    "repetition": 0.78,
+    "variation": 0.36,
+    "interruption": 0.55,
+    "polyphony": 0.6,
+    "genre_style": 0.5
+  },
+  "datums": {
+    "floor_to_floor": 4.716,
+    "level_count": 6,
+    "bay_x": 6.524,
+    "bay_y": 7.124,
+    "joist_spacing": 1.962,
+    "mullion_module": 1.238,
+    "transom_rows": 3,
+    "cantilever": 1.92,
+    "plate_step": 1.98,
+    "void_count": 2,
+    "truss_depth": 2.55,
+    "truss_panels": 8,
+    "slab_thickness": 0.3,
+    "edge_fascia": 0.55,
+    "podium_z": 0.0,
+    "ground_open_height": 5.46
+  },
+  "lattice": {
+    "levels": [
+      {
+        "index": 0,
+        "z": 0.0,
+        "kind": "podium"
+      },
+      {
+        "index": 1,
+        "z": 5.46,
+        "kind": "occupied"
+      },
+      {
+        "index": 2,
+        "z": 10.176,
+        "kind": "occupied"
+      },
+      {
+        "index": 3,
+        "z": 14.892,
+        "kind": "occupied"
+      },
+      {
+        "index": 4,
+        "z": 19.608,
+        "kind": "occupied"
+      },
+      {
+        "index": 5,
+        "z": 24.324,
+        "kind": "roof"
+      }
+    ],
+    "x_lines": [
+      -14.0,
+      -8.0,
+      -2.0,
+      4.0,
+      10.0,
+      16.0,
+      22.0
+    ],
+    "y_lines": [
+      -11.0,
+      -3.667,
+      3.667,
+      11.0
+    ],
+    "apse_nodes": 9
+  },
+  "element_families": {
+    "site_ground": {
+      "instances": 1,
+      "faces": 6,
+      "layer": "site",
+      "subsystem": "context"
+    },
+    "site_step": {
+      "instances": 3,
+      "faces": 18,
+      "layer": "site",
+      "subsystem": "context"
+    },
+    "column": {
+      "instances": 108,
+      "faces": 1512,
+      "layer": "structure",
+      "subsystem": "columns"
+    },
+    "piloti_column": {
+      "instances": 27,
+      "faces": 324,
+      "layer": "structure",
+      "subsystem": "columns"
+    },
+    "primary_beam": {
+      "instances": 224,
+      "faces": 3136,
+      "layer": "structure",
+      "subsystem": "beams"
+    },
+    "secondary_joist": {
+      "instances": 171,
+      "faces": 2394,
+      "layer": "structure",
+      "subsystem": "beams"
+    },
+    "brace": {
+      "instances": 16,
+      "faces": 96,
+      "layer": "structure",
+      "subsystem": "bracing"
+    },
+    "outrigger_strut": {
+      "instances": 13,
+      "faces": 130,
+      "layer": "structure",
+      "subsystem": "bracing"
+    },
+    "footing": {
+      "instances": 27,
+      "faces": 162,
+      "layer": "structure",
+      "subsystem": "foundations"
+    },
+    "floor_slab": {
+      "instances": 5,
+      "faces": 143,
+      "layer": "structure",
+      "subsystem": "slabs"
+    },
+    "slab_fascia": {
+      "instances": 115,
+      "faces": 690,
+      "layer": "structure",
+      "subsystem": "slabs"
+    },
+    "podium_slab": {
+      "instances": 1,
+      "faces": 25,
+      "layer": "site",
+      "subsystem": "podium"
+    },
+    "truss_chord": {
+      "instances": 12,
+      "faces": 72,
+      "layer": "structure",
+      "subsystem": "roof_truss"
+    },
+    "truss_web": {
+      "instances": 102,
+      "faces": 612,
+      "layer": "structure",
+      "subsystem": "roof_truss"
+    },
+    "purlin": {
+      "instances": 45,
+      "faces": 270,
+      "layer": "structure",
+      "subsystem": "roof_truss"
+    },
+    "roof_deck": {
+      "instances": 1,
+      "faces": 25,
+      "layer": "envelope",
+      "subsystem": "roof"
+    },
+    "mullion": {
+      "instances": 243,
+      "faces": 1458,
+      "layer": "envelope",
+      "subsystem": "curtain_wall"
+    },
+    "transom": {
+      "instances": 920,
+      "faces": 5520,
+      "layer": "envelope",
+      "subsystem": "curtain_wall"
+    },
+    "glazing_panel": {
+      "instances": 690,
+      "faces": 690,
+      "layer": "envelope",
+      "subsystem": "curtain_wall"
+    },
+    "spandrel_panel": {
+      "instances": 230,
+      "faces": 230,
+      "layer": "envelope",
+      "subsystem": "curtain_wall"
+    },
+    "solid_wall_panel": {
+      "instances": 13,
+      "faces": 13,
+      "layer": "envelope",
+      "subsystem": "opaque_wall"
+    },
+    "parapet": {
+      "instances": 13,
+      "faces": 78,
+      "layer": "envelope",
+      "subsystem": "roof"
+    },
+    "brise_soleil": {
+      "instances": 212,
+      "faces": 1272,
+      "layer": "envelope",
+      "subsystem": "shading"
+    },
+    "stair_landing": {
+      "instances": 7,
+      "faces": 42,
+      "layer": "circulation",
+      "subsystem": "stairs"
+    },
+    "ramp": {
+      "instances": 1,
+      "faces": 6,
+      "layer": "circulation",
+      "subsystem": "ramps"
+    },
+    "elevator_shaft": {
+      "instances": 5,
+      "faces": 30,
+      "layer": "circulation",
+      "subsystem": "vertical_core"
+    },
+    "stair_tread": {
+      "instances": 203,
+      "faces": 1218,
+      "layer": "circulation",
+      "subsystem": "stairs"
+    },
+    "stair_stringer": {
+      "instances": 22,
+      "faces": 132,
+      "layer": "circulation",
+      "subsystem": "stairs"
+    },
+    "railing": {
+      "instances": 966,
+      "faces": 6284,
+      "layer": "circulation",
+      "subsystem": "safety"
+    },
+    "partition": {
+      "instances": 12,
+      "faces": 72,
+      "layer": "program",
+      "subsystem": "partitions"
+    },
+    "shelving_run": {
+      "instances": 22,
+      "faces": 132,
+      "layer": "program",
+      "subsystem": "furniture"
+    },
+    "desk": {
+      "instances": 81,
+      "faces": 486,
+      "layer": "program",
+      "subsystem": "furniture"
+    },
+    "seat": {
+      "instances": 268,
+      "faces": 1608,
+      "layer": "program",
+      "subsystem": "furniture"
+    },
+    "program_zone_public": {
+      "instances": 8,
+      "faces": 48,
+      "layer": "program",
+      "subsystem": "zones"
+    },
+    "program_zone_private": {
+      "instances": 2,
+      "faces": 12,
+      "layer": "program",
+      "subsystem": "zones"
+    },
+    "program_zone_circulation": {
+      "instances": 1,
+      "faces": 6,
+      "layer": "program",
+      "subsystem": "zones"
+    },
+    "program_zone_service": {
+      "instances": 1,
+      "faces": 6,
+      "layer": "program",
+      "subsystem": "zones"
+    },
+    "figure": {
+      "instances": 222,
+      "faces": 1332,
+      "layer": "program",
+      "subsystem": "scale_reference"
+    }
+  },
+  "instances_by_layer": {
+    "site": 5,
+    "structure": 865,
+    "envelope": 2322,
+    "circulation": 1204,
+    "program": 617
+  },
+  "totals": {
+    "element_instances": 5013,
+    "element_kinds": 38,
+    "faces": 30290,
+    "scale_figures": 111
+  },
+  "renders": [
+    "01_three_quarter.png",
+    "02_section_open_side.png",
+    "03_structure_closeup.png",
+    "04_south_elevation.png",
+    "05_apse_stair.png"
+  ],
+  "primitive_gap_vs_current_schema": {
+    "box(center,size,rot_z)": "SUPPORTED today",
+    "member(p0,p1,section_profile)": "MISSING -- needed by column, primary_beam, secondary_joist, brace, outrigger_strut, truss_chord, truss_web, purlin, mullion, transom, slab_fascia, railing, stair_stringer, parapet",
+    "extrusion(polygon,z0,z1)": "MISSING -- needed by floor_slab (apsidal plan, cantilever, atrium voids), podium_slab, roof_deck, elevator_shaft",
+    "quad(a,b,c,d)": "MISSING -- needed by glazing_panel, spandrel_panel, solid_wall_panel"
+  }
+}

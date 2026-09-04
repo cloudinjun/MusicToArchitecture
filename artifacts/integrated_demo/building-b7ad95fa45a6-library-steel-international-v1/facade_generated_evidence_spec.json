@@ -1,0 +1,32 @@
+{
+  "schema_version": "mta.facade_reference_spec/1.0",
+  "spec_id": "generated-evidence-building-b7ad95fa45a6-library-steel-international-v1",
+  "mode": "reference-analysis",
+  "authority_status": "evidence_only",
+  "source_images": [
+    {
+      "id": "generated-blender-overall",
+      "path": "project://artifacts/integrated_demo/building-b7ad95fa45a6-library-steel-international-v1/blender_overall.png",
+      "sha256": "03087a5a1a7b271bdde924f72c6a900ab27e3b10c1f313855139e37421b5c45b",
+      "role": "generated_model_evidence",
+      "view_kind": "aerial_oblique",
+      "technical_suitability": "warning",
+      "limitations": [
+        "This is output evidence from the same run, not an external design reference.",
+        "It supports review of visible assembly only and supplies no hidden dimensions."
+      ]
+    }
+  ],
+  "regions": [],
+  "claims": [],
+  "unknowns": [
+    "No external facade image was used as design authority in this integrated run."
+  ],
+  "provenance": {
+    "producer": "Blender 5.0 headless semantic adapter",
+    "model_id": "building-b7ad95fa45a6-library-steel-international-v1"
+  },
+  "limitations": [
+    "The selected project guideline, program ownership, and structural support records drive the candidate facade."
+  ]
+}

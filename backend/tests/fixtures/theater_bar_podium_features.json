@@ -1,0 +1,146 @@
+{
+ "schema_version": "1.0",
+ "provenance": {
+  "filename": "gemini_music_to_architecture_44s.mp3",
+  "sha256": "b7ad95fa45a6d546149a4256eb6677ea3f147e0652151d6a0b783846a8695d39",
+  "duration_seconds": 43.9641,
+  "sample_rate_hz": 22050,
+  "channels": 1,
+  "extractor": "librosa",
+  "extractor_version": "extended-2.0+librosa-0.11.0"
+ },
+ "tempo_bpm": {
+  "value": 64.599609,
+  "normalized": 0.1366644965277778,
+  "unit": "bpm",
+  "method": "librosa.beat.beat_track with inter-beat regularity check",
+  "confidence": 0.883
+ },
+ "rms_energy": {
+  "value": 0.119386,
+  "normalized": 0.21167814150346934,
+  "unit": "rms",
+  "method": "librosa.feature.rms",
+  "confidence": 0.95
+ },
+ "onset_density_hz": {
+  "value": 2.092617,
+  "normalized": 0.26355382241439435,
+  "unit": "onsets_per_second",
+  "method": "librosa.onset.onset_detect",
+  "confidence": 0.9
+ },
+ "spectral_centroid_hz": {
+  "value": 1289.10443,
+  "normalized": 0.5177517904433019,
+  "unit": "hz",
+  "method": "librosa.feature.spectral_centroid",
+  "confidence": 0.9
+ },
+ "periodicity": {
+  "value": 1.814886,
+  "normalized": 0.5067801822572547,
+  "unit": "lag_comb_z",
+  "method": "harmonic comb of the chroma+timbre self-similarity lag profile",
+  "confidence": 0.78
+ },
+ "timbre_variation": {
+  "value": 121.733887,
+  "normalized": 0.9152923842121784,
+  "unit": "mfcc_distance",
+  "method": "mean pairwise MFCC centroid distance across segments",
+  "confidence": 0.75
+ },
+ "dynamic_range_db": {
+  "value": 33.538631,
+  "normalized": 0.7270932078906438,
+  "unit": "db",
+  "method": "RMS 97th minus 5th percentile in dB",
+  "confidence": 0.8
+ },
+ "novelty_peak_rate_per_min": {
+  "value": 17.741756,
+  "normalized": 0.3823654265781547,
+  "unit": "peaks_per_minute",
+  "method": "smoothed onset-strength novelty peaks",
+  "confidence": 0.74
+ },
+ "spectral_contrast_db": {
+  "value": 24.26264,
+  "normalized": 0.6222102241755181,
+  "unit": "db",
+  "method": "librosa.feature.spectral_contrast",
+  "confidence": 0.7
+ },
+ "harmonic_ratio": {
+  "value": 0.276291,
+  "normalized": 0.2937351905693384,
+  "unit": "fraction",
+  "method": "HPSS harmonic energy share",
+  "confidence": 0.68
+ },
+ "spectral_flatness": {
+  "value": 0.013959,
+  "normalized": 0.6490797317385808,
+  "unit": "ratio",
+  "method": "librosa.feature.spectral_flatness",
+  "confidence": 0.85
+ },
+ "zero_crossing_rate": {
+  "value": 0.071414,
+  "normalized": 0.515392028691856,
+  "unit": "rate",
+  "method": "librosa.feature.zero_crossing_rate",
+  "confidence": 0.88
+ },
+ "segments": [
+  {
+   "id": "segment-01",
+   "start_seconds": 0.0,
+   "end_seconds": 7.3273,
+   "rms_energy": 0.048114,
+   "onset_density_hz": 0.81885,
+   "spectral_centroid_hz": 886.01
+  },
+  {
+   "id": "segment-02",
+   "start_seconds": 7.3273,
+   "end_seconds": 14.6547,
+   "rms_energy": 0.040072,
+   "onset_density_hz": 0.5459,
+   "spectral_centroid_hz": 1040.258
+  },
+  {
+   "id": "segment-03",
+   "start_seconds": 14.6547,
+   "end_seconds": 21.982,
+   "rms_energy": 0.143611,
+   "onset_density_hz": 2.047126,
+   "spectral_centroid_hz": 1293.252
+  },
+  {
+   "id": "segment-04",
+   "start_seconds": 21.982,
+   "end_seconds": 29.3094,
+   "rms_energy": 0.151401,
+   "onset_density_hz": 3.821301,
+   "spectral_centroid_hz": 1250.703
+  },
+  {
+   "id": "segment-05",
+   "start_seconds": 29.3094,
+   "end_seconds": 36.6367,
+   "rms_energy": 0.174006,
+   "onset_density_hz": 4.367201,
+   "spectral_centroid_hz": 1397.294
+  },
+  {
+   "id": "segment-06",
+   "start_seconds": 36.6367,
+   "end_seconds": 43.9641,
+   "rms_energy": 0.158404,
+   "onset_density_hz": 2.183601,
+   "spectral_centroid_hz": 1874.406
+  }
+ ]
+}

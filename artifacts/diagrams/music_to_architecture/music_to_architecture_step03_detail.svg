@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2400" height="1350" viewBox="0 0 2400 1350" role="img" aria-labelledby="title desc">
+  <title id="title">03 四个建筑选择怎么来</title>
+  <desc id="desc">音乐先提出偏好，硬规则筛掉当前不可行的选项，每个选择保留来源和修改理由，最后得到建筑类型、整体体形、外墙风格和结构骨架。</desc>
+  <defs>
+    <clipPath id="clipType"><rect x="96" y="606" width="483" height="330" rx="14"/></clipPath>
+    <clipPath id="clipForm"><rect x="671" y="606" width="483" height="330" rx="14"/></clipPath>
+    <clipPath id="clipFacade"><rect x="1246" y="606" width="483" height="330" rx="14"/></clipPath>
+    <clipPath id="clipStructure"><rect x="1821" y="606" width="483" height="330" rx="14"/></clipPath>
+    <style>
+      text { font-family: "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif; }
+      .ink { fill:#13232d; }
+      .muted { fill:#5c6b73; }
+      .blue { fill:#086f9b; }
+      .orange { fill:#a95b18; }
+      .card { fill:#ffffff; stroke:#cad5da; stroke-width:2; }
+      .processTitle { fill:#13232d; font-size:32px; font-weight:800; }
+      .processText { fill:#43545e; font-size:23px; }
+      .decisionTitle { fill:#13232d; font-size:31px; font-weight:800; }
+      .pillText { font-size:21px; font-weight:700; }
+      .caption { fill:#4f6069; font-size:22px; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="1350" fill="#f3f6f7"/>
+  <text x="78" y="102" class="ink" font-size="58" font-weight="900">03 四个建筑选择怎么来</text>
+  <rect x="2070" y="55" width="250" height="58" rx="29" fill="#e5f4fa" stroke="#8bc9df" stroke-width="2"/>
+  <circle cx="2112" cy="84" r="13" fill="#1b9bc4"/>
+  <text x="2140" y="94" class="blue" font-size="22" font-weight="700">本次真实运行</text>
+
+  <!-- Top mechanism -->
+  <g id="mechanism">
+    <rect x="78" y="158" width="655" height="300" rx="20" fill="#e5f4fa" stroke="#87c8df" stroke-width="2"/>
+    <circle cx="127" cy="209" r="24" fill="#0878a5"/>
+    <text x="127" y="219" text-anchor="middle" fill="#fff" font-size="24" font-weight="800">1</text>
+    <text x="169" y="221" class="processTitle">音乐提出偏好</text>
+    <text x="105" y="268" class="processText">一次只问一个问题</text>
+    <g font-size="21" font-weight="700">
+      <text x="106" y="324" class="ink">主次</text><rect x="190" y="302" width="390" height="24" rx="12" fill="#c4dde7"/><rect x="190" y="302" width="284" height="24" rx="12" fill="#168eb8"/><text x="602" y="323" class="blue">0.73</text>
+      <text x="106" y="368" class="ink">变化</text><rect x="190" y="346" width="390" height="24" rx="12" fill="#c4dde7"/><rect x="190" y="346" width="359" height="24" rx="12" fill="#168eb8"/><text x="602" y="367" class="blue">0.92</text>
+      <text x="106" y="412" class="ink">重复</text><rect x="190" y="390" width="390" height="24" rx="12" fill="#c4dde7"/><rect x="190" y="390" width="198" height="24" rx="12" fill="#168eb8"/><text x="602" y="411" class="blue">0.51</text>
+    </g>
+
+    <path d="M750 308H800m-18-16 18 16-18 16" fill="none" stroke="#61747e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="820" y="158" width="655" height="300" rx="20" fill="#fff2df" stroke="#e5b877" stroke-width="2"/>
+    <circle cx="869" cy="209" r="24" fill="#bc691e"/>
+    <text x="869" y="219" text-anchor="middle" fill="#fff" font-size="24" font-weight="800">2</text>
+    <text x="911" y="221" class="processTitle">硬规则筛选</text>
+    <path d="M882 292h178l-66 75v47l-46 24v-71Z" fill="none" stroke="#b76820" stroke-width="6" stroke-linejoin="round"/>
+    <g font-size="22" font-weight="700">
+      <rect x="1090" y="278" width="142" height="48" rx="24" fill="#fff" stroke="#db9b55"/><text x="1161" y="310" text-anchor="middle" class="orange">面积</text>
+      <rect x="1246" y="278" width="142" height="48" rx="24" fill="#fff" stroke="#db9b55"/><text x="1317" y="310" text-anchor="middle" class="orange">场地</text>
+      <rect x="1090" y="340" width="142" height="48" rx="24" fill="#fff" stroke="#db9b55"/><text x="1161" y="372" text-anchor="middle" class="orange">基础规则</text>
+      <rect x="1246" y="340" width="142" height="48" rx="24" fill="#fff" stroke="#db9b55"/><text x="1317" y="372" text-anchor="middle" class="orange">可执行性</text>
+    </g>
+    <text x="1090" y="426" class="processText">只淘汰确实不合适的选项</text>
+
+    <path d="M1492 308H1542m-18-16 18 16-18 16" fill="none" stroke="#61747e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="1562" y="158" width="758" height="300" rx="20" fill="#edf0f1" stroke="#c3cdd1" stroke-width="2"/>
+    <circle cx="1611" cy="209" r="24" fill="#4c606a"/>
+    <text x="1611" y="219" text-anchor="middle" fill="#fff" font-size="24" font-weight="800">3</text>
+    <text x="1653" y="221" class="processTitle">理由跟着结果</text>
+    <path d="M1615 284h122v118h-122Zm22 30h78m-78 28h78m-78 28h52" fill="none" stroke="#526871" stroke-width="5" stroke-linecap="round"/>
+    <g font-size="22" font-weight="700">
+      <rect x="1780" y="280" width="158" height="54" rx="27" fill="#fff" stroke="#abbac0"/><text x="1859" y="315" text-anchor="middle" class="ink">音乐来源</text>
+      <rect x="1952" y="280" width="158" height="54" rx="27" fill="#fff" stroke="#abbac0"/><text x="2031" y="315" text-anchor="middle" class="ink">修改规则</text>
+      <rect x="2124" y="280" width="158" height="54" rx="27" fill="#fff" stroke="#abbac0"/><text x="2203" y="315" text-anchor="middle" class="ink">人可推翻</text>
+    </g>
+    <text x="1780" y="385" class="processText">以后能回答：为什么是这个？</text>
+  </g>
+
+  <!-- Branch -->
+  <path d="M1940 458V500H338m0 0v38m575-38v38m575-38v38m575-38v38" fill="none" stroke="#6b7c84" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="338" cy="500" r="6" fill="#6b7c84"/><circle cx="913" cy="500" r="6" fill="#6b7c84"/><circle cx="1488" cy="500" r="6" fill="#6b7c84"/><circle cx="2063" cy="500" r="6" fill="#6b7c84"/>
+
+  <!-- Four decisions -->
+  <g id="decision-type">
+    <rect class="card" x="80" y="538" width="515" height="680" rx="20"/>
+    <text x="104" y="586" class="decisionTitle">建筑类型</text>
+    <g clip-path="url(#clipType)">
+      <image x="96" y="606" width="483" height="330" xlink:href="../../drawings/native/building-v3-b7ad95fa45a6/DWG-PLAN-L02.png" preserveAspectRatio="xMidYMid slice"/>
+    </g>
+    <rect x="96" y="606" width="483" height="330" rx="14" fill="none" stroke="#c9d3d7" stroke-width="2"/>
+    <rect x="106" y="968" width="205" height="52" rx="26" fill="#e5f4fa"/>
+    <text x="208" y="1002" text-anchor="middle" class="blue pillText">主次强 0.73</text>
+    <path d="M329 994h54m-17-13 17 13-17 13" fill="none" stroke="#63747c" stroke-width="4" stroke-linecap="round"/>
+    <rect x="403" y="960" width="150" height="68" rx="34" fill="#16313f"/>
+    <text x="478" y="1004" text-anchor="middle" fill="#fff" font-size="29" font-weight="900">剧场</text>
+    <text x="106" y="1078" class="caption">一个最强事件</text>
+    <path d="M283 1071h46m-14-11 14 11-14 11" fill="none" stroke="#7b8a91" stroke-width="3"/>
+    <text x="349" y="1078" class="caption">一个核心空间</text>
+  </g>
+
+  <g id="decision-form">
+    <rect class="card" x="655" y="538" width="515" height="680" rx="20"/>
+    <text x="679" y="586" class="decisionTitle">整体体形</text>
+    <g clip-path="url(#clipForm)">
+      <image x="671" y="606" width="483" height="330" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/05_massing_south_west.png" preserveAspectRatio="xMidYMid slice"/>
+    </g>
+    <rect x="671" y="606" width="483" height="330" rx="14" fill="none" stroke="#c9d3d7" stroke-width="2"/>
+    <rect x="681" y="968" width="250" height="52" rx="26" fill="#e5f4fa"/>
+    <text x="806" y="1002" text-anchor="middle" class="blue pillText">主次强 + 稳定底层</text>
+    <path d="M945 994h44m-14-13 14 13-14 13" fill="none" stroke="#63747c" stroke-width="4"/>
+    <rect x="1004" y="954" width="136" height="80" rx="30" fill="#16313f"/>
+    <text x="1072" y="986" text-anchor="middle" fill="#fff" font-size="22" font-weight="900">条形体量</text>
+    <text x="1072" y="1015" text-anchor="middle" fill="#fff" font-size="22" font-weight="900">+ 大底座</text>
+    <text x="681" y="1080" class="caption">上面集中，下面铺开</text>
+  </g>
+
+  <g id="decision-facade">
+    <rect class="card" x="1230" y="538" width="515" height="680" rx="20"/>
+    <text x="1254" y="586" class="decisionTitle">外墙风格</text>
+    <g clip-path="url(#clipFacade)">
+      <image x="1246" y="606" width="483" height="330" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/04_south_elevation.png" preserveAspectRatio="xMidYMid slice"/>
+    </g>
+    <rect x="1246" y="606" width="483" height="330" rx="14" fill="none" stroke="#c9d3d7" stroke-width="2"/>
+    <rect x="1256" y="968" width="248" height="52" rx="26" fill="#e5f4fa"/>
+    <text x="1380" y="1002" text-anchor="middle" class="blue pillText">层次 0.49 + 变化 0.92</text>
+    <path d="M1518 994h42m-13-13 13 13-13 13" fill="none" stroke="#63747c" stroke-width="4"/>
+    <rect x="1576" y="960" width="142" height="68" rx="34" fill="#16313f"/>
+    <text x="1647" y="1004" text-anchor="middle" fill="#fff" font-size="27" font-weight="900">高技派</text>
+    <text x="1256" y="1080" class="caption">构架与连接直接被看见</text>
+  </g>
+
+  <g id="decision-structure">
+    <rect class="card" x="1805" y="538" width="515" height="680" rx="20"/>
+    <text x="1829" y="586" class="decisionTitle">结构骨架</text>
+    <g clip-path="url(#clipStructure)">
+      <image x="1821" y="606" width="483" height="330" xlink:href="../../v3_runs/building-v3-b7ad95fa45a6/03_structure_closeup.png" preserveAspectRatio="xMidYMid slice"/>
+    </g>
+    <rect x="1821" y="606" width="483" height="330" rx="14" fill="none" stroke="#c9d3d7" stroke-width="2"/>
+    <rect x="1831" y="956" width="180" height="52" rx="26" fill="#e5f4fa"/>
+    <text x="1921" y="990" text-anchor="middle" class="blue pillText">木梁柱偏好</text>
+    <path d="M2023 982h30" stroke="#63747c" stroke-width="4"/>
+    <rect x="2064" y="956" width="210" height="52" rx="26" fill="#fff0dd" stroke="#dd9b57"/>
+    <text x="2169" y="990" text-anchor="middle" class="orange pillText">筛选未通过</text>
+    <path d="M1921 1028v25h165" fill="none" stroke="#63747c" stroke-width="3"/>
+    <path d="M2169 1028v25h-83m0 0v18" fill="none" stroke="#63747c" stroke-width="3"/>
+    <rect x="2003" y="1071" width="166" height="68" rx="34" fill="#16313f"/>
+    <text x="2086" y="1115" text-anchor="middle" fill="#fff" font-size="28" font-weight="900">钢框架</text>
+    <text x="1831" y="1183" class="caption">偏好会被可执行性改写</text>
+  </g>
+
+  <!-- Bottom summary -->
+  <rect x="78" y="1250" width="2242" height="72" rx="20" fill="#16313f"/>
+  <text x="1199" y="1297" text-anchor="middle" fill="#fff" font-size="31" font-weight="800">音乐定方向 · 规则定边界 · 人定最终版本</text>
+</svg>

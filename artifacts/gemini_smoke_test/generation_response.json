@@ -1,0 +1,1088 @@
+{
+  "audio_features": {
+    "schema_version": "1.0",
+    "provenance": {
+      "filename": "gemini_music_to_architecture_44s.mp3",
+      "sha256": "b7ad95fa45a6d546149a4256eb6677ea3f147e0652151d6a0b783846a8695d39",
+      "duration_seconds": 43.9641,
+      "sample_rate_hz": 22050,
+      "channels": 1,
+      "extractor": "librosa",
+      "extractor_version": "mvp-1.0+librosa-0.11.0"
+    },
+    "tempo_bpm": {
+      "value": 64.5996,
+      "normalized": 0.038330078125,
+      "unit": "bpm",
+      "method": "librosa.beat.beat_track",
+      "confidence": 0.82
+    },
+    "rms_energy": {
+      "value": 0.119386,
+      "normalized": 0.4441977523742838,
+      "unit": "rms",
+      "method": "librosa.feature.rms",
+      "confidence": 0.95
+    },
+    "onset_density_hz": {
+      "value": 2.092617,
+      "normalized": 0.3814079468021896,
+      "unit": "onsets_per_second",
+      "method": "librosa.onset.onset_detect",
+      "confidence": 0.9
+    },
+    "spectral_centroid_hz": {
+      "value": 1289.104,
+      "normalized": 0.17535653992054742,
+      "unit": "hz",
+      "method": "librosa.feature.spectral_centroid",
+      "confidence": 0.9
+    },
+    "segments": [
+      {
+        "id": "segment-01",
+        "start_seconds": 0.0,
+        "end_seconds": 7.3273,
+        "rms_energy": 0.048114,
+        "onset_density_hz": 0.81885,
+        "spectral_centroid_hz": 886.01
+      },
+      {
+        "id": "segment-02",
+        "start_seconds": 7.3273,
+        "end_seconds": 14.6547,
+        "rms_energy": 0.040072,
+        "onset_density_hz": 0.5459,
+        "spectral_centroid_hz": 1040.258
+      },
+      {
+        "id": "segment-03",
+        "start_seconds": 14.6547,
+        "end_seconds": 21.982,
+        "rms_energy": 0.143611,
+        "onset_density_hz": 2.047126,
+        "spectral_centroid_hz": 1293.252
+      },
+      {
+        "id": "segment-04",
+        "start_seconds": 21.982,
+        "end_seconds": 29.3094,
+        "rms_energy": 0.151401,
+        "onset_density_hz": 3.821301,
+        "spectral_centroid_hz": 1250.703
+      },
+      {
+        "id": "segment-05",
+        "start_seconds": 29.3094,
+        "end_seconds": 36.6367,
+        "rms_energy": 0.174006,
+        "onset_density_hz": 4.367201,
+        "spectral_centroid_hz": 1397.294
+      },
+      {
+        "id": "segment-06",
+        "start_seconds": 36.6367,
+        "end_seconds": 43.9641,
+        "rms_energy": 0.158404,
+        "onset_density_hz": 2.183601,
+        "spectral_centroid_hz": 1874.406
+      }
+    ]
+  },
+  "architectural_score": {
+    "schema_version": "1.0",
+    "score_id": "score-b7ad95fa45a6",
+    "source_audio_sha256": "b7ad95fa45a6d546149a4256eb6677ea3f147e0652151d6a0b783846a8695d39",
+    "typology": "small_exhibition_pavilion",
+    "tectonic_system": "orthogonal_frame",
+    "dimensions": [
+      {
+        "id": "tempo_of_change",
+        "value": 0.038330078125,
+        "source_feature": "tempo_bpm",
+        "extraction_method": "observed",
+        "confidence": 0.82,
+        "architectural_proposal": "Increase the frequency of spatial episodes within a fixed pavilion program."
+      },
+      {
+        "id": "tension_release",
+        "value": 0.4441977523742838,
+        "source_feature": "rms_energy",
+        "extraction_method": "observed",
+        "confidence": 0.95,
+        "architectural_proposal": "Increase primary gallery volume while preserving height and site limits."
+      },
+      {
+        "id": "density",
+        "value": 0.3814079468021896,
+        "source_feature": "onset_density_hz",
+        "extraction_method": "observed",
+        "confidence": 0.9,
+        "architectural_proposal": "Tighten the structural grid and deepen the occupied spatial field."
+      },
+      {
+        "id": "continuity",
+        "value": 0.17535653992054742,
+        "source_feature": "spectral_centroid_hz",
+        "extraction_method": "inferred",
+        "confidence": 0.72,
+        "architectural_proposal": "Reduce separation between episodes and increase visual continuity."
+      }
+    ],
+    "mapping_rules": [
+      {
+        "id": "TEMPO_TO_EPISODES",
+        "source_dimension": "tempo_of_change",
+        "target_parameter": "sequence.module_count",
+        "output_range": [
+          3.0,
+          7.0
+        ],
+        "direction": "direct",
+        "priority": 10,
+        "owner": "music"
+      },
+      {
+        "id": "ENERGY_TO_HEIGHT",
+        "source_dimension": "tension_release",
+        "target_parameter": "massing.primary_height",
+        "output_range": [
+          3.4,
+          7.4
+        ],
+        "direction": "direct",
+        "priority": 20,
+        "owner": "music"
+      },
+      {
+        "id": "DENSITY_TO_GRID",
+        "source_dimension": "density",
+        "target_parameter": "structure.bay_spacing",
+        "output_range": [
+          5.2,
+          3.0
+        ],
+        "direction": "inverse",
+        "priority": 30,
+        "owner": "music"
+      },
+      {
+        "id": "DENSITY_TO_DEPTH",
+        "source_dimension": "density",
+        "target_parameter": "massing.primary_depth",
+        "output_range": [
+          6.5,
+          10.0
+        ],
+        "direction": "direct",
+        "priority": 40,
+        "owner": "music"
+      },
+      {
+        "id": "CONTINUITY_TO_GAP",
+        "source_dimension": "continuity",
+        "target_parameter": "sequence.module_gap",
+        "output_range": [
+          1.5,
+          0.35
+        ],
+        "direction": "inverse",
+        "priority": 50,
+        "owner": "music"
+      }
+    ]
+  },
+  "building_model": {
+    "schema_version": "2.0",
+    "model_id": "building-b7ad95fa45a6",
+    "score_id": "score-b7ad95fa45a6",
+    "typology": "small_exhibition_pavilion",
+    "tectonic_system": "orthogonal_frame",
+    "units": "meters",
+    "coordinate_system": "right_handed_z_up",
+    "site": {
+      "width": 38.0,
+      "length": 24.0,
+      "max_height": 8.0
+    },
+    "grid": {
+      "spacing_x": 4.3609,
+      "spacing_y": 7.8349,
+      "column_size": 0.24
+    },
+    "parameters": {
+      "module_count": 3,
+      "bay_spacing": 4.3609,
+      "module_gap": 1.2983,
+      "primary_height": 5.1768,
+      "primary_depth": 7.8349,
+      "visual_continuity": 0.1754
+    },
+    "elements": [
+      {
+        "id": "gallery-01",
+        "kind": "massing",
+        "program": "gallery",
+        "category": "public",
+        "position": {
+          "x": -7.0547,
+          "y": -1.0308,
+          "z": 2.4192
+        },
+        "dimensions": {
+          "x": 5.7564,
+          "y": 7.3621,
+          "z": 4.8384
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "tempo_of_change",
+            "source_value": 0.03833,
+            "target_parameter": "sequence.module_count",
+            "applied_value": 3.0,
+            "rule_id": "TEMPO_TO_EPISODES"
+          },
+          {
+            "source_dimension": "tension_release",
+            "source_value": 0.444198,
+            "target_parameter": "massing.primary_height",
+            "applied_value": 4.838447,
+            "rule_id": "ENERGY_TO_HEIGHT"
+          },
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "massing.primary_depth",
+            "applied_value": 7.362109,
+            "rule_id": "DENSITY_TO_DEPTH"
+          },
+          {
+            "source_dimension": "continuity",
+            "source_value": 0.175357,
+            "target_parameter": "sequence.module_gap",
+            "applied_value": 1.29834,
+            "rule_id": "CONTINUITY_TO_GAP"
+          }
+        ]
+      },
+      {
+        "id": "gallery-02",
+        "kind": "massing",
+        "program": "gallery",
+        "category": "public",
+        "position": {
+          "x": 0.0,
+          "y": 1.0308,
+          "z": 2.4042
+        },
+        "dimensions": {
+          "x": 5.7564,
+          "y": 7.3108,
+          "z": 4.8085
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "tempo_of_change",
+            "source_value": 0.03833,
+            "target_parameter": "sequence.module_count",
+            "applied_value": 3.0,
+            "rule_id": "TEMPO_TO_EPISODES"
+          },
+          {
+            "source_dimension": "tension_release",
+            "source_value": 0.444198,
+            "target_parameter": "massing.primary_height",
+            "applied_value": 4.808472,
+            "rule_id": "ENERGY_TO_HEIGHT"
+          },
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "massing.primary_depth",
+            "applied_value": 7.310784,
+            "rule_id": "DENSITY_TO_DEPTH"
+          },
+          {
+            "source_dimension": "continuity",
+            "source_value": 0.175357,
+            "target_parameter": "sequence.module_gap",
+            "applied_value": 1.29834,
+            "rule_id": "CONTINUITY_TO_GAP"
+          }
+        ]
+      },
+      {
+        "id": "gallery-03",
+        "kind": "massing",
+        "program": "gallery",
+        "category": "public",
+        "position": {
+          "x": 7.0547,
+          "y": -1.0308,
+          "z": 2.5972
+        },
+        "dimensions": {
+          "x": 5.7564,
+          "y": 7.5931,
+          "z": 5.1944
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "tempo_of_change",
+            "source_value": 0.03833,
+            "target_parameter": "sequence.module_count",
+            "applied_value": 3.0,
+            "rule_id": "TEMPO_TO_EPISODES"
+          },
+          {
+            "source_dimension": "tension_release",
+            "source_value": 0.444198,
+            "target_parameter": "massing.primary_height",
+            "applied_value": 5.194392,
+            "rule_id": "ENERGY_TO_HEIGHT"
+          },
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "massing.primary_depth",
+            "applied_value": 7.593072,
+            "rule_id": "DENSITY_TO_DEPTH"
+          },
+          {
+            "source_dimension": "continuity",
+            "source_value": 0.175357,
+            "target_parameter": "sequence.module_gap",
+            "applied_value": 1.29834,
+            "rule_id": "CONTINUITY_TO_GAP"
+          }
+        ]
+      },
+      {
+        "id": "entry-01",
+        "kind": "massing",
+        "program": "entry",
+        "category": "circulation",
+        "position": {
+          "x": -11.9329,
+          "y": 0.0,
+          "z": 1.7
+        },
+        "dimensions": {
+          "x": 3.2,
+          "y": 5.4,
+          "z": 3.4
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "continuity",
+            "source_value": 0.175357,
+            "target_parameter": "sequence.entry_gap",
+            "applied_value": 0.4,
+            "rule_id": "CONTINUITY_TO_GAP"
+          }
+        ]
+      },
+      {
+        "id": "service-01",
+        "kind": "massing",
+        "program": "service",
+        "category": "private",
+        "position": {
+          "x": 4.9665,
+          "y": 6.0175,
+          "z": 1.65
+        },
+        "dimensions": {
+          "x": 6.5,
+          "y": 3.2,
+          "z": 3.3
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "service.module_width",
+            "applied_value": 6.5,
+            "rule_id": "DENSITY_TO_DEPTH"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-01-0-0",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": -9.7529,
+          "y": -4.5318,
+          "z": 2.4192
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 4.8384
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-01-0-1",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": -9.7529,
+          "y": 2.4703,
+          "z": 2.4192
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 4.8384
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-01-1-0",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": -4.3565,
+          "y": -4.5318,
+          "z": 2.4192
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 4.8384
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-01-1-1",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": -4.3565,
+          "y": 2.4703,
+          "z": 2.4192
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 4.8384
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-02-0-0",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": -2.6982,
+          "y": -2.4446,
+          "z": 2.4043
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 4.8085
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-02-0-1",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": -2.6982,
+          "y": 4.5062,
+          "z": 2.4043
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 4.8085
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-02-1-0",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": 2.6982,
+          "y": -2.4446,
+          "z": 2.4043
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 4.8085
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-02-1-1",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": 2.6982,
+          "y": 4.5062,
+          "z": 2.4043
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 4.8085
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-03-0-0",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": 4.3565,
+          "y": -4.6473,
+          "z": 2.5972
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 5.1944
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-03-0-1",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": 4.3565,
+          "y": 2.5857,
+          "z": 2.5972
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 5.1944
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-03-1-0",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": 9.7529,
+          "y": -4.6473,
+          "z": 2.5972
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 5.1944
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      },
+      {
+        "id": "column-gallery-03-1-1",
+        "kind": "column",
+        "program": "structure",
+        "category": "public",
+        "position": {
+          "x": 9.7529,
+          "y": 2.5857,
+          "z": 2.5972
+        },
+        "dimensions": {
+          "x": 0.24,
+          "y": 0.24,
+          "z": 5.1944
+        },
+        "score_bindings": [
+          {
+            "source_dimension": "density",
+            "source_value": 0.381408,
+            "target_parameter": "structure.bay_spacing",
+            "applied_value": 4.360903,
+            "rule_id": "DENSITY_TO_GRID"
+          }
+        ]
+      }
+    ],
+    "validation": [
+      {
+        "id": "TYPOLOGY_REQUIRED_PROGRAMS",
+        "status": "pass",
+        "message": "Entry, gallery, and service programs are present.",
+        "affected_ids": []
+      },
+      {
+        "id": "SITE_ENVELOPE",
+        "status": "pass",
+        "message": "All generated elements remain inside the MVP site envelope.",
+        "affected_ids": []
+      },
+      {
+        "id": "MINIMUM_MASSING_HEIGHT",
+        "status": "pass",
+        "message": "All occupied massing elements meet the 3.0 m MVP minimum height.",
+        "affected_ids": []
+      },
+      {
+        "id": "FRAME_GRID_RANGE",
+        "status": "pass",
+        "message": "Frame grid spacing is 4.36 m within the declared MVP range.",
+        "affected_ids": []
+      },
+      {
+        "id": "PROVENANCE_COVERAGE",
+        "status": "pass",
+        "message": "Every element records at least one score binding.",
+        "affected_ids": []
+      },
+      {
+        "id": "PROGRAM_CATEGORY_COVERAGE",
+        "status": "pass",
+        "message": "Public, private, and circulation massing categories are all represented.",
+        "affected_ids": []
+      }
+    ]
+  },
+  "mapping_report": {
+    "schema_version": "1.0",
+    "report_id": "mapping-b7ad95fa45a6",
+    "score_id": "score-b7ad95fa45a6",
+    "model_id": "building-b7ad95fa45a6",
+    "source_audio_filename": "gemini_music_to_architecture_44s.mp3",
+    "typology": "small_exhibition_pavilion",
+    "tectonic_system": "orthogonal_frame",
+    "automated_dimensions": [
+      "tempo_of_change",
+      "tension_release",
+      "density",
+      "continuity"
+    ],
+    "unsupported_dimensions": [
+      "genre_style",
+      "hierarchy",
+      "repetition",
+      "variation",
+      "interruption",
+      "polyphony"
+    ],
+    "covered_element_count": 17,
+    "total_element_count": 17,
+    "coverage_ratio": 1.0,
+    "entries": [
+      {
+        "id": "translation-01",
+        "rule_id": "TEMPO_TO_EPISODES",
+        "music_feature": "tempo_bpm",
+        "music_feature_label": "Tempo",
+        "music_value": 64.5996,
+        "music_normalized": 0.038330078125,
+        "music_unit": "bpm",
+        "music_method": "librosa.beat.beat_track",
+        "music_confidence": 0.82,
+        "shared_dimension": "tempo_of_change",
+        "shared_dimension_label": "Tempo of change",
+        "score_value": 0.038330078125,
+        "extraction_method": "observed",
+        "score_confidence": 0.82,
+        "architectural_proposal": "Increase the frequency of spatial episodes within a fixed pavilion program.",
+        "architectural_target": "sequence.module_count",
+        "architectural_target_label": "Spatial episode count",
+        "mapping_direction": "direct",
+        "declared_output_range": [
+          3.0,
+          7.0
+        ],
+        "applied_min": 3.0,
+        "applied_max": 3.0,
+        "applied_unit": "count",
+        "outcome": "3 repeated public gallery modules",
+        "negotiation": "Rounded to a whole episode count and limited by the pavilion sequence rule.",
+        "affected_element_ids": [
+          "gallery-01",
+          "gallery-02",
+          "gallery-03"
+        ],
+        "affected_element_kinds": [
+          "massing"
+        ],
+        "affected_programs": [
+          "gallery"
+        ]
+      },
+      {
+        "id": "translation-02",
+        "rule_id": "ENERGY_TO_HEIGHT",
+        "music_feature": "rms_energy",
+        "music_feature_label": "Energy",
+        "music_value": 0.119386,
+        "music_normalized": 0.4441977523742838,
+        "music_unit": "rms",
+        "music_method": "librosa.feature.rms",
+        "music_confidence": 0.95,
+        "shared_dimension": "tension_release",
+        "shared_dimension_label": "Tension / release",
+        "score_value": 0.4441977523742838,
+        "extraction_method": "observed",
+        "score_confidence": 0.95,
+        "architectural_proposal": "Increase primary gallery volume while preserving height and site limits.",
+        "architectural_target": "massing.primary_height",
+        "architectural_target_label": "Primary gallery height",
+        "mapping_direction": "direct",
+        "declared_output_range": [
+          3.4,
+          7.4
+        ],
+        "applied_min": 4.808472,
+        "applied_max": 5.194392,
+        "applied_unit": "m",
+        "outcome": "4.81\u20135.19 m public gallery heights",
+        "negotiation": "Clamped by the site height envelope; controlled module variation produces the reported range.",
+        "affected_element_ids": [
+          "gallery-01",
+          "gallery-02",
+          "gallery-03"
+        ],
+        "affected_element_kinds": [
+          "massing"
+        ],
+        "affected_programs": [
+          "gallery"
+        ]
+      },
+      {
+        "id": "translation-03",
+        "rule_id": "DENSITY_TO_GRID",
+        "music_feature": "onset_density_hz",
+        "music_feature_label": "Onset density",
+        "music_value": 2.092617,
+        "music_normalized": 0.3814079468021896,
+        "music_unit": "onsets_per_second",
+        "music_method": "librosa.onset.onset_detect",
+        "music_confidence": 0.9,
+        "shared_dimension": "density",
+        "shared_dimension_label": "Density",
+        "score_value": 0.3814079468021896,
+        "extraction_method": "observed",
+        "score_confidence": 0.9,
+        "architectural_proposal": "Tighten the structural grid and deepen the occupied spatial field.",
+        "architectural_target": "structure.bay_spacing",
+        "architectural_target_label": "Structural bay spacing",
+        "mapping_direction": "inverse",
+        "declared_output_range": [
+          5.2,
+          3.0
+        ],
+        "applied_min": 4.360903,
+        "applied_max": 4.360903,
+        "applied_unit": "m",
+        "outcome": "4.36 m frame bay spacing across 12 columns",
+        "negotiation": "Inverse mapping: higher musical density tightens the frame grid within its declared span range.",
+        "affected_element_ids": [
+          "column-gallery-01-0-0",
+          "column-gallery-01-0-1",
+          "column-gallery-01-1-0",
+          "column-gallery-01-1-1",
+          "column-gallery-02-0-0",
+          "column-gallery-02-0-1",
+          "column-gallery-02-1-0",
+          "column-gallery-02-1-1",
+          "column-gallery-03-0-0",
+          "column-gallery-03-0-1",
+          "column-gallery-03-1-0",
+          "column-gallery-03-1-1"
+        ],
+        "affected_element_kinds": [
+          "column"
+        ],
+        "affected_programs": [
+          "structure"
+        ]
+      },
+      {
+        "id": "translation-04",
+        "rule_id": "DENSITY_TO_DEPTH",
+        "music_feature": "onset_density_hz",
+        "music_feature_label": "Onset density",
+        "music_value": 2.092617,
+        "music_normalized": 0.3814079468021896,
+        "music_unit": "onsets_per_second",
+        "music_method": "librosa.onset.onset_detect",
+        "music_confidence": 0.9,
+        "shared_dimension": "density",
+        "shared_dimension_label": "Density",
+        "score_value": 0.3814079468021896,
+        "extraction_method": "observed",
+        "score_confidence": 0.9,
+        "architectural_proposal": "Tighten the structural grid and deepen the occupied spatial field.",
+        "architectural_target": "massing.primary_depth",
+        "architectural_target_label": "Primary gallery depth",
+        "mapping_direction": "direct",
+        "declared_output_range": [
+          6.5,
+          10.0
+        ],
+        "applied_min": 7.310784,
+        "applied_max": 7.593072,
+        "applied_unit": "m",
+        "outcome": "7.31\u20137.59 m public gallery depths",
+        "negotiation": "Clamped by the pavilion depth range; each gallery retains a traceable controlled variation.",
+        "affected_element_ids": [
+          "gallery-01",
+          "gallery-02",
+          "gallery-03"
+        ],
+        "affected_element_kinds": [
+          "massing"
+        ],
+        "affected_programs": [
+          "gallery"
+        ]
+      },
+      {
+        "id": "translation-05",
+        "rule_id": "DENSITY_TO_DEPTH",
+        "music_feature": "onset_density_hz",
+        "music_feature_label": "Onset density",
+        "music_value": 2.092617,
+        "music_normalized": 0.3814079468021896,
+        "music_unit": "onsets_per_second",
+        "music_method": "librosa.onset.onset_detect",
+        "music_confidence": 0.9,
+        "shared_dimension": "density",
+        "shared_dimension_label": "Density",
+        "score_value": 0.3814079468021896,
+        "extraction_method": "observed",
+        "score_confidence": 0.9,
+        "architectural_proposal": "Tighten the structural grid and deepen the occupied spatial field.",
+        "architectural_target": "service.module_width",
+        "architectural_target_label": "Service volume width",
+        "mapping_direction": "direct",
+        "declared_output_range": [
+          6.5,
+          10.0
+        ],
+        "applied_min": 6.5,
+        "applied_max": 6.5,
+        "applied_unit": "m",
+        "outcome": "6.50 m private service volume width",
+        "negotiation": "The private service volume reuses the density rule and is capped by its typology-specific width limit.",
+        "affected_element_ids": [
+          "service-01"
+        ],
+        "affected_element_kinds": [
+          "massing"
+        ],
+        "affected_programs": [
+          "service"
+        ]
+      },
+      {
+        "id": "translation-06",
+        "rule_id": "CONTINUITY_TO_GAP",
+        "music_feature": "spectral_centroid_hz",
+        "music_feature_label": "Spectral continuity proxy",
+        "music_value": 1289.104,
+        "music_normalized": 0.17535653992054742,
+        "music_unit": "hz",
+        "music_method": "librosa.feature.spectral_centroid",
+        "music_confidence": 0.9,
+        "shared_dimension": "continuity",
+        "shared_dimension_label": "Continuity",
+        "score_value": 0.17535653992054742,
+        "extraction_method": "inferred",
+        "score_confidence": 0.72,
+        "architectural_proposal": "Reduce separation between episodes and increase visual continuity.",
+        "architectural_target": "sequence.entry_gap",
+        "architectural_target_label": "Entry threshold gap",
+        "mapping_direction": "inverse",
+        "declared_output_range": [
+          1.5,
+          0.35
+        ],
+        "applied_min": 0.4,
+        "applied_max": 0.4,
+        "applied_unit": "m",
+        "outcome": "0.40 m circulation entry threshold",
+        "negotiation": "The circulation entry applies a fixed typology threshold after the continuity proposal.",
+        "affected_element_ids": [
+          "entry-01"
+        ],
+        "affected_element_kinds": [
+          "massing"
+        ],
+        "affected_programs": [
+          "entry"
+        ]
+      },
+      {
+        "id": "translation-07",
+        "rule_id": "CONTINUITY_TO_GAP",
+        "music_feature": "spectral_centroid_hz",
+        "music_feature_label": "Spectral continuity proxy",
+        "music_value": 1289.104,
+        "music_normalized": 0.17535653992054742,
+        "music_unit": "hz",
+        "music_method": "librosa.feature.spectral_centroid",
+        "music_confidence": 0.9,
+        "shared_dimension": "continuity",
+        "shared_dimension_label": "Continuity",
+        "score_value": 0.17535653992054742,
+        "extraction_method": "inferred",
+        "score_confidence": 0.72,
+        "architectural_proposal": "Reduce separation between episodes and increase visual continuity.",
+        "architectural_target": "sequence.module_gap",
+        "architectural_target_label": "Gallery module gap",
+        "mapping_direction": "inverse",
+        "declared_output_range": [
+          1.5,
+          0.35
+        ],
+        "applied_min": 1.29834,
+        "applied_max": 1.29834,
+        "applied_unit": "m",
+        "outcome": "1.30 m spacing between public gallery modules",
+        "negotiation": "Inverse mapping: greater inferred continuity reduces separation between public gallery episodes.",
+        "affected_element_ids": [
+          "gallery-01",
+          "gallery-02",
+          "gallery-03"
+        ],
+        "affected_element_kinds": [
+          "massing"
+        ],
+        "affected_programs": [
+          "gallery"
+        ]
+      }
+    ],
+    "limitations": [
+      "Only four of the ten Shared Score dimensions are automated in the MVP.",
+      "Spectral centroid is an inferred continuity proxy, not a direct musical continuity measurement.",
+      "The report covers accepted building elements; Blender facade and site context remain downstream presentation geometry."
+    ]
+  },
+  "model_asset": {
+    "producer": "blender_headless_5",
+    "format": "glb",
+    "asset_url": "/models/generated/building-b7ad95fa45a6.glb?v=1787853037986223200",
+    "manifest_url": "/models/generated/building-b7ad95fa45a6.manifest.json?v=1787853037987223200",
+    "native_blend_path": "blender/generated/building-b7ad95fa45a6.blend",
+    "semantic_layers": [
+      "program_massing",
+      "facade",
+      "columns",
+      "beams",
+      "slabs",
+      "foundations",
+      "site",
+      "site_context",
+      "context_tree",
+      "context_vehicle",
+      "context_person"
+    ]
+  }
+}

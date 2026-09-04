@@ -1,0 +1,600 @@
+{
+  "best": {
+    "genome": [
+      6.596007204825964,
+      6.900243826572504,
+      2.1532677640879623,
+      4.799969872720784
+    ],
+    "datums": {
+      "bay_x_m": 6.596007204825964,
+      "bay_y_m": 6.900243826572504,
+      "joist_spacing_m": 2.1532677640879623,
+      "floor_to_floor_m": 4.799969872720784
+    },
+    "feasible": true,
+    "failures": [],
+    "fitness": 0.96076,
+    "objectives": {
+      "score_fidelity": 0.9327,
+      "material_efficiency": 0.508,
+      "utilisation": 1.0,
+      "constructability": 0.9701
+    },
+    "steel_kg_per_m2": 44.28,
+    "mean_utilisation": 0.8725,
+    "sections": {
+      "joist": "I-350x175x7x11",
+      "girder": "I-400x200x8x13",
+      "column": "SHS-400x400x8"
+    },
+    "column_axial_kn": 3252.61
+  },
+  "baseline": {
+    "genome": [
+      6.52,
+      7.12,
+      1.96,
+      4.72
+    ],
+    "datums": {
+      "bay_x_m": 6.52,
+      "bay_y_m": 7.12,
+      "joist_spacing_m": 1.96,
+      "floor_to_floor_m": 4.72
+    },
+    "feasible": true,
+    "failures": [],
+    "fitness": 0.877506,
+    "objectives": {
+      "score_fidelity": 1.0,
+      "material_efficiency": 0.4173,
+      "utilisation": 1.0,
+      "constructability": 0.5917
+    },
+    "steel_kg_per_m2": 52.44,
+    "mean_utilisation": 0.8804,
+    "sections": {
+      "joist": "I-350x175x7x11",
+      "girder": "I-400x200x8x13",
+      "column": "SHS-400x400x8"
+    },
+    "column_axial_kn": 3317.52
+  },
+  "history": [
+    {
+      "generation": 0,
+      "best_fitness": 0.877506,
+      "mean_fitness": 0.742491,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.52,
+        "bay_y_m": 7.12,
+        "joist_spacing_m": 1.96,
+        "floor_to_floor_m": 4.72
+      }
+    },
+    {
+      "generation": 1,
+      "best_fitness": 0.905091,
+      "mean_fitness": 0.784394,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.8482,
+        "bay_y_m": 6.9124,
+        "joist_spacing_m": 2.3372,
+        "floor_to_floor_m": 4.7621
+      }
+    },
+    {
+      "generation": 2,
+      "best_fitness": 0.905091,
+      "mean_fitness": 0.812744,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.8482,
+        "bay_y_m": 6.9124,
+        "joist_spacing_m": 2.3372,
+        "floor_to_floor_m": 4.7621
+      }
+    },
+    {
+      "generation": 3,
+      "best_fitness": 0.911378,
+      "mean_fitness": 0.838452,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.8878,
+        "bay_y_m": 6.9547,
+        "joist_spacing_m": 2.0469,
+        "floor_to_floor_m": 4.7721
+      }
+    },
+    {
+      "generation": 4,
+      "best_fitness": 0.951347,
+      "mean_fitness": 0.838887,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6089,
+        "bay_y_m": 6.8996,
+        "joist_spacing_m": 2.181,
+        "floor_to_floor_m": 4.8148
+      }
+    },
+    {
+      "generation": 5,
+      "best_fitness": 0.951347,
+      "mean_fitness": 0.868546,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6089,
+        "bay_y_m": 6.8996,
+        "joist_spacing_m": 2.181,
+        "floor_to_floor_m": 4.8148
+      }
+    },
+    {
+      "generation": 6,
+      "best_fitness": 0.951347,
+      "mean_fitness": 0.879876,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6089,
+        "bay_y_m": 6.8996,
+        "joist_spacing_m": 2.181,
+        "floor_to_floor_m": 4.8148
+      }
+    },
+    {
+      "generation": 7,
+      "best_fitness": 0.951347,
+      "mean_fitness": 0.877735,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6089,
+        "bay_y_m": 6.8996,
+        "joist_spacing_m": 2.181,
+        "floor_to_floor_m": 4.8148
+      }
+    },
+    {
+      "generation": 8,
+      "best_fitness": 0.957896,
+      "mean_fitness": 0.88201,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6004,
+        "bay_y_m": 6.9016,
+        "joist_spacing_m": 2.1928,
+        "floor_to_floor_m": 4.8083
+      }
+    },
+    {
+      "generation": 9,
+      "best_fitness": 0.957896,
+      "mean_fitness": 0.8821,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6004,
+        "bay_y_m": 6.9016,
+        "joist_spacing_m": 2.1928,
+        "floor_to_floor_m": 4.8083
+      }
+    },
+    {
+      "generation": 10,
+      "best_fitness": 0.957896,
+      "mean_fitness": 0.888371,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6004,
+        "bay_y_m": 6.9016,
+        "joist_spacing_m": 2.1928,
+        "floor_to_floor_m": 4.8083
+      }
+    },
+    {
+      "generation": 11,
+      "best_fitness": 0.957896,
+      "mean_fitness": 0.881887,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6004,
+        "bay_y_m": 6.9016,
+        "joist_spacing_m": 2.1928,
+        "floor_to_floor_m": 4.8083
+      }
+    },
+    {
+      "generation": 12,
+      "best_fitness": 0.957896,
+      "mean_fitness": 0.883187,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6004,
+        "bay_y_m": 6.9016,
+        "joist_spacing_m": 2.1928,
+        "floor_to_floor_m": 4.8083
+      }
+    },
+    {
+      "generation": 13,
+      "best_fitness": 0.957896,
+      "mean_fitness": 0.889443,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6004,
+        "bay_y_m": 6.9016,
+        "joist_spacing_m": 2.1928,
+        "floor_to_floor_m": 4.8083
+      }
+    },
+    {
+      "generation": 14,
+      "best_fitness": 0.957896,
+      "mean_fitness": 0.89923,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6004,
+        "bay_y_m": 6.9016,
+        "joist_spacing_m": 2.1928,
+        "floor_to_floor_m": 4.8083
+      }
+    },
+    {
+      "generation": 15,
+      "best_fitness": 0.957896,
+      "mean_fitness": 0.902638,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6004,
+        "bay_y_m": 6.9016,
+        "joist_spacing_m": 2.1928,
+        "floor_to_floor_m": 4.8083
+      }
+    },
+    {
+      "generation": 16,
+      "best_fitness": 0.957896,
+      "mean_fitness": 0.911558,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.6004,
+        "bay_y_m": 6.9016,
+        "joist_spacing_m": 2.1928,
+        "floor_to_floor_m": 4.8083
+      }
+    },
+    {
+      "generation": 17,
+      "best_fitness": 0.958921,
+      "mean_fitness": 0.916694,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5949,
+        "bay_y_m": 6.9031,
+        "joist_spacing_m": 2.1401,
+        "floor_to_floor_m": 4.7993
+      }
+    },
+    {
+      "generation": 18,
+      "best_fitness": 0.960347,
+      "mean_fitness": 0.916195,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5954,
+        "bay_y_m": 6.9005,
+        "joist_spacing_m": 2.1844,
+        "floor_to_floor_m": 4.7988
+      }
+    },
+    {
+      "generation": 19,
+      "best_fitness": 0.960347,
+      "mean_fitness": 0.908142,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5954,
+        "bay_y_m": 6.9005,
+        "joist_spacing_m": 2.1844,
+        "floor_to_floor_m": 4.7988
+      }
+    },
+    {
+      "generation": 20,
+      "best_fitness": 0.960571,
+      "mean_fitness": 0.900482,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5962,
+        "bay_y_m": 6.8992,
+        "joist_spacing_m": 2.1881,
+        "floor_to_floor_m": 4.7989
+      }
+    },
+    {
+      "generation": 21,
+      "best_fitness": 0.960571,
+      "mean_fitness": 0.897901,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5962,
+        "bay_y_m": 6.8992,
+        "joist_spacing_m": 2.1881,
+        "floor_to_floor_m": 4.7989
+      }
+    },
+    {
+      "generation": 22,
+      "best_fitness": 0.960571,
+      "mean_fitness": 0.898546,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5962,
+        "bay_y_m": 6.8992,
+        "joist_spacing_m": 2.1881,
+        "floor_to_floor_m": 4.7989
+      }
+    },
+    {
+      "generation": 23,
+      "best_fitness": 0.960571,
+      "mean_fitness": 0.895455,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5962,
+        "bay_y_m": 6.8992,
+        "joist_spacing_m": 2.1881,
+        "floor_to_floor_m": 4.7989
+      }
+    },
+    {
+      "generation": 24,
+      "best_fitness": 0.960571,
+      "mean_fitness": 0.898366,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5962,
+        "bay_y_m": 6.8992,
+        "joist_spacing_m": 2.1881,
+        "floor_to_floor_m": 4.7989
+      }
+    },
+    {
+      "generation": 25,
+      "best_fitness": 0.960571,
+      "mean_fitness": 0.898124,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5962,
+        "bay_y_m": 6.8992,
+        "joist_spacing_m": 2.1881,
+        "floor_to_floor_m": 4.7989
+      }
+    },
+    {
+      "generation": 26,
+      "best_fitness": 0.960571,
+      "mean_fitness": 0.891996,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.5962,
+        "bay_y_m": 6.8992,
+        "joist_spacing_m": 2.1881,
+        "floor_to_floor_m": 4.7989
+      }
+    },
+    {
+      "generation": 27,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.902115,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 28,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.908733,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 29,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.90432,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 30,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.912428,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 31,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.904028,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 32,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.905928,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 33,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.897242,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 34,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.892464,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 35,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.884509,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 36,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.891491,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 37,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.900631,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 38,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.892083,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    },
+    {
+      "generation": 39,
+      "best_fitness": 0.96076,
+      "mean_fitness": 0.900038,
+      "feasible_count": 60,
+      "best_datums": {
+        "bay_x_m": 6.596,
+        "bay_y_m": 6.9002,
+        "joist_spacing_m": 2.1533,
+        "floor_to_floor_m": 4.8
+      }
+    }
+  ],
+  "settings": {
+    "population": 60,
+    "generations": 40,
+    "tournament_size": 3,
+    "crossover_alpha": 0.35,
+    "mutation_rate": 0.25,
+    "mutation_sigma_fraction": 0.12,
+    "elite_count": 2,
+    "seed": 20260829
+  },
+  "weights": {
+    "score_fidelity": 0.45,
+    "utilisation": 0.25,
+    "constructability": 0.3,
+    "material_efficiency": 0.0
+  },
+  "space": {
+    "genes": [
+      {
+        "name": "bay_x_m",
+        "low": 5.6,
+        "high": 9.0,
+        "proposed": 6.52,
+        "unit": "m",
+        "source_ref": "docs/guidelines/structural_systems/01_steel_frame.md"
+      },
+      {
+        "name": "bay_y_m",
+        "low": 5.6,
+        "high": 9.0,
+        "proposed": 7.12,
+        "unit": "m",
+        "source_ref": "docs/guidelines/structural_systems/01_steel_frame.md"
+      },
+      {
+        "name": "joist_spacing_m",
+        "low": 1.5,
+        "high": 3.0,
+        "proposed": 1.96,
+        "unit": "m",
+        "source_ref": "docs/guidelines/structural_systems/01_steel_frame.md"
+      },
+      {
+        "name": "floor_to_floor_m",
+        "low": 3.9,
+        "high": 5.4,
+        "proposed": 4.72,
+        "unit": "m",
+        "source_ref": "docs/guidelines/structural_systems/01_steel_frame.md"
+      }
+    ]
+  },
+  "evaluations": 2380,
+  "verdict": "improved"
+}

@@ -1,0 +1,43 @@
+# Local tools and environments
+/.claude/
+/.playwright-cli/
+/.pytest_cache/
+/.venv/
+**/__pycache__/
+*.py[cod]
+.coverage
+htmlcov/
+
+# Local configuration and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Web dependencies and build output
+/web/node_modules/
+/web/.next/
+/web/.vinext/
+/web/dist/
+/web/.wrangler/
+/web/tsconfig.tsbuildinfo
+
+# Regenerable runtime and research output
+/runtime/inbox/
+/blender/generated/
+/artifacts/drawings/
+/artifacts/native_models/generated/
+/artifacts/v3_runs/
+/artifacts/web_runs/
+/artifacts/inspector/
+/artifacts/audio_saturation/*/tracks/
+/artifacts/style_evidence/solid/
+
+# Keep only the two assets used by the checked-in frozen run.
+/web/public/models/generated/*
+!/web/public/models/generated/building-b7ad95fa45a6-library-steel-international-v1.glb
+!/web/public/models/generated/building-b7ad95fa45a6-library-steel-international-v1.manifest.json
+!/web/public/models/generated/building-v3-c64269ebc1a8.glb
+!/web/public/models/generated/building-v3-c64269ebc1a8.manifest.json
+
+# Blender's automatic backup files are local recovery files.
+*.blend1

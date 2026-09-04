@@ -1,0 +1,64 @@
+{
+  "schema_version": "mta.semantic-layer-evidence.v1",
+  "experiment_id": "corpus-2026-08-31-evidence-rerun-2",
+  "authority": "presentation_only",
+  "source_report": {
+    "path": "corpus_saturation_report.json",
+    "sha256": "be54889fb82076525bb1a057011cba1b09449e1235bf11345086a5de6ae9f86d"
+  },
+  "track_count": 14,
+  "source_render_count": 42,
+  "source_render_verification": {
+    "manifest_hash_matches": 42,
+    "manifest_hash_mismatches": 0,
+    "render_mode": "semantic_layers"
+  },
+  "track_order": [
+    "mozart-symphony-29",
+    "couperin-harpsichord",
+    "dub-riots-silience-is-gold",
+    "deadbone-wake-up-call",
+    "lucas-darklord-hymne-iii",
+    "jorgensen-guitar-soundscape-1",
+    "krakenti-his-akorns",
+    "affen-like-life-easily-ended",
+    "nienvox-visions",
+    "charrier-accorte",
+    "m-pex-bueid",
+    "kevin-bryce-rainfields",
+    "walcker-crew-blind-istanbul",
+    "hurle-cancer"
+  ],
+  "sheets": [
+    {
+      "path": "contact_sheet_program.png",
+      "visible_semantic_layers": ["program", "circulation"],
+      "sha256": "48266617cabfbd0092e5e5afb8ebf4340d861a83430ae97b783d33522244a6f4"
+    },
+    {
+      "path": "contact_sheet_facade.png",
+      "visible_semantic_layers": ["envelope"],
+      "sha256": "5f54a6bccb71c7bbcbab0fac85a628882f2af55c63a28f0be40e44af99b713ef"
+    },
+    {
+      "path": "contact_sheet_structure.png",
+      "visible_semantic_layers": ["structure"],
+      "sha256": "1a9a8f8d3a10f60418b1fc43a6f8100d593c55cc8268f598a7f06d560120c00f"
+    }
+  ],
+  "run_summary": {
+    "tracks_succeeded": 14,
+    "tracks_failed": 0,
+    "blender_render_count": 42,
+    "score_signature_collision_rate": 0.0,
+    "model_signature_collision_rate": 0.0,
+    "minimum_variable_coverage": 1.0,
+    "program_fit_rate": 0.35714285714285715,
+    "runtime_seconds": 46.703
+  },
+  "limitations": [
+    "The screenshots are Blender presentation-only evidence and do not establish Rhino acceptance.",
+    "Five of fourteen program allocations fit completely; unplaced spaces remain explicit in the other nine runs.",
+    "Code and engineering validation remain governed by their own unresolved or professional-review-required states."
+  ]
+}

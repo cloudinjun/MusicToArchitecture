@@ -1,0 +1,86 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "title03", "type": "text", "x": 70, "y": 55, "width": 760, "height": 66, "angle": 0,
+      "strokeColor": "#13232d", "backgroundColor": "transparent", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "a0", "roundness": null, "seed": 63001, "version": 1, "versionNonce": 73001,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "text": "03 四个建筑选择怎么来", "fontSize": 48, "fontFamily": 5, "textAlign": "left", "verticalAlign": "top"
+    },
+    {
+      "id": "preference", "type": "rectangle", "x": 70, "y": 170, "width": 560, "height": 240, "angle": 0,
+      "strokeColor": "#0878a5", "backgroundColor": "#e5f4fa", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "a1", "roundness": {"type": 3}, "seed": 63002, "version": 1, "versionNonce": 73002,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "text": "1  音乐提出偏好\n\n一次只问一个问题\n主次 0.73 · 变化 0.92 · 重复 0.51", "fontSize": 25, "fontFamily": 5, "textAlign": "center", "verticalAlign": "middle"
+    },
+    {
+      "id": "arrow-pref-screen", "type": "arrow", "x": 640, "y": 290, "width": 80, "height": 0, "angle": 0,
+      "strokeColor": "#63747c", "backgroundColor": "transparent", "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "a2", "roundness": {"type": 2}, "seed": 63003, "version": 1, "versionNonce": 73003,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "points": [[0,0],[80,0]], "startBinding": null, "endBinding": null
+    },
+    {
+      "id": "screen", "type": "rectangle", "x": 730, "y": 170, "width": 560, "height": 240, "angle": 0,
+      "strokeColor": "#bc691e", "backgroundColor": "#fff2df", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "a3", "roundness": {"type": 3}, "seed": 63004, "version": 1, "versionNonce": 73004,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "text": "2  硬规则筛选\n\n面积 · 场地 · 基础规则 · 可执行性\n只淘汰确实不合适的选项", "fontSize": 25, "fontFamily": 5, "textAlign": "center", "verticalAlign": "middle"
+    },
+    {
+      "id": "arrow-screen-trace", "type": "arrow", "x": 1300, "y": 290, "width": 80, "height": 0, "angle": 0,
+      "strokeColor": "#63747c", "backgroundColor": "transparent", "fillStyle": "solid", "strokeWidth": 3, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "a4", "roundness": {"type": 2}, "seed": 63005, "version": 1, "versionNonce": 73005,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "points": [[0,0],[80,0]], "startBinding": null, "endBinding": null
+    },
+    {
+      "id": "trace", "type": "rectangle", "x": 1390, "y": 170, "width": 760, "height": 240, "angle": 0,
+      "strokeColor": "#526871", "backgroundColor": "#edf0f1", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "a5", "roundness": {"type": 3}, "seed": 63006, "version": 1, "versionNonce": 73006,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "text": "3  理由跟着结果\n\n音乐来源 · 修改规则 · 人可推翻\n以后能回答：为什么是这个？", "fontSize": 25, "fontFamily": 5, "textAlign": "center", "verticalAlign": "middle"
+    },
+    {
+      "id": "type", "type": "rectangle", "x": 70, "y": 520, "width": 500, "height": 500, "angle": 0,
+      "strokeColor": "#cad5da", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "b0", "roundness": {"type": 3}, "seed": 63007, "version": 1, "versionNonce": 73007,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "text": "建筑类型\n\n主次强 0.73  →  剧场\n\n一个最强事件\n→ 一个核心空间", "fontSize": 28, "fontFamily": 5, "textAlign": "center", "verticalAlign": "middle"
+    },
+    {
+      "id": "form", "type": "rectangle", "x": 600, "y": 520, "width": 500, "height": 500, "angle": 0,
+      "strokeColor": "#cad5da", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "b1", "roundness": {"type": 3}, "seed": 63008, "version": 1, "versionNonce": 73008,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "text": "整体体形\n\n主次强 + 稳定底层\n→ 条形体量 + 大底座\n\n上面集中，下面铺开", "fontSize": 28, "fontFamily": 5, "textAlign": "center", "verticalAlign": "middle"
+    },
+    {
+      "id": "facade", "type": "rectangle", "x": 1130, "y": 520, "width": 500, "height": 500, "angle": 0,
+      "strokeColor": "#cad5da", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "b2", "roundness": {"type": 3}, "seed": 63009, "version": 1, "versionNonce": 73009,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "text": "外墙风格\n\n层次 0.49 + 变化 0.92\n→ 高技派\n\n构架与连接直接被看见", "fontSize": 28, "fontFamily": 5, "textAlign": "center", "verticalAlign": "middle"
+    },
+    {
+      "id": "structure", "type": "rectangle", "x": 1660, "y": 520, "width": 500, "height": 500, "angle": 0,
+      "strokeColor": "#cad5da", "backgroundColor": "#ffffff", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "b3", "roundness": {"type": 3}, "seed": 63010, "version": 1, "versionNonce": 73010,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "text": "结构骨架\n\n木梁柱偏好 → 筛选未通过\n→ 钢框架\n\n偏好会被可执行性改写", "fontSize": 28, "fontFamily": 5, "textAlign": "center", "verticalAlign": "middle"
+    },
+    {
+      "id": "summary", "type": "rectangle", "x": 70, "y": 1100, "width": 2090, "height": 110, "angle": 0,
+      "strokeColor": "#16313f", "backgroundColor": "#16313f", "fillStyle": "solid", "strokeWidth": 2, "strokeStyle": "solid", "roughness": 1, "opacity": 100,
+      "groupIds": [], "frameId": null, "index": "c0", "roundness": {"type": 3}, "seed": 63011, "version": 1, "versionNonce": 73011,
+      "isDeleted": false, "boundElements": null, "updated": 1788441600000, "link": null, "locked": false,
+      "text": "音乐定方向 · 规则定边界 · 人定最终版本", "fontSize": 34, "fontFamily": 5, "textAlign": "center", "verticalAlign": "middle"
+    }
+  ],
+  "appState": {"viewBackgroundColor": "#f3f6f7", "gridSize": 20},
+  "files": {}
+}

@@ -1,0 +1,193 @@
+{
+  "producer": "blender_headless_5_v3",
+  "authority": "presentation_only",
+  "model_id": "building-v3-b7ad95fa45a6",
+  "score_id": "score-b7ad95fa45a6",
+  "element_count": 3482,
+  "merged_objects": 25,
+  "total_faces": 13820,
+  "objects": {
+    "circulation__ramps__circulation": {
+      "elements": 1,
+      "faces": 6,
+      "layer": "circulation",
+      "subsystem": "ramps",
+      "category": "circulation"
+    },
+    "circulation__safety__circulation": {
+      "elements": 661,
+      "faces": 4986,
+      "layer": "circulation",
+      "subsystem": "safety",
+      "category": "circulation"
+    },
+    "circulation__stairs__circulation": {
+      "elements": 22,
+      "faces": 132,
+      "layer": "circulation",
+      "subsystem": "stairs",
+      "category": "circulation"
+    },
+    "circulation__vertical_core__service": {
+      "elements": 5,
+      "faces": 30,
+      "layer": "circulation",
+      "subsystem": "vertical_core",
+      "category": "service"
+    },
+    "envelope__curtain_wall__public": {
+      "elements": 136,
+      "faces": 136,
+      "layer": "envelope",
+      "subsystem": "curtain_wall",
+      "category": "public"
+    },
+    "envelope__opaque_wall__public": {
+      "elements": 12,
+      "faces": 72,
+      "layer": "envelope",
+      "subsystem": "opaque_wall",
+      "category": "public"
+    },
+    "envelope__roof__public": {
+      "elements": 14,
+      "faces": 103,
+      "layer": "envelope",
+      "subsystem": "roof",
+      "category": "public"
+    },
+    "envelope__shading__public": {
+      "elements": 114,
+      "faces": 684,
+      "layer": "envelope",
+      "subsystem": "shading",
+      "category": "public"
+    },
+    "program__furniture__private": {
+      "elements": 6,
+      "faces": 36,
+      "layer": "program",
+      "subsystem": "furniture",
+      "category": "private"
+    },
+    "program__furniture__public": {
+      "elements": 267,
+      "faces": 1602,
+      "layer": "program",
+      "subsystem": "furniture",
+      "category": "public"
+    },
+    "program__partitions__private": {
+      "elements": 2,
+      "faces": 12,
+      "layer": "program",
+      "subsystem": "partitions",
+      "category": "private"
+    },
+    "program__partitions__service": {
+      "elements": 1,
+      "faces": 6,
+      "layer": "program",
+      "subsystem": "partitions",
+      "category": "service"
+    },
+    "program__scale_reference__public": {
+      "elements": 204,
+      "faces": 1224,
+      "layer": "program",
+      "subsystem": "scale_reference",
+      "category": "public"
+    },
+    "program__zones__circulation": {
+      "elements": 1,
+      "faces": 6,
+      "layer": "program",
+      "subsystem": "zones",
+      "category": "circulation"
+    },
+    "program__zones__private": {
+      "elements": 2,
+      "faces": 12,
+      "layer": "program",
+      "subsystem": "zones",
+      "category": "private"
+    },
+    "program__zones__public": {
+      "elements": 8,
+      "faces": 48,
+      "layer": "program",
+      "subsystem": "zones",
+      "category": "public"
+    },
+    "program__zones__service": {
+      "elements": 1,
+      "faces": 6,
+      "layer": "program",
+      "subsystem": "zones",
+      "category": "service"
+    },
+    "site__context__context": {
+      "elements": 3,
+      "faces": 18,
+      "layer": "site",
+      "subsystem": "context",
+      "category": "context"
+    },
+    "site__podium__context": {
+      "elements": 1,
+      "faces": 25,
+      "layer": "site",
+      "subsystem": "podium",
+      "category": "context"
+    },
+    "structure__beams__public": {
+      "elements": 184,
+      "faces": 2576,
+      "layer": "structure",
+      "subsystem": "beams",
+      "category": "public"
+    },
+    "structure__bracing__public": {
+      "elements": 16,
+      "faces": 96,
+      "layer": "structure",
+      "subsystem": "bracing",
+      "category": "public"
+    },
+    "structure__columns__public": {
+      "elements": 120,
+      "faces": 720,
+      "layer": "structure",
+      "subsystem": "columns",
+      "category": "public"
+    },
+    "structure__foundations__public": {
+      "elements": 24,
+      "faces": 144,
+      "layer": "structure",
+      "subsystem": "foundations",
+      "category": "public"
+    },
+    "structure__roof_truss__public": {
+      "elements": 75,
+      "faces": 450,
+      "layer": "structure",
+      "subsystem": "roof_truss",
+      "category": "public"
+    },
+    "structure__slabs__public": {
+      "elements": 115,
+      "faces": 690,
+      "layer": "structure",
+      "subsystem": "slabs",
+      "category": "public"
+    }
+  },
+  "renders": [
+    "01_three_quarter.png",
+    "02_section_open_side.png",
+    "03_structure_closeup.png",
+    "04_south_elevation.png"
+  ],
+  "glb_sha256": "0414b4a64bace7e0b2b00f36551ed291c88b2d08bf68eb7572bb6b4868a13edb"
+}

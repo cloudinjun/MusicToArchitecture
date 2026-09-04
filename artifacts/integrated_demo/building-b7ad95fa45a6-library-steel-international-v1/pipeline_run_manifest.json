@@ -1,0 +1,334 @@
+{
+  "schema_version": "mta.pipeline_run_manifest/1.0",
+  "run_id": "run-b7ad95fa45a6",
+  "overall_status": "preview_ready",
+  "model_id": "building-b7ad95fa45a6-library-steel-international-v1",
+  "score_id": "score-b7ad95fa45a6",
+  "artifacts": [
+    {
+      "id": "program-guideline",
+      "kind": "program_constitution_guideline",
+      "status": "available",
+      "authority": "specification",
+      "sha256": "19d1f2c93cf6fb91309e67c71e648735d243d0835f616d2357a1b3213c05837b",
+      "uri": "project://docs/guidelines/program_constitution_guideline.md"
+    },
+    {
+      "id": "structure-guideline",
+      "kind": "structural_system_guideline",
+      "status": "available",
+      "authority": "specification",
+      "sha256": "701648ca65a7e49a30041de9cbc3e5546565906584e99996fd69db519762180d",
+      "uri": "project://docs/guidelines/structural_system_guideline.md"
+    },
+    {
+      "id": "facade-research-library",
+      "kind": "facade_grammar_library",
+      "status": "available",
+      "authority": "specification",
+      "sha256": "c537589ab14ff9015f7d677d05ee8fcbb95401117f603d148f26f817af69d653",
+      "uri": "project://docs/style_guides/facade/README.md"
+    },
+    {
+      "id": "facade-selected-guideline",
+      "kind": "facade_grammar_guideline",
+      "status": "available",
+      "authority": "specification",
+      "sha256": "d77a4682f77ffdccf3d685bcc147307b7155362ae3def6a170d53ed2b40e5fea",
+      "uri": "project://docs/style_guides/facade/01_international_style.md"
+    },
+    {
+      "id": "integrated-demo-selection",
+      "kind": "selection_record",
+      "status": "available",
+      "authority": "specification",
+      "sha256": "f3dc056eac4842f17152c2362ca8ccdee418f43b2637ce8c8022ae60e54d8e71",
+      "uri": "project://docs/experiments/integrated_demo_selection.md"
+    },
+    {
+      "id": "typology-selection-decision",
+      "kind": "selection_decision",
+      "status": "available",
+      "authority": "specification",
+      "sha256": "11b59ca2a86368a07cc91c17c8765ed3ffa54b502f26d45f32d2714866720bf5",
+      "uri": "project://docs/decisions/0001-primary-typology-shortlist.md"
+    },
+    {
+      "id": "tectonic-selection-decision",
+      "kind": "selection_decision",
+      "status": "available",
+      "authority": "specification",
+      "sha256": "38a5076efa3661d94c3eca0e4be3d835f54258f305b4225a27b56bf9e6baa3b9",
+      "uri": "project://docs/decisions/0002-tectonic-system-shortlist.md"
+    },
+    {
+      "id": "grammar-selection-decision",
+      "kind": "selection_decision",
+      "status": "available",
+      "authority": "specification",
+      "sha256": "1645a27317a20d846ae7feeffd33ca4a6c0ca3139a6cad638a0f1417a94f22d9",
+      "uri": "project://docs/decisions/0003-style-language-candidate-library.md"
+    },
+    {
+      "id": "audio-features",
+      "kind": "audio_features",
+      "status": "available",
+      "authority": "source_observation",
+      "sha256": "7f9ccf0fdfd7cdf1923271fb62d87af46f03e354f8f45c16083b9937be845f3d",
+      "uri": "inline://audio-features"
+    },
+    {
+      "id": "architectural-score",
+      "kind": "architectural_score",
+      "status": "available",
+      "authority": "candidate",
+      "sha256": "38c1132bed74d06d668d2e54d283cf3396d7ab06302d5166e65cadbb163e6838",
+      "uri": "inline://architectural-score"
+    },
+    {
+      "id": "building-model",
+      "kind": "building_model_v2",
+      "status": "available",
+      "authority": "candidate",
+      "sha256": "f120c691d9739a8ae99a1f019c373c9ffe190d35cbe9b68a7bf9434a06613f59",
+      "uri": "inline://building-model"
+    },
+    {
+      "id": "mapping-report",
+      "kind": "mapping_report",
+      "status": "available",
+      "authority": "validation_report",
+      "sha256": "e1ecdd373a24f492b0c5b5ca2ea86de1ed105a96ab12fff942b9904fa0e7e21f",
+      "uri": "inline://mapping-report"
+    },
+    {
+      "id": "facade-host-handoff",
+      "kind": "facade_host_handoff",
+      "status": "available",
+      "authority": "preview_only",
+      "sha256": "f496d5fc8fd1c9c48b43f5105cec6f7e14919d93ad529000d80d743f2b01b632",
+      "uri": "inline://facade-host-handoff"
+    },
+    {
+      "id": "blender-glb",
+      "kind": "glb",
+      "status": "available",
+      "authority": "presentation_only",
+      "sha256": "83426227af5e1d78b26d865d323f30c3d2d13bc323d24afc0415d4b9b0351b1f",
+      "uri": "/models/generated/building-b7ad95fa45a6-library-steel-international-v1.glb?v=1787899331755033900"
+    },
+    {
+      "id": "blender-manifest",
+      "kind": "blender_manifest",
+      "status": "available",
+      "authority": "presentation_only",
+      "sha256": "2d9335f0aa1c4ac1280b5dff4d0d40e2f1a9f976499b7beb48e721dc115312d3",
+      "uri": "/models/generated/building-b7ad95fa45a6-library-steel-international-v1.manifest.json?v=1787899331758034600"
+    },
+    {
+      "id": "blender-native-scene",
+      "kind": "blend",
+      "status": "available",
+      "authority": "presentation_only",
+      "sha256": "9497680f220bf87d3e06960755f4faf4d04fc8123c57643803a1c85a1c54bbc0",
+      "uri": "blender/generated/building-b7ad95fa45a6-library-steel-international-v1.blend"
+    },
+    {
+      "id": "blender-scene-state",
+      "kind": "scene_state",
+      "status": "available",
+      "authority": "presentation_only",
+      "sha256": "c4bc90cf7c9f7b04765ecd1c2e58ca906e278e11b520b01a6869da3c6251ed17",
+      "uri": "artifacts/native_models/generated/building-b7ad95fa45a6-library-steel-international-v1.scene.json"
+    },
+    {
+      "id": "rhino-accepted-geometry",
+      "kind": "rhino_geometry_manifest",
+      "status": "blocked",
+      "authority": "accepted_geometry",
+      "sha256": null,
+      "uri": null
+    }
+  ],
+  "stages": [
+    {
+      "id": "audio_extraction",
+      "route": "portable_core",
+      "status": "pass",
+      "authority": "source_observation",
+      "producer": "librosa",
+      "input_refs": [],
+      "output_refs": [
+        "audio-features"
+      ],
+      "blocked_by": [],
+      "message": "MP3 observations retain file hash, method, version, and confidence."
+    },
+    {
+      "id": "architectural_score",
+      "route": "portable_core",
+      "status": "warning",
+      "authority": "candidate",
+      "producer": "backend.app.score",
+      "input_refs": [
+        "audio-features"
+      ],
+      "output_refs": [
+        "architectural-score"
+      ],
+      "blocked_by": [],
+      "message": "Four Shared Score dimensions are known; six remain explicitly unknown."
+    },
+    {
+      "id": "program_compilation",
+      "route": "portable_core",
+      "status": "pass",
+      "authority": "candidate",
+      "producer": "backend.app.compiler",
+      "input_refs": [
+        "architectural-score",
+        "program-guideline"
+      ],
+      "output_refs": [
+        "building-model"
+      ],
+      "blocked_by": [],
+      "message": "Room-level library constitution, four program categories, relationship graph, support spaces, and code-input warnings are compiled."
+    },
+    {
+      "id": "structure_compilation",
+      "route": "portable_core",
+      "status": "pass",
+      "authority": "candidate",
+      "producer": "backend.app.compiler",
+      "input_refs": [
+        "architectural-score",
+        "building-model",
+        "structure-guideline"
+      ],
+      "output_refs": [
+        "building-model"
+      ],
+      "blocked_by": [],
+      "message": "Steel-frame candidate includes columns, beams, slabs, bracing, cores, foundations, support edges, and explicit professional-review status."
+    },
+    {
+      "id": "facade_host_bridge",
+      "route": "portable_core",
+      "status": "pass",
+      "authority": "preview_only",
+      "producer": "backend.app.integration",
+      "input_refs": [
+        "architectural-score",
+        "building-model",
+        "facade-selected-guideline",
+        "integrated-demo-selection"
+      ],
+      "output_refs": [
+        "facade-host-handoff"
+      ],
+      "blocked_by": [],
+      "message": "Room-owned exterior hosts, MTA-F2 elements, support references, and all ten score availability states are connected."
+    },
+    {
+      "id": "facade_candidate_plan",
+      "route": "portable_core",
+      "status": "pass",
+      "authority": "review_only",
+      "producer": "mta-facade-image-pipeline",
+      "input_refs": [
+        "facade-host-handoff",
+        "integrated-demo-selection",
+        "facade-selected-guideline"
+      ],
+      "output_refs": [
+        "building-model"
+      ],
+      "blocked_by": [],
+      "message": "International Style-informed facade candidate plan is executable for this demonstration and remains review-only until Rhino acceptance."
+    },
+    {
+      "id": "mapping_report",
+      "route": "portable_core",
+      "status": "pass",
+      "authority": "validation_report",
+      "producer": "backend.app.mapping_report",
+      "input_refs": [
+        "audio-features",
+        "architectural-score",
+        "building-model"
+      ],
+      "output_refs": [
+        "mapping-report"
+      ],
+      "blocked_by": [],
+      "message": "Executed score bindings resolve to source building elements."
+    },
+    {
+      "id": "grasshopper_interactive_geometry",
+      "route": "interactive_acceptance",
+      "status": "pending",
+      "authority": "candidate",
+      "producer": "grasshopper",
+      "input_refs": [
+        "building-model",
+        "facade-host-handoff"
+      ],
+      "output_refs": [],
+      "blocked_by": [],
+      "message": "Portable geometry and contracts are ready; the modular Grasshopper graph still requires an interactive solve and review."
+    },
+    {
+      "id": "rhino_acceptance",
+      "route": "interactive_acceptance",
+      "status": "blocked",
+      "authority": "accepted_geometry",
+      "producer": "rhino",
+      "input_refs": [
+        "building-model",
+        "facade-host-handoff"
+      ],
+      "output_refs": [
+        "rhino-accepted-geometry"
+      ],
+      "blocked_by": [
+        "RHINO_ACCEPTANCE_NOT_RECORDED"
+      ],
+      "message": "Only an explicit Rhino acceptance record may establish accepted geometry for this run."
+    },
+    {
+      "id": "blender_web_preview",
+      "route": "web_preview",
+      "status": "pass",
+      "authority": "presentation_only",
+      "producer": "blender_headless_5",
+      "input_refs": [
+        "building-model"
+      ],
+      "output_refs": [
+        "blender-glb",
+        "blender-manifest",
+        "blender-native-scene",
+        "blender-scene-state"
+      ],
+      "blocked_by": [],
+      "message": "Blender/Web provide semantic inspection and presentation without changing design authority."
+    }
+  ],
+  "accepted_state": {
+    "status": "blocked",
+    "authority_owner": "rhino",
+    "accepted_model_id": null,
+    "geometry_manifest_ref": null,
+    "blocked_by": [
+      "RHINO_ACCEPTANCE_NOT_RECORDED"
+    ]
+  },
+  "limitations": [
+    "This run produces a reproducible semantic preview, not accepted project geometry.",
+    "Program code inputs and structural analysis remain incomplete and require jurisdiction-specific and professional review.",
+    "The Library + steel frame + International Style selection applies only to this integrated demonstration.",
+    "Grasshopper interactive review and Rhino acceptance have not been recorded.",
+    "Blender and Web render the candidate contracts without increasing their design authority."
+  ]
+}

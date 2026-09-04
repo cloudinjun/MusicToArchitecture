@@ -1,0 +1,307 @@
+{
+  "schema_version": "1.0",
+  "score_id": "score-b7ad95fa45a6",
+  "source_audio_sha256": "b7ad95fa45a6d546149a4256eb6677ea3f147e0652151d6a0b783846a8695d39",
+  "typology": "library",
+  "tectonic_system": "frame",
+  "dimensions": [
+    {
+      "id": "tempo_of_change",
+      "value": 0.1366644965277778,
+      "source_feature": "tempo_bpm",
+      "extraction_method": "observed",
+      "confidence": 0.883,
+      "architectural_proposal": "Stack more distinct floor episodes and change the module more often along the public sequence."
+    },
+    {
+      "id": "tension_release",
+      "value": 0.21167814150346934,
+      "source_feature": "rms_energy",
+      "extraction_method": "observed",
+      "confidence": 0.95,
+      "architectural_proposal": "Open the section: more headroom and deeper shading where the music releases, compression where it does not."
+    },
+    {
+      "id": "density",
+      "value": 0.26355382241439435,
+      "source_feature": "onset_density_hz",
+      "extraction_method": "observed",
+      "confidence": 0.9,
+      "architectural_proposal": "Tighten the structural bay and the tertiary framing rhythm within the declared span limits."
+    },
+    {
+      "id": "continuity",
+      "value": 0.5177517904433019,
+      "source_feature": "spectral_centroid_hz",
+      "extraction_method": "inferred",
+      "confidence": 0.72,
+      "architectural_proposal": "Run the plate past its supports and round the end rather than cutting it; keep more of the floor for continuous routes."
+    },
+    {
+      "id": "repetition",
+      "value": 0.5067801822572547,
+      "source_feature": "periodicity",
+      "extraction_method": "observed",
+      "confidence": 0.78,
+      "architectural_proposal": "Fix the envelope module and the tertiary rhythms -- mullion spacing, spandrel band, guard posts -- to a tighter, more regular cadence."
+    },
+    {
+      "id": "variation",
+      "value": 0.9152923842121784,
+      "source_feature": "timbre_variation",
+      "extraction_method": "observed",
+      "confidence": 0.75,
+      "architectural_proposal": "Let the upper plates depart from the lower ones: step the plan back and rotate each level against the one below."
+    },
+    {
+      "id": "hierarchy",
+      "value": 0.7270932078906438,
+      "source_feature": "dynamic_range_db",
+      "extraction_method": "observed",
+      "confidence": 0.8,
+      "architectural_proposal": "Make one structural order dominate: a deeper roof truss, a taller open ground level, a larger entry gesture."
+    },
+    {
+      "id": "interruption",
+      "value": 0.3823654265781547,
+      "source_feature": "novelty_peak_rate_per_min",
+      "extraction_method": "observed",
+      "confidence": 0.74,
+      "architectural_proposal": "Break the stack: punch atrium voids through the plates and strip the envelope from whole levels to make terraces."
+    },
+    {
+      "id": "polyphony",
+      "value": 0.49082021073304616,
+      "source_feature": "spectral_contrast_db+harmonic_ratio",
+      "extraction_method": "inferred",
+      "confidence": 0.55,
+      "architectural_proposal": "Separate the orders so each reads on its own: push the envelope further outboard of the frame, add screen and shading layers, express more braced bays. This is a layering proxy, not a count of voices."
+    },
+    {
+      "id": "genre_style",
+      "value": 0.5941448481039237,
+      "source_feature": "spectral_flatness+zero_crossing_rate+spectral_centroid_hz+harmonic_ratio",
+      "extraction_method": "inferred",
+      "confidence": 0.35,
+      "architectural_proposal": "A timbral position, bright and percussive against dark and sustained. It proposes a weighting between a light glazed envelope and a heavier panelled one, and a fin depth to match. It is not a genre label, it never selects a facade grammar, and a human must accept the weighting."
+    }
+  ],
+  "mapping_rules": [
+    {
+      "id": "TEMPO_TO_EPISODES",
+      "source_dimension": "tempo_of_change",
+      "target_parameter": "sequence.episode_count",
+      "output_range": [
+        4.0,
+        7.0
+      ],
+      "direction": "direct",
+      "priority": 10,
+      "owner": "music"
+    },
+    {
+      "id": "ENERGY_TO_READING_HEIGHT",
+      "source_dimension": "tension_release",
+      "target_parameter": "program.reading_height",
+      "output_range": [
+        5.4,
+        7.2
+      ],
+      "direction": "direct",
+      "priority": 20,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_GRID",
+      "source_dimension": "density",
+      "target_parameter": "structure.bay_spacing",
+      "output_range": [
+        5.2,
+        4.4
+      ],
+      "direction": "inverse",
+      "priority": 30,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_FACADE",
+      "source_dimension": "density",
+      "target_parameter": "facade.submodule_count",
+      "output_range": [
+        2.0,
+        5.0
+      ],
+      "direction": "direct",
+      "priority": 40,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_SERVICE_DEPTH",
+      "source_dimension": "density",
+      "target_parameter": "program.service_depth",
+      "output_range": [
+        2.6,
+        3.4
+      ],
+      "direction": "direct",
+      "priority": 45,
+      "owner": "music"
+    },
+    {
+      "id": "CONTINUITY_TO_SPINE",
+      "source_dimension": "continuity",
+      "target_parameter": "circulation.spine_width",
+      "output_range": [
+        1.8,
+        2.6
+      ],
+      "direction": "direct",
+      "priority": 50,
+      "owner": "music"
+    },
+    {
+      "id": "CONTINUITY_TO_DATUM",
+      "source_dimension": "continuity",
+      "target_parameter": "facade.datum_offset",
+      "output_range": [
+        0.18,
+        0.04
+      ],
+      "direction": "inverse",
+      "priority": 60,
+      "owner": "music"
+    },
+    {
+      "id": "TEMPO_TO_LEVEL_COUNT",
+      "source_dimension": "tempo_of_change",
+      "target_parameter": "lattice.level_count",
+      "output_range": [
+        4.0,
+        7.0
+      ],
+      "direction": "direct",
+      "priority": 10,
+      "owner": "music"
+    },
+    {
+      "id": "TENSION_TO_FLOOR_HEIGHT",
+      "source_dimension": "tension_release",
+      "target_parameter": "lattice.floor_to_floor_m",
+      "output_range": [
+        3.9,
+        5.4
+      ],
+      "direction": "direct",
+      "priority": 20,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_BAY_X",
+      "source_dimension": "density",
+      "target_parameter": "grid.bay_x_m",
+      "output_range": [
+        7.8,
+        5.6
+      ],
+      "direction": "inverse",
+      "priority": 30,
+      "owner": "music"
+    },
+    {
+      "id": "DENSITY_TO_JOIST_SPACING",
+      "source_dimension": "density",
+      "target_parameter": "structure.joist_spacing_m",
+      "output_range": [
+        2.6,
+        1.5
+      ],
+      "direction": "inverse",
+      "priority": 35,
+      "owner": "music"
+    },
+    {
+      "id": "CONTINUITY_TO_CANTILEVER",
+      "source_dimension": "continuity",
+      "target_parameter": "plate.cantilever_m",
+      "output_range": [
+        0.6,
+        3.6
+      ],
+      "direction": "direct",
+      "priority": 40,
+      "owner": "music"
+    },
+    {
+      "id": "REPETITION_TO_MULLION",
+      "source_dimension": "repetition",
+      "target_parameter": "envelope.mullion_module_m",
+      "output_range": [
+        1.55,
+        1.15
+      ],
+      "direction": "inverse",
+      "priority": 50,
+      "owner": "music"
+    },
+    {
+      "id": "VARIATION_TO_PLATE_STEP",
+      "source_dimension": "variation",
+      "target_parameter": "plate.step_m",
+      "output_range": [
+        0.0,
+        5.5
+      ],
+      "direction": "direct",
+      "priority": 55,
+      "owner": "music"
+    },
+    {
+      "id": "HIERARCHY_TO_TRUSS_DEPTH",
+      "source_dimension": "hierarchy",
+      "target_parameter": "structure.truss_depth_m",
+      "output_range": [
+        1.5,
+        3.0
+      ],
+      "direction": "direct",
+      "priority": 60,
+      "owner": "music"
+    },
+    {
+      "id": "INTERRUPTION_TO_VOIDS",
+      "source_dimension": "interruption",
+      "target_parameter": "plate.void_count",
+      "output_range": [
+        0.0,
+        3.0
+      ],
+      "direction": "direct",
+      "priority": 65,
+      "owner": "music"
+    },
+    {
+      "id": "POLYPHONY_TO_ENVELOPE_OFFSET",
+      "source_dimension": "polyphony",
+      "target_parameter": "envelope.offset_m",
+      "output_range": [
+        0.15,
+        0.9
+      ],
+      "direction": "direct",
+      "priority": 70,
+      "owner": "music"
+    },
+    {
+      "id": "GENRE_TO_OPAQUE_FRACTION",
+      "source_dimension": "genre_style",
+      "target_parameter": "envelope.opaque_fraction",
+      "output_range": [
+        0.45,
+        0.1
+      ],
+      "direction": "inverse",
+      "priority": 80,
+      "owner": "architecture"
+    }
+  ]
+}

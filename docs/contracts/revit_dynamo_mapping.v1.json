@@ -1,0 +1,566 @@
+{
+  "schema_version": "mta.revit_dynamo_mapping/0.1",
+  "status": "prototype_contract_live_validation_pending",
+  "source_contract": {
+    "schema_version": "3.0",
+    "model_type": "BuildingModelV3",
+    "units": "meters",
+    "coordinate_system": "right_handed_z_up",
+    "geometry_authority": "tagged_geometry",
+    "identity_field": "ElementInstance.id"
+  },
+  "target_contract": {
+    "host": "Autodesk Revit",
+    "orchestrator": "Dynamo for Revit",
+    "tested_revit_version": null,
+    "tested_dynamo_version": null,
+    "api_reference_baseline": "Autodesk Revit 2026 documentation",
+    "write_mode": "dry_run_then_transaction_group",
+    "live_validation_required": true
+  },
+  "coordinate_contract": {
+    "source_length_unit": "meters",
+    "convert_with": "Autodesk.Revit.DB.UnitUtils.ConvertToInternalUnits",
+    "source_to_revit_transform_required": true,
+    "identity_transform_requires_preflight_confirmation": true,
+    "level_mapping_required": true
+  },
+  "identity_contract": {
+    "external_key": "MTA_ElementId",
+    "host_binding_key": "Revit Element.UniqueId",
+    "forbidden_cross_run_key": "Revit ElementId",
+    "duplicate_source_id_policy": "block_run",
+    "missing_source_id_policy": "retire_for_review",
+    "hard_delete_default": false,
+    "conflict_policy": "preserve_and_review"
+  },
+  "shared_parameters": [
+    {
+      "name": "MTA_ElementId",
+      "guid": "4bcdb016-7db5-4f07-af91-c23d44039815",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "instance.id",
+      "purpose": "Stable cross-tool source identity"
+    },
+    {
+      "name": "MTA_ModelId",
+      "guid": "67b09b5b-6259-4744-8754-c1131e24ce57",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "model.model_id",
+      "purpose": "Source model identity"
+    },
+    {
+      "name": "MTA_SourceSchema",
+      "guid": "c075fb33-b904-40e4-aa1e-98605e4456c0",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "model.schema_version",
+      "purpose": "Source contract version"
+    },
+    {
+      "name": "MTA_SourceHash",
+      "guid": "2b27059e-ea4f-4e9b-a4fc-2fb225e5c588",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "handoff.element_fingerprint_sha256",
+      "purpose": "Element-level change detection"
+    },
+    {
+      "name": "MTA_GroupId",
+      "guid": "5fd23286-0055-4a43-ac00-fd1d8086ec32",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "group.group_id",
+      "purpose": "Source family grouping"
+    },
+    {
+      "name": "MTA_Kind",
+      "guid": "cbdf2ad2-ea95-461d-83cf-0e184ef47ca2",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "group.kind",
+      "purpose": "Portable element taxonomy"
+    },
+    {
+      "name": "MTA_Subsystem",
+      "guid": "75f421e1-57f9-4aea-960d-4be7ed901e52",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "group.subsystem",
+      "purpose": "System ownership"
+    },
+    {
+      "name": "MTA_LevelId",
+      "guid": "56c8e4a0-162b-4c8f-ac46-d38bb4586f70",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "instance.level_id",
+      "purpose": "Portable level identity"
+    },
+    {
+      "name": "MTA_Program",
+      "guid": "a65fc76f-61b5-47a0-bc88-b58a3feacec8",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "group.program",
+      "purpose": "Program owner or use"
+    },
+    {
+      "name": "MTA_MaterialProfile",
+      "guid": "ebd77c88-ed7c-4372-ba65-efe56b9ae222",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "group.material_profile",
+      "purpose": "Material identity the host Revit material is matched to or created from. Every element already carries one; without it on the instance a coordination model arrives knowing an element's taxonomy, level and provenance and not what it is made of."
+    },
+    {
+      "name": "MTA_MaterialFamily",
+      "guid": "2c1a25bb-d4b2-40ef-bd12-a31d02a8562b",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "handoff.materials[group.material_profile].family",
+      "purpose": "Material class: steel, concrete, timber, masonry, glass, plaster or metal. Carried beside the profile so a profile the host cannot match still lands in the right family instead of a default."
+    },
+    {
+      "name": "MTA_MaterialFinish",
+      "guid": "a45b5862-3201-4f4f-835c-05d6324b14f8",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": false,
+      "source": "handoff.materials[group.material_profile].finish",
+      "purpose": "The finish named on the source material, for a reviewer reading the model rather than for a lookup."
+    },
+    {
+      "name": "MTA_Authority",
+      "guid": "83a046d7-374e-4181-986d-9fa80e1855e0",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "handoff.authority_status",
+      "purpose": "Candidate, accepted-design, or preview authority"
+    },
+    {
+      "name": "MTA_ValidationStatus",
+      "guid": "8cafcb8f-3d81-404c-a397-a74eb3f11426",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "group.validation_status",
+      "purpose": "Source validation status without upgrade"
+    },
+    {
+      "name": "MTA_DatumRefs",
+      "guid": "4673b647-7a15-4fb2-8068-6591ca9d8631",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": false,
+      "source": "group.datum_refs joined for display",
+      "purpose": "Compact visible provenance; full list remains in sidecar"
+    },
+    {
+      "name": "MTA_RuleRefs",
+      "guid": "67c4c3dd-a213-4201-a5ed-97d67c17a491",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": false,
+      "source": "group.rule_refs joined for display",
+      "purpose": "Compact rule trace; full list remains in sidecar"
+    },
+    {
+      "name": "MTA_SizingStatus",
+      "guid": "abd6294e-5f40-4cf3-ae30-aff3f3de4b56",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": false,
+      "source": "group.sizing_status",
+      "purpose": "Separates calculated, conventional, and inapplicable sizing"
+    },
+    {
+      "name": "MTA_Utilisation",
+      "guid": "afce8dbf-babe-46b2-8040-a8440765004d",
+      "storage_type": "number",
+      "scope": "instance",
+      "required": false,
+      "source": "group.utilisation",
+      "purpose": "Calculated utilisation only where sizing status permits"
+    },
+    {
+      "name": "MTA_GoverningCheck",
+      "guid": "c2115896-aa8c-40fa-9025-8f7946b17438",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": false,
+      "source": "group.governing_check",
+      "purpose": "Named governing calculation or check"
+    },
+    {
+      "name": "MTA_DeliveryStatus",
+      "guid": "321b6c9d-b5f8-4d40-a726-27658382756b",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "handoff.delivery_status",
+      "purpose": "Native, DirectShape fallback, review, or omitted"
+    },
+    {
+      "name": "MTA_LastSyncRunId",
+      "guid": "1f40cc04-eef4-4cb8-b707-a1cb1bbe212c",
+      "storage_type": "text",
+      "scope": "instance",
+      "required": true,
+      "source": "handoff.run_id",
+      "purpose": "Last successful synchronization run"
+    }
+  ],
+  "mapping_rules": [
+    {
+      "id": "REVIT-FOUNDATION",
+      "source_kinds": [
+        "footing"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Structural Foundations",
+      "built_in_category": "OST_StructuralFoundation",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Foundation family, dimensions, level, material, and soil/geotechnical basis"
+    },
+    {
+      "id": "REVIT-COLUMN",
+      "source_kinds": [
+        "piloti_column",
+        "column"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Structural Columns",
+      "built_in_category": "OST_StructuralColumns",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Catalogue section, family/type, base/top levels, offsets, material, and analytical intent"
+    },
+    {
+      "id": "REVIT-STRUCTURAL-FRAMING",
+      "source_kinds": [
+        "primary_beam",
+        "secondary_joist",
+        "brace",
+        "outrigger_strut",
+        "truss_chord",
+        "truss_web",
+        "purlin",
+        "heavy_joist",
+        "knee_brace",
+        "external_strut"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Structural Framing",
+      "built_in_category": "OST_StructuralFraming",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Catalogue section, curve/roll, joins, releases, material, and analytical intent"
+    },
+    {
+      "id": "REVIT-FLOOR",
+      "source_kinds": [
+        "floor_slab",
+        "podium_slab",
+        "drop_panel",
+        "clt_panel"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Floors",
+      "built_in_category": "OST_Floors",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Closed sketch, openings, type buildup, level/offset, span direction, and structural use"
+    },
+    {
+      "id": "REVIT-FLOOR-EDGE",
+      "source_kinds": [
+        "slab_fascia"
+      ],
+      "strategy": "direct_shape_preview",
+      "revit_category": "Generic Models",
+      "built_in_category": "OST_GenericModel",
+      "fallback": "review",
+      "review_gate": "Resolve as slab edge family or coordinated preview after profile and host review"
+    },
+    {
+      "id": "REVIT-ROOF",
+      "source_kinds": [
+        "roof_deck"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Roofs",
+      "built_in_category": "OST_Roofs",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Closed sketch, openings, type buildup, level/offset, slope, and drainage intent"
+    },
+    {
+      "id": "REVIT-STRUCTURAL-WALL",
+      "source_kinds": [
+        "shear_wall",
+        "core_wall"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Walls",
+      "built_in_category": "OST_Walls",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Wall type, location line, base/top constraints, openings, joins, and analytical intent"
+    },
+    {
+      "id": "REVIT-CURTAIN-MULLION",
+      "source_kinds": [
+        "mullion",
+        "transom",
+        "lattice_mullion",
+        "lattice_transom"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Curtain Wall Mullions",
+      "built_in_category": "OST_CurtainWallMullions",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Curtain host, grid topology, mullion family/type, joins, and orientation"
+    },
+    {
+      "id": "REVIT-CURTAIN-PANEL",
+      "source_kinds": [
+        "glazing_panel",
+        "spandrel_panel",
+        "solid_wall_panel",
+        "backing_panel",
+        "field_panel",
+        "facet_panel",
+        "facet_glazing"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Curtain Panels",
+      "built_in_category": "OST_CurtainWallPanels",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Curtain host, panel family/type, thickness, orientation, material, and panelization"
+    },
+    {
+      "id": "REVIT-ENVELOPE-WALL",
+      "source_kinds": [
+        "wall_panel",
+        "parapet"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Walls",
+      "built_in_category": "OST_Walls",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Wall assembly, host/level constraints, joins, openings, and parapet treatment"
+    },
+    {
+      "id": "REVIT-ENVELOPE-COMPONENT",
+      "source_kinds": [
+        "brise_soleil",
+        "screen_fin",
+        "entry_canopy",
+        "window_reveal",
+        "window_head",
+        "sill",
+        "slot_opening",
+        "lattice_cell",
+        "field_carrier",
+        "seam_edge",
+        "order_jamb",
+        "order_lintel",
+        "order_field",
+        "frame_expression",
+        "entrance_head",
+        "partition_head"
+      ],
+      "strategy": "direct_shape_preview",
+      "revit_category": "Generic Models",
+      "built_in_category": "OST_GenericModel",
+      "fallback": "review",
+      "review_gate": "Resolve host, fabrication/assembly role, reusable family strategy, and native category before promotion"
+    },
+    {
+      "id": "REVIT-STAIR-COMPONENT",
+      "source_kinds": [
+        "stair_tread",
+        "stair_stringer",
+        "stair_landing",
+        "stair_half_landing"
+      ],
+      "strategy": "direct_shape_preview",
+      "revit_category": "Stairs",
+      "built_in_category": "OST_Stairs",
+      "fallback": "review",
+      "review_gate": "Rebuild as one native stair only after runs, landings, supports, levels, and code inputs resolve"
+    },
+    {
+      "id": "REVIT-CEILING",
+      "source_kinds": [
+        "ceiling"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Ceilings",
+      "built_in_category": "OST_Ceilings",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Closed sketch, level/offset, ceiling type, room context, and service coordination"
+    },
+    {
+      "id": "REVIT-DOOR",
+      "source_kinds": [
+        "entrance_door",
+        "door"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Doors",
+      "built_in_category": "OST_Doors",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Wall host, family/type, clear opening, swing, level, rating, and accessibility"
+    },
+    {
+      "id": "REVIT-RAILING",
+      "source_kinds": [
+        "railing"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Railings",
+      "built_in_category": "OST_StairsRailing",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Host path, railing type, height, extensions, openings, and code inputs"
+    },
+    {
+      "id": "REVIT-SHAFT",
+      "source_kinds": [
+        "elevator_shaft"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Shaft Openings",
+      "built_in_category": "OST_ShaftOpening",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Level range, floor/roof hosts, opening profile, shaft enclosure, and elevator system"
+    },
+    {
+      "id": "REVIT-RAMP",
+      "source_kinds": [
+        "ramp",
+        "ramp_landing",
+        "ramp_curb"
+      ],
+      "strategy": "direct_shape_preview",
+      "revit_category": "Ramps",
+      "built_in_category": "OST_Ramps",
+      "fallback": "review",
+      "review_gate": "Rebuild as a native ramp only after runs, landings, curbs, levels, slopes, and ADA checks agree"
+    },
+    {
+      "id": "REVIT-PROGRAM-ZONE",
+      "source_kinds": [
+        "program_zone"
+      ],
+      "strategy": "room_candidate",
+      "revit_category": "Rooms",
+      "built_in_category": "OST_Rooms",
+      "fallback": "review",
+      "review_gate": "Room-bounding elements, phase, level, enclosed point, name/number policy, and unplaced-space status"
+    },
+    {
+      "id": "REVIT-PARTITION",
+      "source_kinds": [
+        "partition",
+        "proscenium_wall"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Walls",
+      "built_in_category": "OST_Walls",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Partition assembly, fire/acoustic source, base/top constraints, openings, and joins; the proscenium wall additionally carries its opening dimensions and the fire-curtain scope it does not yet model"
+    },
+    {
+      "id": "REVIT-ARCHETYPE-STADIA",
+      "source_kinds": [
+        "auditorium_riser",
+        "stage_platform"
+      ],
+      "strategy": "direct_shape_preview",
+      "revit_category": "Floors",
+      "built_in_category": "OST_Floors",
+      "fallback": "review",
+      "review_gate": "Stepped stadia and stage build-up arrive as preview solids; resolve as floors, in-place stadia, or a precast package after the seating layout and the substructure are designed"
+    },
+    {
+      "id": "REVIT-FURNITURE",
+      "source_kinds": [
+        "shelving_run",
+        "desk",
+        "seat"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Furniture",
+      "built_in_category": "OST_Furniture",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Family/type, clearance, host level, quantity intent, and whether layout is schematic"
+    },
+    {
+      "id": "REVIT-FIGURE",
+      "source_kinds": [
+        "figure"
+      ],
+      "strategy": "omit_presentation_only",
+      "revit_category": null,
+      "built_in_category": null,
+      "fallback": "omit",
+      "review_gate": "Scale figure is presentation context and carries no BIM scope"
+    },
+    {
+      "id": "REVIT-SITE-GROUND",
+      "source_kinds": [
+        "site_ground"
+      ],
+      "strategy": "direct_shape_preview",
+      "revit_category": "Toposolids",
+      "built_in_category": "OST_Toposolid",
+      "fallback": "review",
+      "review_gate": "Survey coordinates, topography source, boundary, subregions, and site authority"
+    },
+    {
+      "id": "REVIT-SITE-STEP",
+      "source_kinds": [
+        "site_step"
+      ],
+      "strategy": "direct_shape_preview",
+      "revit_category": "Generic Models",
+      "built_in_category": "OST_GenericModel",
+      "fallback": "review",
+      "review_gate": "Resolve as site, stair, floor, or landscape assembly after site and accessibility review"
+    }
+  ],
+  "sync_operations": [
+    "create",
+    "update",
+    "keep",
+    "preserve_host_edit",
+    "review_conflict",
+    "retire",
+    "review"
+  ],
+  "required_reports": [
+    "preflight_report",
+    "operation_plan",
+    "binding_index",
+    "reconciliation_report",
+    "review_queue"
+  ],
+  "limitations": [
+    "No live Revit or Dynamo execution has been verified yet.",
+    "Category mappings are candidate strategies; family and type selection remains human-owned.",
+    "DirectShape output is coordination preview geometry and does not count as native BIM completion.",
+    "No construction, permit, code-compliance, fabrication, or professional engineering claim is made.",
+    "Revit and Dynamo versions must be recorded and tested before the contract status can advance."
+  ]
+}

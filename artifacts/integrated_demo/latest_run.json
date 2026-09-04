@@ -1,0 +1,84 @@
+{
+  "model_id": "building-b7ad95fa45a6-library-steel-international-v1",
+  "score_id": "score-b7ad95fa45a6",
+  "audio_sha256": "b7ad95fa45a6d546149a4256eb6677ea3f147e0652151d6a0b783846a8695d39",
+  "glb_sha256": "83426227af5e1d78b26d865d323f30c3d2d13bc323d24afc0415d4b9b0351b1f",
+  "blend_sha256": "9497680f220bf87d3e06960755f4faf4d04fc8123c57643803a1c85a1c54bbc0",
+  "run_directory": "project://artifacts/integrated_demo/building-b7ad95fa45a6-library-steel-international-v1",
+  "element_count": 471,
+  "room_count": 21,
+  "validation": [
+    {
+      "id": "LIBRARY_REQUIRED_SPACES",
+      "status": "pass",
+      "message": "Detailed library and base-building support spaces are present.",
+      "affected_ids": []
+    },
+    {
+      "id": "PROGRAM_CATEGORY_COVERAGE",
+      "status": "pass",
+      "message": "Public, private, circulation, and service categories are represented.",
+      "affected_ids": []
+    },
+    {
+      "id": "PROGRAM_NON_OVERLAP",
+      "status": "pass",
+      "message": "All room-level program volumes are non-overlapping.",
+      "affected_ids": []
+    },
+    {
+      "id": "PROGRAM_RELATION_GRAPH",
+      "status": "pass",
+      "message": "The public, accessible, service, separation, and daylight relationship records are traceable.",
+      "affected_ids": []
+    },
+    {
+      "id": "SITE_ENVELOPE",
+      "status": "pass",
+      "message": "All generated building elements remain inside the test site and height envelope.",
+      "affected_ids": []
+    },
+    {
+      "id": "STEEL_LOAD_PATH_TOPOLOGY",
+      "status": "pass",
+      "message": "Every non-foundation structural element names at least one support path.",
+      "affected_ids": []
+    },
+    {
+      "id": "CIRCULATION_COLUMN_EXCLUSION",
+      "status": "pass",
+      "message": "Primary steel columns remain outside the interior of the public circulation spine.",
+      "affected_ids": []
+    },
+    {
+      "id": "FACADE_HOST_SUPPORT",
+      "status": "pass",
+      "message": "Every facade element resolves to a host and a declared primary or secondary support.",
+      "affected_ids": []
+    },
+    {
+      "id": "PROVENANCE_COVERAGE",
+      "status": "pass",
+      "message": "Every generated element records an executed Shared Score binding.",
+      "affected_ids": []
+    },
+    {
+      "id": "FRAME_GRID_RANGE",
+      "status": "pass",
+      "message": "Steel frame bay spacing is 5.00 m within the test coordination range.",
+      "affected_ids": []
+    },
+    {
+      "id": "PROGRAM_CODE_PROFILE",
+      "status": "warning",
+      "message": "Occupancy, fixture counts, egress, accessibility, fire, and local amendments require a resolved jurisdiction profile.",
+      "affected_ids": []
+    },
+    {
+      "id": "STRUCTURAL_ENGINEERING_REVIEW",
+      "status": "warning",
+      "message": "Structural sections, loads, connections, diaphragm, fire protection, and foundations remain candidate geometry requiring professional review.",
+      "affected_ids": []
+    }
+  ]
+}

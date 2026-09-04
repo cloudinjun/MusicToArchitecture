@@ -1,0 +1,318 @@
+{
+  "schema_version": "1.0",
+  "report_id": "mapping-b7ad95fa45a6",
+  "score_id": "score-b7ad95fa45a6",
+  "model_id": "building-b7ad95fa45a6",
+  "source_audio_filename": "gemini_music_to_architecture_44s.mp3",
+  "typology": "small_exhibition_pavilion",
+  "tectonic_system": "orthogonal_frame",
+  "automated_dimensions": [
+    "tempo_of_change",
+    "tension_release",
+    "density",
+    "continuity"
+  ],
+  "unsupported_dimensions": [
+    "genre_style",
+    "hierarchy",
+    "repetition",
+    "variation",
+    "interruption",
+    "polyphony"
+  ],
+  "covered_element_count": 17,
+  "total_element_count": 17,
+  "coverage_ratio": 1.0,
+  "entries": [
+    {
+      "id": "translation-01",
+      "rule_id": "TEMPO_TO_EPISODES",
+      "music_feature": "tempo_bpm",
+      "music_feature_label": "Tempo",
+      "music_value": 64.5996,
+      "music_normalized": 0.038330078125,
+      "music_unit": "bpm",
+      "music_method": "librosa.beat.beat_track",
+      "music_confidence": 0.82,
+      "shared_dimension": "tempo_of_change",
+      "shared_dimension_label": "Tempo of change",
+      "score_value": 0.038330078125,
+      "extraction_method": "observed",
+      "score_confidence": 0.82,
+      "architectural_proposal": "Increase the frequency of spatial episodes within a fixed pavilion program.",
+      "architectural_target": "sequence.module_count",
+      "architectural_target_label": "Spatial episode count",
+      "mapping_direction": "direct",
+      "declared_output_range": [
+        3.0,
+        7.0
+      ],
+      "applied_min": 3.0,
+      "applied_max": 3.0,
+      "applied_unit": "count",
+      "outcome": "3 repeated public gallery modules",
+      "negotiation": "Rounded to a whole episode count and limited by the pavilion sequence rule.",
+      "affected_element_ids": [
+        "gallery-01",
+        "gallery-02",
+        "gallery-03"
+      ],
+      "affected_element_kinds": [
+        "massing"
+      ],
+      "affected_programs": [
+        "gallery"
+      ]
+    },
+    {
+      "id": "translation-02",
+      "rule_id": "ENERGY_TO_HEIGHT",
+      "music_feature": "rms_energy",
+      "music_feature_label": "Energy",
+      "music_value": 0.119386,
+      "music_normalized": 0.4441977523742838,
+      "music_unit": "rms",
+      "music_method": "librosa.feature.rms",
+      "music_confidence": 0.95,
+      "shared_dimension": "tension_release",
+      "shared_dimension_label": "Tension / release",
+      "score_value": 0.4441977523742838,
+      "extraction_method": "observed",
+      "score_confidence": 0.95,
+      "architectural_proposal": "Increase primary gallery volume while preserving height and site limits.",
+      "architectural_target": "massing.primary_height",
+      "architectural_target_label": "Primary gallery height",
+      "mapping_direction": "direct",
+      "declared_output_range": [
+        3.4,
+        7.4
+      ],
+      "applied_min": 4.808472,
+      "applied_max": 5.194392,
+      "applied_unit": "m",
+      "outcome": "4.81\u20135.19 m public gallery heights",
+      "negotiation": "Clamped by the site height envelope; controlled module variation produces the reported range.",
+      "affected_element_ids": [
+        "gallery-01",
+        "gallery-02",
+        "gallery-03"
+      ],
+      "affected_element_kinds": [
+        "massing"
+      ],
+      "affected_programs": [
+        "gallery"
+      ]
+    },
+    {
+      "id": "translation-03",
+      "rule_id": "DENSITY_TO_GRID",
+      "music_feature": "onset_density_hz",
+      "music_feature_label": "Onset density",
+      "music_value": 2.092617,
+      "music_normalized": 0.3814079468021896,
+      "music_unit": "onsets_per_second",
+      "music_method": "librosa.onset.onset_detect",
+      "music_confidence": 0.9,
+      "shared_dimension": "density",
+      "shared_dimension_label": "Density",
+      "score_value": 0.3814079468021896,
+      "extraction_method": "observed",
+      "score_confidence": 0.9,
+      "architectural_proposal": "Tighten the structural grid and deepen the occupied spatial field.",
+      "architectural_target": "structure.bay_spacing",
+      "architectural_target_label": "Structural bay spacing",
+      "mapping_direction": "inverse",
+      "declared_output_range": [
+        5.2,
+        3.0
+      ],
+      "applied_min": 4.360903,
+      "applied_max": 4.360903,
+      "applied_unit": "m",
+      "outcome": "4.36 m frame bay spacing across 12 columns",
+      "negotiation": "Inverse mapping: higher musical density tightens the frame grid within its declared span range.",
+      "affected_element_ids": [
+        "column-gallery-01-0-0",
+        "column-gallery-01-0-1",
+        "column-gallery-01-1-0",
+        "column-gallery-01-1-1",
+        "column-gallery-02-0-0",
+        "column-gallery-02-0-1",
+        "column-gallery-02-1-0",
+        "column-gallery-02-1-1",
+        "column-gallery-03-0-0",
+        "column-gallery-03-0-1",
+        "column-gallery-03-1-0",
+        "column-gallery-03-1-1"
+      ],
+      "affected_element_kinds": [
+        "column"
+      ],
+      "affected_programs": [
+        "structure"
+      ]
+    },
+    {
+      "id": "translation-04",
+      "rule_id": "DENSITY_TO_DEPTH",
+      "music_feature": "onset_density_hz",
+      "music_feature_label": "Onset density",
+      "music_value": 2.092617,
+      "music_normalized": 0.3814079468021896,
+      "music_unit": "onsets_per_second",
+      "music_method": "librosa.onset.onset_detect",
+      "music_confidence": 0.9,
+      "shared_dimension": "density",
+      "shared_dimension_label": "Density",
+      "score_value": 0.3814079468021896,
+      "extraction_method": "observed",
+      "score_confidence": 0.9,
+      "architectural_proposal": "Tighten the structural grid and deepen the occupied spatial field.",
+      "architectural_target": "massing.primary_depth",
+      "architectural_target_label": "Primary gallery depth",
+      "mapping_direction": "direct",
+      "declared_output_range": [
+        6.5,
+        10.0
+      ],
+      "applied_min": 7.310784,
+      "applied_max": 7.593072,
+      "applied_unit": "m",
+      "outcome": "7.31\u20137.59 m public gallery depths",
+      "negotiation": "Clamped by the pavilion depth range; each gallery retains a traceable controlled variation.",
+      "affected_element_ids": [
+        "gallery-01",
+        "gallery-02",
+        "gallery-03"
+      ],
+      "affected_element_kinds": [
+        "massing"
+      ],
+      "affected_programs": [
+        "gallery"
+      ]
+    },
+    {
+      "id": "translation-05",
+      "rule_id": "DENSITY_TO_DEPTH",
+      "music_feature": "onset_density_hz",
+      "music_feature_label": "Onset density",
+      "music_value": 2.092617,
+      "music_normalized": 0.3814079468021896,
+      "music_unit": "onsets_per_second",
+      "music_method": "librosa.onset.onset_detect",
+      "music_confidence": 0.9,
+      "shared_dimension": "density",
+      "shared_dimension_label": "Density",
+      "score_value": 0.3814079468021896,
+      "extraction_method": "observed",
+      "score_confidence": 0.9,
+      "architectural_proposal": "Tighten the structural grid and deepen the occupied spatial field.",
+      "architectural_target": "service.module_width",
+      "architectural_target_label": "Service volume width",
+      "mapping_direction": "direct",
+      "declared_output_range": [
+        6.5,
+        10.0
+      ],
+      "applied_min": 6.5,
+      "applied_max": 6.5,
+      "applied_unit": "m",
+      "outcome": "6.50 m private service volume width",
+      "negotiation": "The private service volume reuses the density rule and is capped by its typology-specific width limit.",
+      "affected_element_ids": [
+        "service-01"
+      ],
+      "affected_element_kinds": [
+        "massing"
+      ],
+      "affected_programs": [
+        "service"
+      ]
+    },
+    {
+      "id": "translation-06",
+      "rule_id": "CONTINUITY_TO_GAP",
+      "music_feature": "spectral_centroid_hz",
+      "music_feature_label": "Spectral continuity proxy",
+      "music_value": 1289.104,
+      "music_normalized": 0.17535653992054742,
+      "music_unit": "hz",
+      "music_method": "librosa.feature.spectral_centroid",
+      "music_confidence": 0.9,
+      "shared_dimension": "continuity",
+      "shared_dimension_label": "Continuity",
+      "score_value": 0.17535653992054742,
+      "extraction_method": "inferred",
+      "score_confidence": 0.72,
+      "architectural_proposal": "Reduce separation between episodes and increase visual continuity.",
+      "architectural_target": "sequence.entry_gap",
+      "architectural_target_label": "Entry threshold gap",
+      "mapping_direction": "inverse",
+      "declared_output_range": [
+        1.5,
+        0.35
+      ],
+      "applied_min": 0.4,
+      "applied_max": 0.4,
+      "applied_unit": "m",
+      "outcome": "0.40 m circulation entry threshold",
+      "negotiation": "The circulation entry applies a fixed typology threshold after the continuity proposal.",
+      "affected_element_ids": [
+        "entry-01"
+      ],
+      "affected_element_kinds": [
+        "massing"
+      ],
+      "affected_programs": [
+        "entry"
+      ]
+    },
+    {
+      "id": "translation-07",
+      "rule_id": "CONTINUITY_TO_GAP",
+      "music_feature": "spectral_centroid_hz",
+      "music_feature_label": "Spectral continuity proxy",
+      "music_value": 1289.104,
+      "music_normalized": 0.17535653992054742,
+      "music_unit": "hz",
+      "music_method": "librosa.feature.spectral_centroid",
+      "music_confidence": 0.9,
+      "shared_dimension": "continuity",
+      "shared_dimension_label": "Continuity",
+      "score_value": 0.17535653992054742,
+      "extraction_method": "inferred",
+      "score_confidence": 0.72,
+      "architectural_proposal": "Reduce separation between episodes and increase visual continuity.",
+      "architectural_target": "sequence.module_gap",
+      "architectural_target_label": "Gallery module gap",
+      "mapping_direction": "inverse",
+      "declared_output_range": [
+        1.5,
+        0.35
+      ],
+      "applied_min": 1.29834,
+      "applied_max": 1.29834,
+      "applied_unit": "m",
+      "outcome": "1.30 m spacing between public gallery modules",
+      "negotiation": "Inverse mapping: greater inferred continuity reduces separation between public gallery episodes.",
+      "affected_element_ids": [
+        "gallery-01",
+        "gallery-02",
+        "gallery-03"
+      ],
+      "affected_element_kinds": [
+        "massing"
+      ],
+      "affected_programs": [
+        "gallery"
+      ]
+    }
+  ],
+  "limitations": [
+    "Only four of the ten Shared Score dimensions are automated in the MVP.",
+    "Spectral centroid is an inferred continuity proxy, not a direct musical continuity measurement.",
+    "The report covers accepted building elements; Blender facade and site context remain downstream presentation geometry."
+  ]
+}

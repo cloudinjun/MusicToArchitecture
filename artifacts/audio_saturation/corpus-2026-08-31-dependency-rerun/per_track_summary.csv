@@ -1,0 +1,15 @@
+id,title,style_family,runtime_seconds,element_count,feature_near_count,score_near_count,datum_near_count,variable_coverage,program_fits,dependency_status,dependency_connected_rate,dependency_structural_path_rate,dependency_relation_count,model_id
+mozart-symphony-29,"Symphony No. 29 in A major, K. 201 (excerpt)",Classical orchestral,7.49,5791,0,0,0,1.0,True,passed,1.0,1.0,6910,building-v3-60c5b7411c1a
+couperin-harpsichord,L'Art de toucher le clavecin (recorded excerpt),Baroque harpsichord,1.765,4880,0,0,0,1.0,True,passed,1.0,1.0,5803,building-v3-887e29547b49
+dub-riots-silience-is-gold,Silience Is Gold,Dub / roots reggae,1.978,5558,0,0,0,1.0,True,passed,1.0,1.0,7402,building-v3-2cbd89d77490
+deadbone-wake-up-call,Wake-up Call Intro – 24 Hours,Detroit techno,1.737,4279,0,0,0,1.0,False,passed,1.0,1.0,4734,building-v3-6354f3fbea80
+lucas-darklord-hymne-iii,Hymne III,Black metal / noise,2.056,4969,0,0,0,1.0,False,passed,1.0,1.0,5582,building-v3-bfbde72cc850
+jorgensen-guitar-soundscape-1,Guitar Soundscape 1,Ambient guitar / drone,2.02,5125,0,0,0,1.0,False,passed,1.0,1.0,6972,building-v3-3d99061e0059
+krakenti-his-akorns,His Akorns,Electronic industrial,1.751,3986,0,0,0,1.0,True,passed,1.0,1.0,4417,building-v3-7907d157831a
+affen-like-life-easily-ended,Like Life Easily Ended,Indie rock,1.662,3315,0,0,0,1.0,False,passed,1.0,1.0,3845,building-v3-6673b85caa7f
+nienvox-visions,Visions,Trip-hop / breakbeats / jazz,1.764,4272,0,0,0,1.0,False,failed,0.9997365648050579,1.0,4591,building-v3-0cdcb2d42f1d
+charrier-accorte,Accorte,Acousmatic / electroacoustic improvisation,1.984,5743,0,0,0,1.0,True,passed,1.0,1.0,7017,building-v3-f74b049c0fd3
+m-pex-bueid,Bueid,Portuguese guitar / electronic world music,1.755,2857,0,0,0,1.0,False,failed,0.9996159754224271,1.0,3163,building-v3-250121350724
+kevin-bryce-rainfields,Rainfields,Electropop / IDM / ambient,1.973,4963,0,0,0,1.0,False,passed,1.0,1.0,5745,building-v3-ac899390a0d4
+walcker-crew-blind-istanbul,Blind Istanbul,Alternative hip-hop / jazz-funk / dub,1.63,2955,0,0,0,1.0,False,passed,1.0,1.0,3413,building-v3-e1128f5ea97d
+hurle-cancer,Cancer,Hardcore punk / thrash / crust,1.693,3938,0,0,0,1.0,False,passed,1.0,1.0,4373,building-v3-483cf79c50ca
