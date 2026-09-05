@@ -3115,7 +3115,7 @@ def _emit_site(b: _Builder) -> None:
 def compile_building_model_v3(
     features: AudioFeatures, score: ArchitecturalScore, *,
     massing_id: str | None = None, typology: str | None = None,
-    grammar_id: str | None = None, cutaway: bool = True,
+    grammar_id: str | None = None, cutaway: bool = False,
     site: SiteParameters | None = None,
 ) -> BuildingModelV3:
     """Compile one building from one score.
@@ -3305,7 +3305,8 @@ def compile_building_model_v3(
         seismic_weight_kn=seismic_weight_kn,
         structural_system_id=selection.system_id)
     model.constitution = validate_model(typology, brief, model)
-    model.life_safety = life_safety_graph(model, brief, typology=typology)
+    model.life_safety = life_safety_graph(
+        model, brief, typology=typology, sprinklered=bool(site.sprinklered.value))
     # The spatial rules go here with the other post-assembly reports. They need every
     # element in place, and leaving them in a script would mean the constraint exists
     # only while somebody is looking -- which is the situation they were written to end.

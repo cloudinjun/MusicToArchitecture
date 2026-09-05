@@ -29,13 +29,17 @@ a status must be earned by a measurement, not by the derivation that promised it
 
 from __future__ import annotations
 
+import math
+
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
 from .datums import DatumSet, Lattice
 from .geometry import point_inside
-from .program import AllocatedZone, UnplacedSpace, plate_x_runs
+from .program import AllocatedZone, UnplacedSpace
+from .plan_regions import PLAN_EPS_M, usable_region, rectangular_runs
+from shapely.geometry import box
 
 
 # --- what a theatre is, in numbers a person can check -------------------------------
@@ -225,47 +229,25 @@ def _row_index(y_lines: list[float], y: float) -> int:
 
 
 def _rect_clear_of(level, rect: Rect) -> bool:
-    """Whether a room can actually stand here: on the plate, over no hole.
-
-    A notched or split plate can satisfy the bounding box and still not own these
-    corners, and an atrium void is floor that is not there -- standing a gallery
-    over either is exactly the error a person catches by looking. Probes are inset
-    50 mm so a corner exactly on the plate edge does not fail the boundary test.
-    """
+    """Cover the entire room, including corners and holes, not inset probes."""
     x0, y0, x1, y1 = rect
-    probes = ((x0 + 0.05, y0 + 0.05), (x0 + 0.05, y1 - 0.05),
-              (x1 - 0.05, y0 + 0.05), (x1 - 0.05, y1 - 0.05),
-              ((x0 + x1) / 2.0, y0 + 0.05),
-              ((x0 + x1) / 2.0, y1 - 0.05),
-              (x0 + 0.05, (y0 + y1) / 2.0),
-              (x1 - 0.05, (y0 + y1) / 2.0),
-              ((x0 + x1) / 2.0, (y0 + y1) / 2.0))
-    if not all(point_inside(level.plate, x, y) for x, y in probes):
-        return False
-    # A hole wholly inside a large room misses every probe above. Compare the
-    # rectangles as well, so a room cannot count absent floor as delivered area.
-    for void in level.voids:
-        vx0, vx1 = min(p.x for p in void), max(p.x for p in void)
-        vy0, vy1 = min(p.y for p in void), max(p.y for p in void)
-        if min(x1, vx1) - max(x0, vx0) > 0.01 \
-                and min(y1, vy1) - max(y0, vy0) > 0.01:
-            return False
-    return True
+    return (x1 > x0 and y1 > y0
+            and usable_region(level).buffer(PLAN_EPS_M).covers(box(*rect)))
 
 
 def _plate_x_span(level, y0: float, y1: float) -> tuple[float, float] | None:
-    """The common horizontal run an axis-aligned room owns over its full depth."""
-    inset = min(0.05, max(0.0, (y1 - y0) / 4.0))
-    ys = (y0 + inset, (y0 + y1) / 2.0, y1 - inset)
-    runs = []
-    for y in ys:
-        row = plate_x_runs(level.plate, y, [])
-        if not row:
-            return None
-        runs.append(max(row, key=lambda run: run[1] - run[0]))
-    x0 = max(run[0] for run in runs)
-    x1 = min(run[1] for run in runs)
-    return (x0, x1) if x1 - x0 > 0.1 else None
+    """The longest run that owns the entire strip, not three sample lines."""
+    runs = rectangular_runs(usable_region(level), y0, y1)
+    return max(runs, key=lambda run: run[1] - run[0]) if runs else None
+
+
+def _inward_rect(rect: Rect) -> Rect:
+    """Serialize external room edges inward to millimetres, never off the floor."""
+    x0, y0, x1, y1 = rect
+    return (math.ceil(x0 * 1000 - 1e-8) / 1000,
+            math.ceil(y0 * 1000 - 1e-8) / 1000,
+            math.floor(x1 * 1000 + 1e-8) / 1000,
+            math.floor(y1 * 1000 + 1e-8) / 1000)
 
 
 def _gutted(lattice: Lattice,
@@ -299,7 +281,7 @@ def _gutted(lattice: Lattice,
 def _place_zone(ask, rect: Rect, level, y_lines, *,
                 daylight_satisfied: bool = True) -> AllocatedZone:
     """One archetype room as the finished zone the allocator would have made."""
-    x0, y0, x1, y1 = rect
+    x0, y0, x1, y1 = _inward_rect(rect)
     delivered = (x1 - x0) * (y1 - y0)
     return AllocatedZone(
         space_id=ask.id, space_type=ask.space_type, label=ask.label,
@@ -309,7 +291,6 @@ def _place_zone(ask, rect: Rect, level, y_lines, *,
         x0=round(x0, 3), y0=round(y0, 3), x1=round(x1, 3), y1=round(y1, 3),
         area_required_m2=ask.area_m2,
         area_delivered_m2=round(delivered, 2),
-        area_satisfied=delivered >= ask.area_m2 * ask.area_tolerance,
         area_tolerance=ask.area_tolerance,
         daylight_satisfied=daylight_satisfied,
         level_preference_satisfied=True)
@@ -342,9 +323,11 @@ def carve_theatre(lattice: Lattice, datums: DatumSet,
         return _refuse('ARCH-THEATRE-BOWL', asks, reason)
 
     ground = lattice.occupied[0]
+    # Fix one canonical pair before deriving the bowl, reservations and voids.
+    # Rounding only AllocatedZone used to add a thin unsupported strip at the edge.
     px0 = min(p.x for p in ground.plate)
-    px1 = max(p.x for p in ground.plate)
-    py1 = max(p.y for p in ground.plate)
+    px1 = math.floor(max(p.x for p in ground.plate) * 1000 + 1e-8) / 1000
+    py1 = math.floor(max(p.y for p in ground.plate) * 1000 + 1e-8) / 1000
 
     # Depth: whole structural rows from the north edge, snapped to the band grid so
     # the rooms beside the carve sit flush against its wall. Deepest first -- depth
@@ -359,7 +342,7 @@ def carve_theatre(lattice: Lattice, datums: DatumSet,
         return refuse(f'no run of rows offers the house its '
                       f'{house_ask.min_dimension_m:.0f} m minimum dimension '
                       f'on this plate')
-    y0 = min(candidates)
+    y0 = math.ceil(min(candidates) * 1000 - 1e-8) / 1000
     depth = py1 - y0
 
     stage_w = max(stage_ask.area_m2 / depth, stage_ask.min_dimension_m)
@@ -372,8 +355,10 @@ def carve_theatre(lattice: Lattice, datums: DatumSet,
     # Stage at the east end, audience raking west toward the entry side.
     audience_dx = -1
     stage_x1 = px1
-    stage_x0 = house_x1 = stage_x1 - stage_w
-    house_x0 = house_x1 - house_w
+    # The shared proscenium uses one coordinate, not two independently rounded edges.
+    stage_x0 = house_x1 = round(stage_x1 - stage_w, 3)
+    house_x0 = math.ceil((house_x1 - house_w) * 1000 - 1e-8) / 1000
+    house_w = house_x1 - house_x0
     proscenium_x = house_x1
     house = (house_x0, y0, house_x1, py1)
     stage = (stage_x0, y0, stage_x1, py1)

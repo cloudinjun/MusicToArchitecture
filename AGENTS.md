@@ -318,6 +318,20 @@ break them, and three real massing defects — an asymmetric taper, an uncapped 
 about a drifting centroid, and a minimum-plate guard checked before the last narrowing —
 were found by these tests rather than by looking at renders.
 
+## Redline hardening R1
+
+`docs/implementation/redline-r1.md` records the first source-level response to the
+architectural redlines. Normal v3 compilation is complete (`cutaway=False`). Incomplete
+cutaway sets require `issue_drawings(..., allow_cutaway=True)` and diagnostic captions;
+do not silently route them into ordinary drawing output. Legacy cutaway compilation
+remains available for explicit diagnostics until the presentation ViewSpec is separated.
+
+Program allocation must check the complete serialized footprint against plate minus
+holes and non-waivable core reservations. Do not restore the small-floor core waiver.
+Preplaced archetype rooms are not exempt. `SP-ROOM-OUTSIDE-SUPPORT` reads emitted slab
+pieces independently; missing geometry is unknown, not passing. Egress findings based
+on centroid links and provisional tables must not report a compliance pass.
+
 ## The issued drawing set
 
 Plans, elevations and sections are readings of the model, not pictures of it; the

@@ -37,6 +37,9 @@ import itertools
 from typing import Literal
 
 from pydantic import BaseModel, Field
+from shapely.geometry import box
+
+from .plan_regions import PLAN_EPS_M, rectangular_runs, usable_region
 
 from .datums import DatumSet, Lattice, LevelDatum
 from .geometry import Vector2, point_inside
@@ -125,10 +128,8 @@ class ProgramAllocation(BaseModel):
     schema_version: Literal['mta.program_allocation/1.0'] = 'mta.program_allocation/1.0'
     zones: list[AllocatedZone]
     unplaced: list[UnplacedSpace]
-    # Levels whose plate could not carry its own cores: cutting them out left too
-    # little to lay out on, so the bands were taken whole and the program shares the
-    # floor with the stair. Recorded rather than hidden -- the spatial rules read this
-    # to tell a consequence of a small plate from an oversight.
+    # Legacy payload field. New allocations never waive core reservations. Old
+    # runs may still carry this list; it must not excuse a measured collision.
     cores_unreserved: list[str] = Field(default_factory=list)
     usable_area_by_level: dict[str, float]
     required_area_m2: float
@@ -268,10 +269,6 @@ LIBRARY_BRIEF: tuple[SpaceRequirement, ...] = (
 Reservation = tuple[float, float, float, float]
 DEFAULT_CIRCULATION_ALLOWANCE = 0.22   # used when the datum set predates the rule
 
-# How much of a floor must survive the core reservation for it to be worth applying.
-# Below this the plate is too small to lay out around its own cores, and cutting them
-# out leaves nothing to allocate at all.
-MIN_USABLE_AFTER_CORES = 0.45
 _SAMPLES = 220
 
 
@@ -354,25 +351,15 @@ class Band(BaseModel):
 
 def level_bands(level: LevelDatum, lattice: Lattice,
                 reserved: tuple[Reservation, ...] = ()) -> list[Band]:
+    """Inscribed rectangular strips measured against the full usable region."""
+    region = usable_region(level, reserved)
+    if region.is_empty:
+        return []
     bands: list[Band] = []
     rows = len(lattice.y_lines) - 1
     for index in range(rows):
         y0, y1 = lattice.y_lines[index], lattice.y_lines[index + 1]
-        mid = (y0 + y1) / 2.0
-        blocked: list[tuple[float, float]] = []
-        for hole in level.voids:
-            hy0 = min(p.y for p in hole)
-            hy1 = max(p.y for p in hole)
-            if hy0 < y1 and hy1 > y0:
-                blocked.append((min(p.x for p in hole), max(p.x for p in hole)))
-        for rx0, ry0, rx1, ry1 in reserved:
-            if ry0 < y1 and ry1 > y0:
-                blocked.append((rx0, rx1))
-        # Every clear run, not the longest. A core standing in the middle of a row
-        # leaves usable floor on both sides of it, and taking only the longer side threw
-        # the other away -- which is how reserving 133 m2 of core cost 267 m2 of floor,
-        # and why an atrium sterilised whichever side of itself was narrower.
-        for x0_run, x1_run in plate_x_runs(level.plate, mid, blocked):
+        for x0_run, x1_run in rectangular_runs(region, y0, y1):
             if x1_run - x0_run < 4.0:
                 continue
             bands.append(Band(index=len(bands), row=index, y0=y0, y1=y1,
@@ -446,8 +433,8 @@ def allocate_program(
 ) -> ProgramAllocation:
     """Lay the brief out on the plates, around whatever already stands on them.
 
-    `reserved` is the cores, on every level alike, and may be waived on a plate too
-    small to carry its own (see below). The three keyword parameters are the
+    `reserved` is the cores, on every level alike, and is never waived. The three
+    keyword parameters are the
     archetype's, and they are different in kind: `carved` is floor an archetype has
     taken, per level, and is never waived -- an auditorium is not a stair that a small
     plate can choose to overlap; `preplaced` are the archetype's own rooms, which
@@ -463,35 +450,14 @@ def allocate_program(
         allowance = DEFAULT_CIRCULATION_ALLOWANCE
 
     occupied = [level.index for level in lattice.occupied]
-    # Reserve the cores where the floor can carry them, and say so where it cannot.
-    #
-    # A core is a real obstruction and the program has to be laid out around it -- that
-    # is the whole point of reserving it. But `level_bands` measures a row as one
-    # continuous run, so an obstruction in the middle of a row costs the shorter side
-    # as well as itself. On a wide plate that is a few per cent; on a nineteen-metre
-    # tower it took every band on every floor and left twenty-two spaces unplaced and a
-    # building with no rooms in it.
-    #
-    # So the reservation is applied where it leaves a floor to lay out on, and where it
-    # does not the bands are taken unreserved and the overlap is left for the spatial
-    # rules to report. A stated compromise beats an empty building, and beats a silent
-    # one either way.
+    # A core is an obstruction even on a small floor. The fit stage may grow the
+    # plate or report unplaced rooms; it must never make a core disappear to fit.
     bands_by_level: dict[int, list[Band]] = {}
-    unreserved_levels: list[str] = []
+    regions_by_level = {}
     for level in lattice.occupied:
-        # Carved floor is in both the gross and the cut bands, so the core fallback
-        # below can waive the cores but can never waive the archetype.
-        carve_here = tuple((carved or {}).get(level.index, ()))
-        gross = level_bands(level, lattice, carve_here)
-        cut = level_bands(level, lattice, tuple(reserved) + carve_here) \
-            if reserved else gross
-        gross_area = sum(band.area for band in gross)
-        cut_area = sum(band.area for band in cut)
-        if reserved and (not cut or cut_area < gross_area * MIN_USABLE_AFTER_CORES):
-            bands_by_level[level.index] = gross
-            unreserved_levels.append(level.id)
-        else:
-            bands_by_level[level.index] = cut
+        reservations = tuple(reserved) + tuple((carved or {}).get(level.index, ()))
+        regions_by_level[level.index] = usable_region(level, reservations)
+        bands_by_level[level.index] = level_bands(level, lattice, reservations)
     # remaining run per band, consumed left to right
     cursor: dict[tuple[int, int], float] = {
         (level_index, band.index): band.x0
@@ -525,8 +491,21 @@ def allocate_program(
     groups_by_level = {index: _stacking_groups(bands, max_rows)
                        for index, bands in bands_by_level.items()}
 
-    zones: list[AllocatedZone] = list(preplaced)
+    zones: list[AllocatedZone] = []
     unplaced: list[UnplacedSpace] = list(precluded)
+    # An archetype is not exempt from floor coverage. Its own carved reservation
+    # is excluded here, but holes and real cores still constrain the room.
+    for zone in preplaced:
+        level = lattice.level(zone.level_index)
+        footprint = box(zone.x0, zone.y0, zone.x1, zone.y1)
+        region = usable_region(level, reserved)
+        if footprint.is_empty or not region.buffer(PLAN_EPS_M).covers(footprint):
+            unplaced.append(UnplacedSpace(
+                space_id=zone.space_id, label=zone.label,
+                area_required_m2=zone.area_required_m2,
+                reason='Preplaced archetype room is outside the usable floor or overlaps a core.'))
+            continue
+        zones.append(zone.model_copy(update={'area_delivered_m2': round(footprint.area, 2)}))
 
     def try_place(
         space: SpaceRequirement, level_index: int, tolerance: float,
@@ -558,15 +537,25 @@ def allocate_program(
             if remaining < width * tolerance:
                 continue
             width = min(width, remaining)
-            delivered = width * depth
+            # Round inward, then validate the exact serialized rectangle. Checking
+            # before rounding can turn boundary contact into a small overhang.
+            x0 = math.ceil(start * 1000.0 - 1e-8) / 1000.0
+            x1 = math.floor((start + width) * 1000.0 + 1e-8) / 1000.0
+            y0 = math.ceil(group[0].y0 * 1000.0 - 1e-8) / 1000.0
+            y1 = math.floor(group[-1].y1 * 1000.0 + 1e-8) / 1000.0
+            if min(x1 - x0, y1 - y0) < space.min_dimension_m - PLAN_EPS_M:
+                continue
+            footprint = box(x0, y0, x1, y1)
+            if not regions_by_level[level_index].buffer(PLAN_EPS_M).covers(footprint):
+                continue
+            delivered = footprint.area
             perimeter = any(band.perimeter for band in group)
             candidate = AllocatedZone(
                 space_id=space.id, space_type=space.space_type, label=space.label,
                 category=space.category, occupancy_id=space.occupancy_id,
                 level_index=level_index, level_id=level.id,
                 band_index=group[0].row,
-                x0=round(start, 3), y0=round(group[0].y0, 3),
-                x1=round(start + width, 3), y1=round(group[-1].y1, 3),
+                x0=x0, y0=y0, x1=x1, y1=y1,
                 area_required_m2=space.area_m2,
                 area_delivered_m2=round(delivered, 2),
                 area_tolerance=space.area_tolerance,
@@ -636,7 +625,7 @@ def allocate_program(
         capacity[chosen.level_index] -= chosen.area_delivered_m2
 
     return ProgramAllocation(
-        zones=zones, unplaced=unplaced, cores_unreserved=unreserved_levels,
+        zones=zones, unplaced=unplaced, cores_unreserved=[],
         usable_area_by_level=usable,
         required_area_m2=round(sum(space.area_m2 for space in brief), 2),
         delivered_area_m2=round(sum(zone.area_delivered_m2 for zone in zones), 2))

@@ -51,7 +51,8 @@ def _patch_generation(monkeypatch, *, v2_export, v3_export):
     monkeypatch.setattr(pipeline, 'compile_facade_host_handoff', lambda *_: facade_handoff)
     monkeypatch.setattr(pipeline, 'export_blender_web_model', v2_export)
 
-    def compile_v3(*args):
+    def compile_v3(*args, cutaway):
+        assert cutaway is False, 'Normal pipeline exports need a complete model.'
         v3_calls.append(args)
         return v3_model
 

@@ -370,7 +370,7 @@ class Lattice(BaseModel):
     # run can turn it off and see the volume it actually made. Reading massing off a
     # model sliced open on the two faces you can see is nearly impossible, which is
     # what the first evidence sheets demonstrated.
-    cutaway: bool = True
+    cutaway: bool = False
     # Floor a spatial archetype carved for its own rooms (decision 0016), as plan
     # rectangles keyed by level index. Written by the compiler when a carve is
     # applied, alongside the voids it punches in the levels above. It lives on the
@@ -613,7 +613,7 @@ def _void_polygons(datums: DatumSet, level: int, family: MassingFamily,
 
 def build_lattice(datums: DatumSet,
                   family: MassingFamily | None = None,
-                  cutaway: bool = True) -> Lattice:
+                  cutaway: bool = False) -> Lattice:
     """Register one building's levels and grid inside its massing family's footprint.
 
     `family` defaults to the stacked slab, which reproduces exactly the building this
