@@ -1,0 +1,32 @@
+name: Redline implementation workspace
+on:
+  push:
+    branches: [fix/redline-generator-r1]
+    paths:
+      - .github/workflows/redline-implementation.yml
+      - .redline/**
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive tracked source and test inputs
+        run: |
+          python - <<'PY'
+          import pathlib, subprocess, zipfile
+          paths = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+          suffixes = {'.py', '.json', '.md', '.txt', '.toml', '.ini', '.yaml', '.yml', '.csv'}
+          with zipfile.ZipFile('redline-source.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
+              for name in paths:
+                  path = pathlib.Path(name)
+                  if name and path.is_file() and path.suffix in suffixes:
+                      archive.write(path, name)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: redline-source
+          path: redline-source.zip
+          retention-days: 2
