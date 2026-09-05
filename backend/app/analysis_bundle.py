@@ -40,6 +40,7 @@ from .models_v3 import (
     AxisReport,
     BuildingModelV3,
     DependencyGraph,
+    DerivationChain,
     MemberSizingRecord,
     SelectionRecord,
 )
@@ -48,7 +49,7 @@ from .site import SiteParameters
 from .site_loads import SiteLoadSet
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard, typing only
-    from .models import PipelineGateState, ValidationCheck
+    from .models import ArchitecturalScore, AudioFeatures, PipelineGateState, ValidationCheck
 
 
 class ElementGroupSummary(BaseModel):
@@ -192,6 +193,15 @@ class AnalysisBundle(BaseModel):
     # repository mapping registry but never imports Revit or upgrades model authority.
     bim_handoff: BimHandoffReport | None = None
 
+    # One assembled reasoning chain per element group, keyed by `group_id`, so a
+    # reader who picks a family in the model can see how it was reasoned rather than
+    # only what was recorded. Per group and not per element: the chains for 3,362
+    # elements are 9 MB, and the instances of one family differ in their indices, not
+    # in their reasoning. `derivation_element_ids` names the instance each chain was
+    # assembled from, so the sample is stated rather than implied.
+    derivation: dict[str, DerivationChain] = Field(default_factory=dict)
+    derivation_element_ids: dict[str, str] = Field(default_factory=dict)
+
     compliance: ComplianceRollup = Field(default_factory=ComplianceRollup)
     limitations: list[str] = Field(default_factory=list)
 
@@ -256,6 +266,45 @@ V2_GRAMMAR_ALIASES = {'international_style_informed': 'FCD-01-INTERNATIONAL-STYL
 
 def _canonical_grammar(grammar_id: str) -> str:
     return V2_GRAMMAR_ALIASES.get(grammar_id, grammar_id)
+
+
+def _summarise_derivation(
+    model: BuildingModelV3, features, score,
+) -> tuple[dict[str, DerivationChain], dict[str, str]]:
+    """One reasoning chain per element family, assembled from what the model carries.
+
+    `derivation.build_chains` returns a chain per *element*, which is what a click on a
+    solid would want and what the module was written for. It is also 9 MB on a theatre,
+    against 1.7 MB for the whole model, so shipping it whole would make the reasoning
+    the largest thing in the response by a factor of five.
+
+    The instances of one family differ in their lattice indices and their coordinates,
+    not in why they exist, so one chain per family carries the reasoning at a size the
+    wire can hold. The instance it was assembled from is returned alongside rather than
+    left implicit -- a sample presented as a summary is the kind of claim this project
+    does not make.
+    """
+    from .derivation import build_chain
+
+    by_dependent: dict[str, list] = {}
+    graph = model.dependency_graph
+    if graph is not None:
+        for relation_group in graph.relation_groups:
+            for relation in relation_group.expand():
+                by_dependent.setdefault(relation.dependent_id, []).append(relation)
+
+    chains: dict[str, DerivationChain] = {}
+    sampled: dict[str, str] = {}
+    for group in model.element_groups:
+        elements = group.expand()
+        if not elements:
+            continue
+        element = elements[0]
+        chains[group.group_id] = build_chain(
+            element, model.lattice, model.datum_set,
+            by_dependent.get(element.id, ()), features=features, score=score)
+        sampled[group.group_id] = element.id
+    return chains, sampled
 
 
 def _same_building(model: BuildingModelV3, companion: str | None) -> bool:
@@ -515,6 +564,8 @@ def compile_analysis_bundle(
     pipeline_gates: 'list[PipelineGateState] | None' = None,
     bim_handoff: BimHandoffReport | None = None,
     companion_identity: str | None = None,
+    features: 'AudioFeatures | None' = None,
+    score: 'ArchitecturalScore | None' = None,
 ) -> AnalysisBundle:
     """Gather one run's schema 3.0 results into the payload the client reads.
 
@@ -550,6 +601,11 @@ def compile_analysis_bundle(
         _tally_site_loads(model.site_loads),
     ) if tally is not None]
 
+    # The reasoning behind each element family. Assembled here rather than by a caller
+    # so every consumer of a bundle -- the API, the frozen demo, a stored run reopened
+    # months later -- carries the same chains as the run that produced it.
+    _derivation, _derivation_ids = _summarise_derivation(model, features, score)
+
     rollup = ComplianceRollup(
         tallies=tallies,
         foreign_tallies=foreign,
@@ -574,6 +630,7 @@ def compile_analysis_bundle(
         profiles=model.profiles,
         sizing=model.sizing,
         element_groups=_summarise_groups(model),
+        derivation=_derivation, derivation_element_ids=_derivation_ids,
         element_counts=model.element_counts,
         layer_counts=model.layer_counts,
         element_count=model.element_count,

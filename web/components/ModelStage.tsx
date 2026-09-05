@@ -163,6 +163,9 @@ export function ModelStage({
   const [showSite, setShowSite] = useState(true);
   const [loaded, setLoaded] = useState(false);
   const [assembling, setAssembling] = useState<string | null>(null);
+  // Labels get out of the way while the model is being turned, and come back the
+  // moment the pointer lifts — the building is what you are looking at mid-orbit.
+  const [orbiting, setOrbiting] = useState(false);
   // The performance: which rationale stage is speaking, how many of its lines are
   // out, and whether the whole argument has landed. `fast` is Skip — it shrinks the
   // live tempo so the assembly fast-forwards instead of being torn down.
@@ -182,7 +185,7 @@ export function ModelStage({
 
   const asset = run?.model_asset_v3 ?? null;
   const manifestUrl = asset?.manifest_url ?? null;
-  const glbUrl = asset?.asset_url ?? run?.model_asset.asset_url ?? null;
+  const glbUrl = asset?.asset_url ?? run?.model_asset?.asset_url ?? null;
 
   // The stage is no longer remounted per run — the Canvas, and with it the camera,
   // survives a run switch so two variants can be compared from the same viewpoint.
@@ -350,7 +353,14 @@ export function ModelStage({
   const analysis = run.analysis;
 
   return (
-    <div className="stage">
+    <div
+      className="stage"
+      onPointerDown={(event) => {
+        if (event.target instanceof HTMLCanvasElement) setOrbiting(true);
+      }}
+      onPointerUp={() => setOrbiting(false)}
+      onPointerLeave={() => setOrbiting(false)}
+    >
       <ArchitectureViewport
         assetUrl={assetUrl(glbUrl)}
         mode={mode}
@@ -360,7 +370,7 @@ export function ModelStage({
         clipping={clipping}
         showSite={showSite}
         callouts={callouts}
-        annotate={annotate && (story === null || story.done)}
+        annotate={annotate && !orbiting && (story === null || story.done)}
         buildKey={viewNonce}
         stepSeconds={story && !story.done && !fast ? 3.0 : 0.55}
         onReady={handleReady}
@@ -441,9 +451,13 @@ export function ModelStage({
       <p className="stage-hint">
         {assembling
           ? 'Assembling · ' + assembling
-          : hidden.size > 0 || focus
-            ? compact(visibleElements) + ' of ' + compact(drawnTotal) + ' elements shown'
-            : 'Drag to orbit · scroll to zoom'}
+          : sectionOpen
+            ? 'Cut at ' + clipping.axis.toUpperCase() + ' ' + clipping.offset.toFixed(1)
+              + ' m · Section clears it'
+            : hidden.size > 0 || focus
+              ? compact(visibleElements) + ' of ' + compact(drawnTotal)
+                + ' elements shown · Layers to change'
+              : 'Drag to orbit · scroll to zoom · Reports for every detail'}
       </p>
 
       {layersOpen && (

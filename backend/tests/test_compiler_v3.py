@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 
 import pytest
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
 
 from backend.app.compiler_v3 import compile_building_model_v3, core_reservations
 from backend.app.datums import build_lattice, compile_datum_set
@@ -90,10 +92,25 @@ def test_derived_bounds_stay_consistent_with_the_geometry(model):
         assert element.dimensions.z > 0
 
 
-def test_floor_slabs_carry_the_atrium_voids_as_holes(model):
+def test_floor_slabs_exclude_the_atrium_voids(model):
     slabs = [e for e in model.elements if e.kind == 'floor_slab']
     assert slabs
-    assert any(e.geometry.holes for e in slabs)
+    voided_levels = [level for level in model.lattice.levels if level.voids]
+    assert voided_levels
+
+    for level in voided_levels:
+        material = unary_union([
+            Polygon(
+                [(point.x, point.y) for point in slab.geometry.boundary],
+                holes=[[(point.x, point.y) for point in ring]
+                       for ring in slab.geometry.holes],
+            )
+            for slab in slabs if slab.level_id == level.id
+        ])
+        assert not material.is_empty
+        for ring in level.voids:
+            void = Polygon([(point.x, point.y) for point in ring])
+            assert material.intersection(void).area == pytest.approx(0.0, abs=1e-7)
 
 
 # ---------------------------------------------------------------------------

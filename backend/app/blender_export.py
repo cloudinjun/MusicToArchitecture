@@ -24,6 +24,17 @@ class BlenderExportError(RuntimeError):
     pass
 
 
+def _blender_output_tail(result: subprocess.CompletedProcess, *, max_chars: int = 1200) -> str:
+    streams = []
+    for label, output in (('stderr', result.stderr), ('stdout', result.stdout)):
+        lines = (output or '').strip().splitlines()
+        if not lines:
+            continue
+        excerpt = ' | '.join(lines[-8:])[-max_chars:]
+        streams.append(f'{label}: {excerpt}')
+    return ' | '.join(streams) or 'no Blender output'
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open('rb') as handle:
@@ -84,6 +95,8 @@ def export_blender_web_model(
             str(blender),
             "--background",
             "--factory-startup",
+            "--python-exit-code",
+            "1",
             "--python",
             str(IMPORT_SCRIPT),
             "--",
@@ -109,11 +122,13 @@ def export_blender_web_model(
             ) from error
 
     if result.returncode != 0:
-        excerpt = (result.stderr or result.stdout or "unknown Blender error")[-1200:]
-        raise BlenderExportError(f"Blender export failed: {excerpt.strip()}")
+        raise BlenderExportError(f"Blender export failed: {_blender_output_tail(result)}")
     missing = [path.name for path in (glb_path, manifest_path, blend_path, state_path) if not path.is_file()]
     if missing:
-        raise BlenderExportError(f"Blender did not create required outputs: {', '.join(missing)}")
+        raise BlenderExportError(
+            f"Blender did not create required outputs: {', '.join(missing)}; "
+            f"Blender output: {_blender_output_tail(result)}"
+        )
 
     return ModelAsset(
         asset_url=f"/models/generated/{glb_path.name}?v={glb_path.stat().st_mtime_ns}",

@@ -121,7 +121,7 @@ CutState = Literal['cut', 'beyond', 'above', 'below']
 # every subsystem its own weight has no hierarchy left to spend on the cut.
 DrawingRole = Literal[
     'primary_structure', 'secondary_structure', 'envelope', 'partition',
-    'glazing', 'circulation', 'furniture', 'site', 'grid', 'annotation',
+    'glazing', 'circulation', 'furniture', 'entourage', 'site', 'grid', 'annotation',
 ]
 
 # Element kinds to drawing roles. Anything absent is drawn as furniture -- present,
@@ -153,9 +153,15 @@ ROLE_OF_KIND: dict[str, DrawingRole] = {
     'stair_tread': 'circulation', 'stair_stringer': 'circulation',
     'stair_landing': 'circulation', 'stair_half_landing': 'circulation',
     'ramp': 'circulation', 'ramp_landing': 'circulation', 'ramp_curb': 'circulation',
-    'railing': 'circulation', 'elevator_shaft': 'circulation',
+    'railing': 'circulation',
+    # A lift shaft is a concrete core: it is cut at the weight of structure and
+    # drawn hollow, walls around a void, rather than as the solid block the model
+    # carries for it. See `drawings._shaft_geometry`.
+    'elevator_shaft': 'primary_structure',
     'desk': 'furniture', 'seat': 'furniture', 'shelving_run': 'furniture',
-    'figure': 'furniture',
+    # A scale figure is never cut and never appears in plan. It stands in a section
+    # or an elevation as a glyph, so the reader has a body to measure the room by.
+    'figure': 'entourage',
     'site_ground': 'site', 'site_step': 'site',
 }
 
@@ -174,6 +180,7 @@ _CUT_STROKE: dict[DrawingRole, Stroke] = {
     'glazing': Stroke(Weight.MEDIUM, Tone.CUT),
     'circulation': Stroke(Weight.MEDIUM, Tone.CUT),
     'furniture': Stroke(Weight.LIGHT, Tone.NEAR),
+    'entourage': Stroke(Weight.FINE, Tone.NEAR),
     'site': Stroke(Weight.HEAVY, Tone.CUT),
     'grid': Stroke(Weight.THIN, Tone.FAR, LineType.DASH_DOT),
     'annotation': Stroke(Weight.FINE, Tone.NEAR),
@@ -189,10 +196,30 @@ _POCHE: dict[DrawingRole, Tone | None] = {
     'glazing': None,
     'circulation': Tone.FAR,
     'furniture': None,
+    'entourage': None,
     'site': Tone.MIDDLE,
     'grid': None,
     'annotation': None,
 }
+
+# Hatching: a fill made of lines rather than a tone. Earth is the one case. A
+# section that fills the ground with a flat grey reads as a slab the building
+# stands on; the earth hatch is the convention that says "this is not built".
+# Pattern names resolve to `<pattern>` definitions the sheet writes once.
+_HATCH: dict[DrawingRole, str | None] = {
+    'site': 'earth',
+}
+
+# What an uncut element narrower than this collapses to. A guard post seen side-on
+# at 1:100 is half a millimetre wide: drawn as an outline it is two strokes with no
+# paper between them, which prints as a smear, and a run of them prints as a cage
+# over the stair. Anything thinner than the width of a line is drawn as a line.
+THIN_LINE_PAPER_MM = 1.0
+
+# Overhead work that is not worth dashing. Railings and curbs above the cut are real
+# but say nothing a reader needs -- every guard post above a stair became a dashed
+# box, and the one thing dashing carries, "this is over your head", drowned in them.
+NEVER_OVERHEAD_KINDS: set[str] = {'railing', 'ramp_curb'}
 
 
 @dataclass(frozen=True)
@@ -223,11 +250,14 @@ class Scale:
 
         2 draws everything, 1 drops furniture and fittings, 0 keeps structure and
         enclosure only. A 1:200 plan carrying every chair is not a more informative
-        drawing; it is a grey field with a building somewhere inside it.
+        drawing; it is a grey field with a building somewhere inside it. A 1:100 plan
+        without its furniture is the opposite failure -- a diagram of walls in which
+        the reader cannot tell a reading room from a store -- so the loose furniture
+        is kept at 1:100 and drawn at the lightest weight on the sheet.
         """
-        if self.denominator <= 50:
-            return 2
         if self.denominator <= 100:
+            return 2
+        if self.denominator <= 200:
             return 1
         return 0
 
@@ -247,9 +277,10 @@ _ROLES_AT_LEVEL: dict[int, set[DrawingRole]] = {
     0: {'primary_structure', 'envelope', 'partition', 'glazing', 'circulation',
         'site', 'grid', 'annotation'},
     1: {'primary_structure', 'secondary_structure', 'envelope', 'partition',
-        'glazing', 'circulation', 'site', 'grid', 'annotation'},
+        'glazing', 'circulation', 'entourage', 'site', 'grid', 'annotation'},
     2: {'primary_structure', 'secondary_structure', 'envelope', 'partition',
-        'glazing', 'circulation', 'furniture', 'site', 'grid', 'annotation'},
+        'glazing', 'circulation', 'furniture', 'entourage', 'site', 'grid',
+        'annotation'},
 }
 
 
@@ -291,6 +322,13 @@ class DrawingStandard:
     def poche(self, role: DrawingRole) -> Tone | None:
         return _POCHE[role]
 
+    def hatch(self, role: DrawingRole) -> str | None:
+        return _HATCH.get(role)
+
+    def collapses(self, width_m: float) -> bool:
+        """Whether an uncut element this wide is drawn as a single line."""
+        return self.scale.to_paper_mm(width_m) < THIN_LINE_PAPER_MM
+
     def band_for(self, distance_m: float, spread_m: float) -> int:
         """Which depth plane something `distance_m` behind the cut belongs to.
 
@@ -330,6 +368,7 @@ def export_profile(standard: DrawingStandard) -> dict:
             'dash_mm': list(cut.line_type.value),
             'poche_grey': (None if standard.poche(role) is None
                            else standard.poche(role).value),
+            'hatch': standard.hatch(role),
             'beyond': [
                 {'weight_mm': standard.stroke(role, 'beyond', band).weight.value,
                  'grey': standard.stroke(role, 'beyond', band).tone.value}
@@ -341,6 +380,7 @@ def export_profile(standard: DrawingStandard) -> dict:
         'scale': standard.scale.name,
         'scale_denominator': standard.scale.denominator,
         'detail_level': standard.scale.detail_level,
+        'thin_line_paper_mm': THIN_LINE_PAPER_MM,
         'roles': roles,
         'drawn_roles': sorted(role for role in strokes if standard.draws(role)),
         'strokes': strokes,

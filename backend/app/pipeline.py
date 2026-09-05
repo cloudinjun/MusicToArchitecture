@@ -27,7 +27,7 @@ from pathlib import Path
 
 from .analysis_bundle import compile_analysis_bundle
 from .audio import extract_audio_features
-from .version import COMPILER_VERSION
+from .version import COMPILER_VERSION, compiler_source_fingerprint
 from .bim_handoff import compile_bim_handoff_report
 from .blender_export import BlenderExportError, export_blender_web_model
 from .blender_export_v3 import export_blender_web_model_v3
@@ -36,7 +36,7 @@ from .compiler_v3 import compile_building_model_v3
 from .drawings import issue_drawings, write_drawing_set
 from .integration import compile_facade_host_handoff, compile_pipeline_manifest
 from .mapping_report import compile_mapping_report
-from .models import DrawingSheetRef, GenerationResponse, RenderRef
+from .models import DrawingOnSheetRef, DrawingSheetRef, GenerationResponse, RenderRef
 from .score import compile_architectural_score
 from .translation_report import compile_translation_report
 
@@ -65,12 +65,28 @@ def drawing_sheet_refs(model_id: str, index: dict | None) -> list[DrawingSheetRe
             scale=sheet.get('scale', ''),
             subtitle=sheet.get('subtitle', ''),
             url=f'/api/models/{model_id}/drawings/{sheet_id}.svg',
+            sheet_number=str(sheet.get('sheet_number', '')),
+            paper=str(sheet.get('paper', '')),
             sheet_mm=[float(value) for value in sheet.get('sheet_mm', [])],
+            content_mm=[float(value) for value in sheet.get('content_mm', [])],
             marks=int(sheet.get('marks', 0)),
             elements_cut=int(sheet.get('elements_cut', 0)),
             elements_drawn=int(sheet.get('elements_drawn', 0)),
             omitted_by_scale={str(kind): int(count)
                               for kind, count in sheet.get('omitted_by_scale', {}).items()},
+            drawings=[DrawingOnSheetRef(
+                id=str(drawing.get('id', '')),
+                title=drawing.get('title', ''),
+                kind=drawing.get('kind', 'plan'),
+                scale=drawing.get('scale', ''),
+                subtitle=drawing.get('subtitle', ''),
+                content_mm=[float(value) for value in drawing.get('content_mm', [])],
+                marks=int(drawing.get('marks', 0)),
+                elements_cut=int(drawing.get('elements_cut', 0)),
+                elements_drawn=int(drawing.get('elements_drawn', 0)),
+                omitted_by_scale={str(kind): int(count) for kind, count
+                                  in drawing.get('omitted_by_scale', {}).items()},
+            ) for drawing in sheet.get('drawings', [])],
         ))
     return sheets
 
@@ -101,6 +117,7 @@ def compile_generation(audio_path: Path, filename: str, *,
     should hand it to a thread rather than awaiting pieces of it.
     """
     started = time.perf_counter()
+    source_fingerprint = compiler_source_fingerprint()
     features = extract_audio_features(audio_path, filename)
     score = compile_architectural_score(features)
 
@@ -108,7 +125,12 @@ def compile_generation(audio_path: Path, filename: str, *,
     model = compile_building_model(features, score)
     mapping_report = compile_mapping_report(features, score, model)
     facade_handoff = compile_facade_host_handoff(score, model)
-    model_asset = export_blender_web_model(model)
+    try:
+        model_asset = export_blender_web_model(model)
+        v2_preview_error = None
+    except BlenderExportError as error:
+        model_asset = None
+        v2_preview_error = str(error)
 
     # --- v3: the member-level model the viewport draws --------------------------
     model_v3 = compile_building_model_v3(features, score)
@@ -133,11 +155,15 @@ def compile_generation(audio_path: Path, filename: str, *,
     # came out. Keying runs on the audio alone let a re-run after a compiler change
     # replace assets an older stored run still pointed at, and made two pinned variants
     # of one piece impossible to keep side by side.
-    run_seed = f'{features.provenance.sha256}|{COMPILER_VERSION}|{model_v3.model_id}'
+    model_digest = hashlib.sha256(
+        model_v3.model_dump_json().encode('utf-8')).hexdigest()
+    run_seed = (f'{features.provenance.sha256}|{COMPILER_VERSION}|'
+                f'{source_fingerprint}|{model_v3.model_id}|{model_digest}')
     run_id = 'run-' + hashlib.sha256(run_seed.encode('utf-8')).hexdigest()[:12]
     pipeline_manifest = compile_pipeline_manifest(
         features, score, model, mapping_report, facade_handoff, model_asset,
-        run_id=run_id)
+        run_id=run_id, preview_error=v2_preview_error,
+        has_other_preview=model_asset_v3 is not None)
 
     # Everything the v3 compile decided and checked. The v2 validation and the handoff
     # gates are handed in so the roll-up covers every check the run ran rather than
@@ -146,11 +172,21 @@ def compile_generation(audio_path: Path, filename: str, *,
         model_v3, validation=model.validation, pipeline_gates=facade_handoff.gates,
         bim_handoff=bim_handoff,
         companion_identity=(
-            f'{model.typology}/{model.facade_profile.grammar_id}'))
+            f'{model.typology}/{model.facade_profile.grammar_id}'),
+        # The reasoning chains reach back to the recording only if the run hands over
+        # what the music measured; without these they start at the building.
+        features=features, score=score)
+
+    source_after = compiler_source_fingerprint()
+    if source_after != source_fingerprint:
+        raise RuntimeError(
+            'compiler source changed while this run was being generated; '
+            'discard the mixed-source artifacts and run again')
 
     return GenerationResponse(
         run_id=pipeline_manifest.run_id,
         generated_at=datetime.now(timezone.utc).isoformat(timespec='seconds'),
+        compiler_source_sha256=source_fingerprint,
         elapsed_seconds=round(time.perf_counter() - started, 2),
         audio_features=features,
         architectural_score=score,

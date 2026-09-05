@@ -28,6 +28,7 @@ import { ProgramWorkspace } from '../components/workspaces/ProgramWorkspace';
 import { ComplianceWorkspace } from '../components/workspaces/ComplianceWorkspace';
 import { BimHandoffWorkspace } from '../components/workspaces/BimHandoffWorkspace';
 import { DependencyWorkspace } from '../components/workspaces/DependencyWorkspace';
+import { DerivationWorkspace } from '../components/workspaces/DerivationWorkspace';
 import { SiteWorkspace } from '../components/workspaces/SiteWorkspace';
 import { ArtifactsWorkspace } from '../components/workspaces/ArtifactsWorkspace';
 
@@ -60,8 +61,8 @@ const PANELS: PanelDefinition[] = [
     blurb: 'What the music asked for, what the screen allowed, and every admissible pair in the order the score prefers them.',
   },
   {
-    id: 'drawings', label: 'Drawings', group: 'Building', title: 'Plans and sections',
-    blurb: 'Sheets cut from the model, each with the account of what it drew and what it left out.',
+    id: 'drawings', label: 'Drawings', group: 'Building', title: 'The issued set',
+    blurb: 'Cover, plans, elevations and sections on one paper size; every drawing carries the account of what it drew and what it left out.',
   },
   {
     id: 'structure', label: 'Structure', group: 'Building', title: 'Gravity frame',
@@ -86,6 +87,10 @@ const PANELS: PanelDefinition[] = [
   {
     id: 'dependencies', label: 'Dependencies', group: 'Diagnostics', title: 'Support graph and axes',
     blurb: 'What holds what up, where the members meet, and what is exempt from the construction graph.',
+  },
+  {
+    id: 'derivation', label: 'Derivation', group: 'Evidence', title: 'How each part was reasoned',
+    blurb: 'One assembled chain per element family, from the measured recording through the rules and datums to the solid, and what each chain does not reach.',
   },
   {
     id: 'artifacts', label: 'Artifacts', group: 'Diagnostics', title: 'Artifacts and authority',
@@ -235,16 +240,16 @@ export default function Workbench() {
             type="button"
             className={'btn btn-sm' + (annotateOn ? ' is-active' : '')}
             aria-pressed={annotateOn}
-            title="Leader-line annotations compiled from the run"
+            title="Labels on the model, each pointing at a decision"
             onClick={() => setAnnotateOn((value) => !value)}
-          >Notes</button>
+          >Labels</button>
           <button
             type="button"
             className={'btn btn-sm' + (hudOn ? ' is-active' : '')}
             aria-pressed={hudOn}
-            title="Corner readouts: model, levels, verification, takeoff"
+            title="Corner readouts: model, levels, verification, quantities"
             onClick={() => setHudOn((value) => !value)}
-          >HUD</button>
+          >Info</button>
           <button
             type="button"
             className="btn btn-sm"
@@ -361,7 +366,12 @@ export default function Workbench() {
                             ? '' : ' · ' + percent(summary.variable_coverage) + ' coverage'}
                         </small>
                       </span>
-                      <em>{timestamp(summary.generated_at)}</em>
+                      <em className={summary.failed_checks > 0 ? 'tone-bad' : ''}>
+                        {summary.failed_checks > 0
+                          ? summary.failed_checks + ' failed'
+                          : summary.unevaluated_checks + ' open'}
+                        <br />{timestamp(summary.generated_at)}
+                      </em>
                     </button>
                   ))}
                 </div>
@@ -425,7 +435,11 @@ export default function Workbench() {
         onClose={() => setPanel(null)}
       >
         {panel === 'overview' && (
-          <OverviewWorkspace run={run} onOpenCompliance={() => setPanel('compliance')} />
+          <OverviewWorkspace
+            run={run}
+            onOpenCompliance={() => setPanel('compliance')}
+            onReplay={() => { setPanel(null); setBuildNonce((value) => value + 1); }}
+          />
         )}
         {panel === 'audio' && <AudioWorkspace run={run} />}
         {panel === 'score' && <ScoreWorkspace run={run} />}
@@ -436,6 +450,7 @@ export default function Workbench() {
         {panel === 'compliance' && <ComplianceWorkspace run={run} />}
         {panel === 'bim' && <BimHandoffWorkspace run={run} />}
         {panel === 'dependencies' && <DependencyWorkspace run={run} />}
+        {panel === 'derivation' && <DerivationWorkspace run={run} />}
         {panel === 'site' && <SiteWorkspace run={run} />}
         {panel === 'artifacts' && <ArtifactsWorkspace run={run} />}
         {panel && !run && (

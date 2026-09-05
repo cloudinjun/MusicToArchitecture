@@ -512,7 +512,11 @@ def _plate_polygon(datums: DatumSet, level: int, family: MassingFamily,
         apse_r = radius + (cantilever * 0.35 if projecting else 0.0)
         squash = abs(south) / abs(y_min) if y_min else 1.0
         points = [v2(x_max, south), v2(x_min, south)]
-        for step_index in range(1, APSE_SEGMENTS):
+        # The boundary arrives at the west end from the south.  Walk the apse from
+        # its south end through west to its north end before closing the rectangle;
+        # the increasing-angle traversal starts at the north end and folds the ring
+        # across itself.
+        for step_index in range(APSE_SEGMENTS - 1, 0, -1):
             angle = math.pi * 0.5 + math.pi * step_index / APSE_SEGMENTS
             sine = math.sin(angle)
             points.append(v2(x_min + math.cos(angle) * apse_r,

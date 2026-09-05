@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1600 1842" width="1600" height="1842">
+<rect x="0" y="0" width="1600" height="1842" fill="#ffffff"/>
+<text x="396.0" y="38.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="17" font-weight="bold" text-anchor="middle" fill="#000">Program and circulation</text>
+<line x1="170.0" y1="54.0" x2="622.0" y2="54.0" stroke="#000" stroke-width="1.0"/>
+<text x="870.0" y="38.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="17" font-weight="bold" text-anchor="middle" fill="#000">Envelope only</text>
+<line x1="644.0" y1="54.0" x2="1096.0" y2="54.0" stroke="#000" stroke-width="1.0"/>
+<text x="1344.0" y="38.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="17" font-weight="bold" text-anchor="middle" fill="#000">Structure only</text>
+<line x1="1118.0" y1="54.0" x2="1570.0" y2="54.0" stroke="#000" stroke-width="1.0"/>
+<text x="136.0" y="229.4" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="end" fill="#000"><tspan x="136.0" dy="0">Classical orchestral</tspan><tspan x="136.0" dy="17">theater, steel</tspan></text>
+<image href="assets/program_mozart-symphony-29.png" x="170.0" y="78.0" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/facade_mozart-symphony-29.png" x="644.0" y="78.0" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/structure_mozart-symphony-29.png" x="1118.0" y="78.0" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="136.0" y="558.1" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="end" fill="#000"><tspan x="136.0" dy="0">Black metal</tspan><tspan x="136.0" dy="17">library, concrete</tspan></text>
+<image href="assets/program_lucas-darklord-hymne-iii.png" x="170.0" y="406.8" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/facade_lucas-darklord-hymne-iii.png" x="644.0" y="406.8" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/structure_lucas-darklord-hymne-iii.png" x="1118.0" y="406.8" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="136.0" y="886.9" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="end" fill="#000"><tspan x="136.0" dy="0">Trip-hop</tspan><tspan x="136.0" dy="17">library, steel</tspan></text>
+<image href="assets/program_nienvox-visions.png" x="170.0" y="735.5" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/facade_nienvox-visions.png" x="644.0" y="735.5" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/structure_nienvox-visions.png" x="1118.0" y="735.5" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="136.0" y="1215.6" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="end" fill="#000"><tspan x="136.0" dy="0">Portuguese guitar</tspan><tspan x="136.0" dy="17">museum, steel</tspan></text>
+<image href="assets/program_m-pex-bueid.png" x="170.0" y="1064.2" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/facade_m-pex-bueid.png" x="644.0" y="1064.2" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/structure_m-pex-bueid.png" x="1118.0" y="1064.2" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="136.0" y="1544.4" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="end" fill="#000"><tspan x="136.0" dy="0">Hardcore punk</tspan><tspan x="136.0" dy="17">library, steel</tspan></text>
+<image href="assets/program_hurle-cancer.png" x="170.0" y="1393.0" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/facade_hurle-cancer.png" x="644.0" y="1393.0" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<image href="assets/structure_hurle-cancer.png" x="1118.0" y="1393.0" width="452.0" height="310.8" preserveAspectRatio="xMidYMid meet"/>
+<rect x="170.0" y="1721.8" width="452.0" height="90.0" fill="none" stroke="#2f3f4f" stroke-width="1.2"/>
+<text x="396.0" y="1774.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#000">• • •</text>
+<rect x="644.0" y="1721.8" width="452.0" height="90.0" fill="none" stroke="#2f3f4f" stroke-width="1.2"/>
+<text x="870.0" y="1774.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#000">• • •</text>
+<rect x="1118.0" y="1721.8" width="452.0" height="90.0" fill="none" stroke="#2f3f4f" stroke-width="1.2"/>
+<text x="1344.0" y="1774.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#000">• • •</text>
+<text x="110.0" y="1774.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#000">• • •</text>
+</svg>

@@ -1,0 +1,11 @@
+{
+  "schema_version": "mta.model_version_pointer/1.0",
+  "version_id": "20260904T234614Z-v3.4.0-d7cb03bc14a1-98b0ba3b0a89",
+  "manifest": "archive/20260904T234614Z-v3.4.0-d7cb03bc14a1-98b0ba3b0a89/manifest.json",
+  "v3_model_id": "building-v3-5b3193b619f5",
+  "compiler_version": "3.4.0",
+  "compiler_source_sha256": "cfab283145a5fc493f4492d3c3cabf5b759fd63a454eb9c9606c4c78b48df432",
+  "bundle_sha256": "98b0ba3b0a890fbd27806ecfd99c7e46c878430365e0f99e1ea95fbe5a4619de",
+  "rhino_status": "blocked",
+  "blender_status": "available"
+}

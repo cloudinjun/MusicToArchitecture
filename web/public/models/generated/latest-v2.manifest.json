@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "model_id": "building-b7ad95fa45a6-library-steel-international-v1",
+  "producer": "Blender 5.0 semantic adapter",
+  "asset": "building-b7ad95fa45a6-library-steel-international-v1.glb",
+  "coordinate_conversion": "Blender right-handed Z-up to glTF right-handed Y-up",
+  "layers": {
+    "overall": [
+      "facade",
+      "columns",
+      "beams",
+      "slabs",
+      "foundations",
+      "bracing",
+      "cores",
+      "interior_sequence",
+      "site",
+      "site_context",
+      "context_tree",
+      "context_vehicle",
+      "context_person"
+    ],
+    "program": [
+      "program_massing",
+      "site",
+      "site_context",
+      "context_tree",
+      "context_vehicle",
+      "context_person"
+    ],
+    "facade": [
+      "facade",
+      "site",
+      "site_context",
+      "context_tree",
+      "context_vehicle",
+      "context_person"
+    ],
+    "structure": [
+      "columns",
+      "beams",
+      "slabs",
+      "foundations",
+      "bracing",
+      "cores"
+    ],
+    "interior": [
+      "interior_sequence",
+      "facade",
+      "structure"
+    ]
+  },
+  "subsystem_counts": {
+    "beams": 58,
+    "bracing": 4,
+    "columns": 35,
+    "context_person": 16,
+    "context_tree": 12,
+    "context_vehicle": 12,
+    "cores": 3,
+    "facade": 299,
+    "foundations": 35,
+    "interior_sequence": 11,
+    "program_massing": 21,
+    "site": 1,
+    "site_context": 3,
+    "slabs": 5
+  },
+  "program_category_counts": {
+    "circulation": 3,
+    "private": 2,
+    "public": 8,
+    "service": 8
+  },
+  "context_counts": {
+    "person": 4,
+    "site_feature": 3,
+    "tree": 6,
+    "vehicle": 2
+  },
+  "materials": [
+    "MTA_Beams",
+    "MTA_Bracing",
+    "MTA_Columns",
+    "MTA_Context_Paving",
+    "MTA_Context_Person",
+    "MTA_Context_Road",
+    "MTA_Context_Tree_Canopy",
+    "MTA_Context_Tree_Trunk",
+    "MTA_Context_Vehicle_01",
+    "MTA_Context_Vehicle_02",
+    "MTA_Context_Vehicle_Glass",
+    "MTA_Context_Vehicle_Tire",
+    "MTA_Cores",
+    "MTA_Facade_Aluminum_Panel",
+    "MTA_Facade_Canopy",
+    "MTA_Facade_Mullion",
+    "MTA_Facade_Support",
+    "MTA_Facade_Vision_Glass",
+    "MTA_Foundations",
+    "MTA_Interior_Path",
+    "MTA_Interior_Threshold",
+    "MTA_Program_Circulation",
+    "MTA_Program_Private",
+    "MTA_Program_Public",
+    "MTA_Program_Service",
+    "MTA_Site",
+    "MTA_Slabs"
+  ],
+  "object_count": 515
+}

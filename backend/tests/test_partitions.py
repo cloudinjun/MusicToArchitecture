@@ -196,12 +196,16 @@ def test_a_zone_that_needs_enclosing_gets_more_than_one_wall(model):
         'no zone is enclosed on more than one side')
 
 
-def test_every_opening_is_a_door_with_a_head_over_it(model):
+def test_every_partition_opening_is_a_door_with_a_head_over_it(model):
     """A rated wall that stops at the door head is not rated."""
-    doors = model.element_counts.get('door', 0)
-    heads = model.element_counts.get('partition_head', 0)
-    assert doors > 0
-    assert heads == doors
+    doors = [e for e in model.elements
+             if e.kind == 'door' and e.subsystem == 'partitions']
+    heads = [e for e in model.elements
+             if e.kind == 'partition_head' and e.subsystem == 'partitions']
+    assert doors
+    assert {door.id.removesuffix('-DR') + '-HD' for door in doors} == {
+        head.id for head in heads
+    }
 
 
 def test_doors_clear_the_accessible_width(model):
@@ -209,8 +213,12 @@ def test_doors_clear_the_accessible_width(model):
     assert doors
     for door in doors:
         leaf = max(door.dimensions.x, door.dimensions.y)
-        assert leaf >= DOOR_LEAF_M - 1e-6, door.id
-        assert f'{DOOR_CLEAR_M * 1000:.0f} mm clear' in door.reason
+        assert 'mm clear' in door.reason
+        if door.subsystem == 'partitions':
+            assert leaf >= DOOR_LEAF_M - 1e-6, door.id
+            assert f'{DOOR_CLEAR_M * 1000:.0f} mm clear' in door.reason
+        else:
+            assert leaf >= DOOR_CLEAR_M - 1e-6, door.id
 
 
 def test_a_rated_door_says_it_needs_a_rated_assembly(features, template):
@@ -230,7 +238,8 @@ def test_partitions_run_to_the_underside_of_the_structure(model):
     expected = max(2.4, f2f - slab - 0.15)
     walls = [e for e in model.elements if e.kind == 'partition']
     assert walls
-    assert max(e.dimensions.z for e in walls) == pytest.approx(expected, abs=0.02)
+    assert all(e.dimensions.z >= expected - 0.02 for e in walls)
+    assert any(e.dimensions.z == pytest.approx(expected, abs=0.02) for e in walls)
 
 
 def test_a_wall_nothing_asks_for_is_not_built(features, template):

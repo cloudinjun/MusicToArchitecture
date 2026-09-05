@@ -1,0 +1,57 @@
+{
+  "date": "2026-09-04",
+  "compiler_version": "3.3.2",
+  "batch": "verified-frozen",
+  "compiled_track_count": 20,
+  "source_unchanged_count": 20,
+  "retained_audio_sha256_matches": 20,
+  "original_evidence_sha256_matches": 140,
+  "blender_png_count": 100,
+  "glb_count": 20,
+  "json_model_count": 20,
+  "local_glb_closeups": 40,
+  "manually_reviewed_tracks": 20,
+  "manually_reviewed_views": 140,
+  "demo_model_id": "building-v3-7519e839871f",
+  "demo_unique_asset_references_resolved": 18,
+  "demo_asset_and_manifest_hash_matches": 4,
+  "limitations": [
+    "Visual review covers five selected whole views and two primary-stair cuts per model.",
+    "Zero finding records in bounded polygon checks do not establish beam clearance, code compliance or constructability.",
+    "Audit native Blender staging files are disposable; retained JSON and GLB hashes identify the reviewed output."
+  ],
+  "glb_surface_parity": {
+    "tracks": 20,
+    "target_checks": 40,
+    "passed": 40,
+    "failed": 0,
+    "unevaluated": 0
+  },
+  "frozen_source_archives": [
+    {
+      "path": "after_source.zip",
+      "sha256": "baf446054613f8d5c26be103a712b456a7f6347c5a3f786087769e59bf508bdd"
+    },
+    {
+      "path": "baseline_source.zip",
+      "sha256": "e1678667b84dbd048fb7193e3029bd7dcb8d386062fe33dfbcddd06b178a9781"
+    },
+    {
+      "path": "final_source.zip",
+      "sha256": "493792979aa40de76474312b96ff5a816e451e57d7495a49b2c619e90be98a60"
+    },
+    {
+      "path": "qa_source.zip",
+      "sha256": "ee25f2a862f6a055829fd29d8045862a65999c652a5b507c6b197ffaba05ac81"
+    },
+    {
+      "path": "verified_source.zip",
+      "sha256": "010e0a438fe05cf239476533df6f92f00b97bfd944ad39cb42e099bbbc6302ee"
+    }
+  ],
+  "qa_source_identity": "qa_source_identity.json",
+  "cleanup_status": "blocked_by_environment_policy",
+  "cleanup_record": "cleanup.json",
+  "report_local_link_count": 74,
+  "report_local_links_all_resolve": true
+}

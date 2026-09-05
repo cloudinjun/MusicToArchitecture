@@ -2,15 +2,15 @@
   "producer": "blender_headless_5_v3",
   "format": "glb",
   "asset_schema_version": "3.0",
-  "asset_url": "/models/generated/building-v3-b7ad95fa45a6.glb",
-  "manifest_url": "/models/generated/building-v3-b7ad95fa45a6.manifest.json",
-  "native_blend_path": "blender/generated/building-v3-b7ad95fa45a6.blend",
-  "model_json_path": "artifacts/v3_runs/building-v3-b7ad95fa45a6/building_model_v3.json",
-  "asset_sha256": "ed7b7c3399aff64cffceb0246f2f5d2069fc04b5400cc4e24504b4901272f69a",
-  "manifest_sha256": "a26917cdc95028cbef6c62ea73cda09af1fe397fd523367d4693b41f7c60a44a",
-  "element_count": 3466,
-  "merged_object_count": 28,
-  "face_count": 14527,
+  "asset_url": "/models/generated/building-v3-7519e839871f.glb",
+  "manifest_url": "/models/generated/building-v3-7519e839871f.manifest.json",
+  "native_blend_path": "blender/generated/building-v3-7519e839871f.blend",
+  "model_json_path": "artifacts/v3_runs/building-v3-7519e839871f/building_model_v3.json",
+  "asset_sha256": "5f7d5e7d4abac4e76759329cb0337f00d24868bafac349af57364dc4d744add5",
+  "manifest_sha256": "29df130a50b0aa5073d3eb28d39bed15ba77154c727d38cda1fa0bd3bdae0dc6",
+  "element_count": 3545,
+  "merged_object_count": 34,
+  "face_count": 17961,
   "semantic_layers": [
     "circulation",
     "envelope",
@@ -22,7 +22,8 @@
     "01_three_quarter.png",
     "02_section_open_side.png",
     "03_structure_closeup.png",
-    "04_south_elevation.png"
+    "04_south_elevation.png",
+    "05_massing_south_west.png"
   ],
   "authority_status": "presentation_only"
 }

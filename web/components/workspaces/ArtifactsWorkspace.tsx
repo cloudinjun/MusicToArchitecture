@@ -46,6 +46,7 @@ export function ArtifactsWorkspace({ run }: { run: GenerationResponse | null }) 
   if (!run) return <Empty title="No artifacts">A run writes its artifacts as it goes.</Empty>;
 
   const manifest = run.pipeline_manifest;
+  const v2PreviewStage = manifest.stages.find((stage) => stage.id === 'blender_web_preview');
   const downloads: Array<[string, unknown]> = [
     ['architectural_score.json', run.architectural_score],
     ['building_model_v2.json', run.building_model],
@@ -132,14 +133,23 @@ export function ArtifactsWorkspace({ run }: { run: GenerationResponse | null }) 
 
       <div className="cols-2">
         <Panel title="Massing GLB" sub="schema 2.0 · presentation only">
-          <KeyValue rows={[
-            ['Producer', run.model_asset.producer],
-            ['Asset', <a key="a" className="mono" href={assetUrl(run.model_asset.asset_url)} download>{run.model_asset.asset_url}</a>],
-            ['Asset SHA', <span key="b" className="mono">{shortHash(run.model_asset.asset_sha256, 24)}</span>],
-            ['Blend', <span key="c" className="mono">{run.model_asset.native_blend_path}</span>],
-            ['Scene state', <span key="d" className="mono">{run.model_asset.scene_state_path}</span>],
-            ['Layers', run.model_asset.semantic_layers.length],
-          ]} />
+          {run.model_asset ? (
+            <KeyValue rows={[
+              ['Producer', run.model_asset.producer],
+              ['Asset', <a key="a" className="mono" href={assetUrl(run.model_asset.asset_url)} download>{run.model_asset.asset_url}</a>],
+              ['Asset SHA', <span key="b" className="mono">{shortHash(run.model_asset.asset_sha256, 24)}</span>],
+              ['Blend', <span key="c" className="mono">{run.model_asset.native_blend_path}</span>],
+              ['Scene state', <span key="d" className="mono">{run.model_asset.scene_state_path}</span>],
+              ['Layers', run.model_asset.semantic_layers.length],
+            ]} />
+          ) : (
+            <div>
+              <Pill tone="bad">unavailable</Pill>
+              <p className="prose" style={{ marginTop: 10 }}>
+                {v2PreviewStage?.message ?? 'The massing preview is unavailable for this run.'}
+              </p>
+            </div>
+          )}
         </Panel>
 
         <Panel title="Member-level GLB" sub="schema 3.0 · presentation only">
@@ -249,7 +259,9 @@ export function ArtifactsWorkspace({ run }: { run: GenerationResponse | null }) 
             type="button" className="btn btn-primary"
             onClick={() => downloadJson('generation_response.json', run)}
           >Whole run</button>
-          <a className="btn" href={assetUrl(run.model_asset.asset_url)} download>massing.glb</a>
+          {run.model_asset && (
+            <a className="btn" href={assetUrl(run.model_asset.asset_url)} download>massing.glb</a>
+          )}
           {run.model_asset_v3 && (
             <a className="btn" href={assetUrl(run.model_asset_v3.asset_url)} download>members.glb</a>
           )}

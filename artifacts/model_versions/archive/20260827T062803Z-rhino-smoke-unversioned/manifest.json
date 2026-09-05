@@ -1,0 +1,43 @@
+{
+  "schema_version": "mta.model_version/1.0",
+  "version_id": "20260827T062803Z-rhino-smoke-unversioned",
+  "status": "historical_smoke_only",
+  "generated_at": null,
+  "published_at": "2026-09-04T23:16:07+00:00",
+  "compiler_version": "unknown_unrecorded",
+  "run_id": null,
+  "v3_model_id": null,
+  "authority": {
+    "rhino": {
+      "status": "claimed_unverified",
+      "authority": "claimed_unverified",
+      "owner": "rhino",
+      "purposes": [
+        "historical_smoke_test"
+      ],
+      "files": [
+        "rhino/model.3dm"
+      ],
+      "blocked_by": [
+        "EXACT_RUN_ACCEPTANCE_MANIFEST_MISSING"
+      ]
+    },
+    "blender": {
+      "status": "not_in_this_archive",
+      "authority": "presentation_only",
+      "owner": "blender",
+      "purposes": []
+    }
+  },
+  "reason": "Rhino 8 smoke-test file predates the exact per-run acceptance contract; never use as current design/Revit source.",
+  "assets": [
+    {
+      "role": "rhino_historical_smoke_model",
+      "authority": "claimed_unverified",
+      "path": "rhino/model.3dm",
+      "source_path": "rhino/MusicToArchitecture_Gemini_SmokeTest.3dm",
+      "bytes": 340926,
+      "sha256": "dacf381f8881a95941c0c75615d670815990ba2fc8b23602cfb5808f5cae4ff2"
+    }
+  ]
+}

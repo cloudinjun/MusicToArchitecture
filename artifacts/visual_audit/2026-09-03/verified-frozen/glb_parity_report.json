@@ -1,0 +1,750 @@
+{
+  "schema_version": "mta.glb_parity_report/1.0",
+  "batch": "verified-frozen",
+  "target_kinds": [
+    "floor_slab",
+    "ceiling"
+  ],
+  "track_count": 20,
+  "status_counts": {
+    "passed": 20,
+    "failed": 0,
+    "unevaluated": 0
+  },
+  "tracks": [
+    {
+      "track_id": "android-sock-hop",
+      "model_id": "building-v3-10a3838e492f",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "blue-ska",
+      "model_id": "building-v3-2f52ec38e7fc",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "bossa-bossa",
+      "model_id": "building-v3-5a14c81cfea8",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "cantina-blues",
+      "model_id": "building-v3-a7a8c12856dc",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 7,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "carefree",
+      "model_id": "building-v3-c0f25d46b00f",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "cloud-dancer",
+      "model_id": "building-v3-81ab2a312204",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "couperin-harpsichord",
+      "model_id": "building-v3-92f6ac1bb932",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 7,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "dama-may",
+      "model_id": "building-v3-78fe9b22d37e",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "drozerix-rndd",
+      "model_id": "building-v3-90dd56137c75",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 7,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "dub-eastern",
+      "model_id": "building-v3-2eefa86b1512",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 9,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 8,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "exotic-battle",
+      "model_id": "building-v3-51bb62f113c5",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "funky-boxstep",
+      "model_id": "building-v3-be1d3fa84bff",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 7,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "night-in-venice",
+      "model_id": "building-v3-5d8cfd7b6ca4",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "raw",
+      "model_id": "building-v3-e3a81c36fcb5",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 7,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "ritual",
+      "model_id": "building-v3-7510bf9203a2",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 7,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "scp-outer-thoughts",
+      "model_id": "building-v3-5479ada1c44f",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 9,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 8,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "still-pickin",
+      "model_id": "building-v3-22892be4f8ff",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "tafi-maradi",
+      "model_id": "building-v3-e244e581d060",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 5,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "the-britons",
+      "model_id": "building-v3-bad8e787b390",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 3,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 2,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    },
+    {
+      "track_id": "valse-gymnopedie",
+      "model_id": "building-v3-978955eec5bf",
+      "status": "passed",
+      "target_status": {
+        "floor_slab": "passed",
+        "ceiling": "passed"
+      },
+      "target_metrics": {
+        "floor_slab": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 7,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        },
+        "ceiling": {
+          "declared_hole_count": 0,
+          "filled_hole_count": 0,
+          "partial_hole_count": 0,
+          "unevaluated_hole_count": 0,
+          "surface_parity_level_count": 6,
+          "surface_parity_failed_level_count": 0,
+          "surface_parity_unevaluated_level_count": 0,
+          "declared_area_m2": 0,
+          "covered_area_m2": 0,
+          "coverage_ratio": null
+        }
+      }
+    }
+  ],
+  "target_check_count": 40,
+  "target_status_counts": {
+    "passed": 40,
+    "failed": 0,
+    "unevaluated": 0
+  },
+  "surface_parity_level_counts": {
+    "floor_slab": 130,
+    "ceiling": 110
+  },
+  "surface_parity_failed_level_counts": {
+    "floor_slab": 0,
+    "ceiling": 0
+  },
+  "surface_parity_unevaluated_level_counts": {
+    "floor_slab": 0,
+    "ceiling": 0
+  },
+  "declared_hole_counts": {
+    "floor_slab": 0,
+    "ceiling": 0
+  },
+  "filled_hole_counts": {
+    "floor_slab": 0,
+    "ceiling": 0
+  },
+  "partial_hole_counts": {
+    "floor_slab": 0,
+    "ceiling": 0
+  },
+  "unevaluated_hole_counts": {
+    "floor_slab": 0,
+    "ceiling": 0
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "schema_version": "mta.model_version_legacy/1.0",
+  "version_id": "20260904T070705Z-mixed-portfolio-plates",
+  "status": "stale_mixed_sources",
+  "created_at": "2026-09-04T07:07:05+00:00",
+  "original_model_id": "building-v3-c64269ebc1a8",
+  "authority": "historical_only",
+  "reason": "Eight portfolio plates combined a superseded demo model with separate fourteen-track corpus evidence and hard-coded statistics. They cannot support a current single-version claim.",
+  "current_use": "Do not cite as current evidence. Preserved only to explain the provenance defect.",
+  "assets": [
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/P-01_pipeline_diagram.png",
+      "bytes": 448204,
+      "sha256": "cd86a250c43ba8f91cd2481c306c13b175d3df0682ebb8d8c28ef5c06f264453"
+    },
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/P-02_fourteen_buildings.png",
+      "bytes": 2031067,
+      "sha256": "733c443e5a4c0b37f6ba4f65c9d5f54e7f77c47633257d5af07dce65a13d1823"
+    },
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/P-03_structure_follows.png",
+      "bytes": 1465152,
+      "sha256": "81a08c487487f94957612dd39378192a6a5dc60b6f5795d3c2a6578c8aab70c9"
+    },
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/P-04_member_level.png",
+      "bytes": 1523085,
+      "sha256": "a1f383016a1f277b210cef7cd1120ca8ed885bf626b210aa0d6d1e77d9b635c6"
+    },
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/P-05_emitted_drawing.png",
+      "bytes": 268472,
+      "sha256": "ff500ba23bee8201811b73a79a0618f11ec094f5640e13b81501cd3648548cfc"
+    },
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/P-06_verification_schedule.png",
+      "bytes": 346306,
+      "sha256": "e3e65778b18b8d6c089c37e8756dd490afd6fc24e616e28e273c62c330221c3d"
+    },
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/P-07_presentation_range.png",
+      "bytes": 457114,
+      "sha256": "e1b056e192bd2b889f140c6cf29e48a4baa278a1175e4832f1ba9661ac0786d3"
+    },
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/P-08_revit_handoff.png",
+      "bytes": 478009,
+      "sha256": "d1c9703f8dc9cb164c2dbf68b6987b61d236bd3f4e68ccd84b7d24a4e6bd6d9f"
+    },
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/plates_manifest.json",
+      "bytes": 1145,
+      "sha256": "ae7f12854fd54bb0fffed9dd0aae9fd87fcd7aacbacdf9367fa7bcdb36bfab6e"
+    },
+    {
+      "role": "retired_mixed_evidence",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/README.md",
+      "bytes": 1853,
+      "sha256": "e7fe905438545814b41b2c9ed0c8de4d5c4bab8a3c21421a4a3bc4dd19f8bcfe"
+    },
+    {
+      "role": "retired_generator",
+      "authority": "historical_only",
+      "path": "derived/portfolio_plates/render_portfolio_plates_legacy.py",
+      "bytes": 25377,
+      "sha256": "7a5ba65e5ae6bbe722c2f3d081f2297e05f1b6022a7004e331977d40b7200790"
+    }
+  ]
+}

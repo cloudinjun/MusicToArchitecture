@@ -844,6 +844,39 @@ export interface SightlineRecord {
   c_measured_m: number | null;
 }
 
+/** One thing the spatial rules saw: two systems overlapping, a step that is not
+ *  flush, a gap you could fall through, a thing standing over a void. */
+export interface SpatialFinding {
+  rule_id: string;
+  severity: 'violation' | 'warning';
+  elements: string[];
+  measure: number;
+  unit: string;
+  detail: string;
+}
+
+export interface SpatialReport {
+  schema_version: string;
+  status: 'passed' | 'failed' | 'unevaluated';
+  findings: SpatialFinding[];
+  counts: Record<string, number>;
+  /** What each rule watches for, carried so a passing check says what it checked. */
+  watches: Record<string, string>;
+}
+
+/** A material as the exporter paints it, with the reason it was chosen. */
+export interface MaterialSpec {
+  id: string;
+  family: string;
+  finish: string;
+  base_color: string;
+  roughness: number;
+  metallic: number;
+  transmission: number;
+  ior: number;
+  reason: string;
+}
+
 /** What the spatial archetype promised, audited against the built model. */
 export interface ArchetypeReport {
   archetype_id: string;
@@ -1039,30 +1072,55 @@ export interface AnalysisBundle {
   accessible_route_unresolved: string | null;
   constitution: ConstitutionReport | null;
   archetype?: ArchetypeReport | null;
+  spatial?: SpatialReport | null;
+  materials?: Record<string, MaterialSpec>;
   life_safety: LifeSafetyGraph | null;
   dependency_graph: DependencyGraph | null;
   axis_report: AxisReport | null;
   site: SiteParameters | null;
   site_loads: SiteLoadSet | null;
   bim_handoff: BimHandoffReport | null;
+  /** One reasoning chain per element family, keyed by `group_id`. */
+  derivation: Record<string, DerivationChain>;
+  /** The instance each chain was assembled from, so the sample is stated. */
+  derivation_element_ids: Record<string, string>;
   compliance: ComplianceRollup;
   limitations: string[];
 }
 
 // --- drawings, renders, runs -------------------------------------------------
 
-export interface DrawingSheetRef {
+export interface DrawingOnSheetRef {
   id: string;
   title: string;
   kind: 'plan' | 'section' | 'elevation';
   scale: string;
   subtitle: string;
-  url: string;
-  sheet_mm: number[];
+  content_mm: number[];
   marks: number;
   elements_cut: number;
   elements_drawn: number;
   omitted_by_scale: Record<string, number>;
+}
+
+export interface DrawingSheetRef {
+  id: string;
+  title: string;
+  kind: 'plan' | 'section' | 'elevation' | 'cover';
+  scale: string;
+  subtitle: string;
+  url: string;
+  /** Number in the set (A-101 …) and the paper every sheet of the set shares. */
+  sheet_number: string;
+  paper: string;
+  sheet_mm: number[];
+  content_mm: number[];
+  marks: number;
+  elements_cut: number;
+  elements_drawn: number;
+  omitted_by_scale: Record<string, number>;
+  /** The drawings composed on this sheet; the cover carries none. */
+  drawings: DrawingOnSheetRef[];
 }
 
 export interface RenderRef {
@@ -1075,6 +1133,7 @@ export interface RenderRef {
 export interface DrawingIndex {
   schema_version: string;
   model_id: string;
+  paper: string;
   sheets: Array<Record<string, unknown>>;
   element_account: { drawn: number; omitted_by_scale: number; on_no_cut: number; total: number };
   accounted_for: boolean;
@@ -1101,13 +1160,14 @@ export interface RunSummary {
 export interface GenerationResponse {
   run_id: string;
   generated_at: string;
+  compiler_source_sha256: string;
   elapsed_seconds?: number | null;
   audio_features: AudioFeatures;
   architectural_score: ArchitecturalScore;
   building_model: BuildingModel;
   mapping_report: MappingReport;
   facade_handoff: FacadeHostHandoff;
-  model_asset: ModelAsset;
+  model_asset: ModelAsset | null;
   pipeline_manifest: PipelineRunManifest;
   model_asset_v3?: ModelAssetV3 | null;
   translation_report?: TranslationReport | null;
@@ -1119,7 +1179,37 @@ export interface GenerationResponse {
   analysis?: AnalysisBundle | null;
 }
 
+/** One step of an element's reasoning, in the order a person would have reasoned it. */
+export interface DerivationStep {
+  stage: string;
+  label: string;
+  value: string;
+  source: string;
+  why: string;
+}
+
+/**
+ * How one element family came to be, assembled from what the model already carries.
+ *
+ * `reaches_audio` is the honest half: not every element is driven by the music — a fire
+ * stair is required by code whatever the piece sounds like — and those chains say so
+ * rather than inventing a musical cause.
+ */
+export interface DerivationChain {
+  schema_version: string;
+  element_id: string;
+  kind: string;
+  level_id: string;
+  steps: DerivationStep[];
+  reaches_solid: boolean;
+  starts_located: boolean;
+  reaches_audio: boolean;
+  rule_refs: string[];
+  summary: string;
+}
+
 /** Which workspace the stage is showing. */
 export type WorkspaceId =
   | 'overview' | 'audio' | 'score' | 'selection' | 'model' | 'drawings'
-  | 'structure' | 'program' | 'compliance' | 'bim' | 'dependencies' | 'site' | 'artifacts';
+  | 'structure' | 'program' | 'compliance' | 'bim' | 'dependencies' | 'site'
+  | 'derivation' | 'artifacts';

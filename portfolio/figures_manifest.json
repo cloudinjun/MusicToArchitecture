@@ -1,0 +1,62 @@
+{
+  "demo_run": "building-v3-5b3193b619f5",
+  "plan_sheet": "A-102",
+  "section_sheet": "A-301",
+  "verification_totals": {
+    "passed": 62,
+    "failed": 4,
+    "unevaluated": 10
+  },
+  "elements": 3557,
+  "sized": 407,
+  "elapsed_seconds": 52.39,
+  "selection": {
+    "max_affinity_diff_vs_record": 0.0,
+    "preferred": [
+      "STR-SYS-GLULAM-POST-BEAM",
+      "FCD-05-HIGH-TECH"
+    ],
+    "chosen": [
+      "STR-SYS-STEEL-FRAME",
+      "FCD-05-HIGH-TECH"
+    ],
+    "preferred_affinity": 0.8471,
+    "chosen_affinity": 0.824
+  },
+  "fig1_tracks": [
+    "mozart-symphony-29",
+    "m-pex-bueid",
+    "affen-like-life-easily-ended"
+  ],
+  "fig7_tracks": [
+    "mozart-symphony-29",
+    "lucas-darklord-hymne-iii",
+    "nienvox-visions",
+    "m-pex-bueid",
+    "hurle-cancer"
+  ],
+  "sha256": {
+    "fig10_bim_handoff.svg": "236c5463c79d716f6ea3cc8e165d65e4b21538a4d688437784d536794e4796cb",
+    "fig1_framework.svg": "434c471c3d97a34f556102b34498c0bb347bac51a2f85a7720d18f670b338076",
+    "fig2_datum_clamp.svg": "2802a683547dfd72df080346b5fae876fafa7ed8d522ff3213f739a6310b8d72",
+    "fig3_axes_and_massing.svg": "c413aa0712717bc4f6781baa33b306148e9f9c8fac8ee18f3a091a16da4f74b8",
+    "fig4_two_authorities.svg": "b41fbe2b10d537c4d78349243cebcc91b9d9bc5c62ba87e697561f724115cdc7",
+    "fig5_lattice.svg": "674766efcd23d6221d08d42644dd6bfb89c77c779488d2efb63868cc343b51f6",
+    "fig6_fourteen_recordings.svg": "fa23d1400d1a2c92f4f7a3caba09fd91ffd5fdc83dee684eb67a86f451b43655",
+    "fig7_semantic_layers.svg": "54d5e1491a0a9a9f317e0023f2c3bd74998aefdd749f6cc1932d403c7218bf8a",
+    "fig8_drawings.svg": "2515e871f0693648ff30d0a516358277cb605464ba69639a437dd7c7ffb485dc",
+    "fig9_presentation_presets.svg": "31dcf50c560d6e3f86444c78a0a58e621473492b7f20d25e7d7cf1bc5f59faf4",
+    "table1_verification.svg": "db5bfa4090d89b0c1788ea3be10ad8df8631c9f89bce100854dc43b8d4641668",
+    "fig10_bim_handoff.png": "8521d0be05f775cb5e103c7880e349b28397fdb9bf92374d37fb7bb3bbe7259e",
+    "fig1_framework.png": "004363b7e48ee9a3159c3920476e3cc20fcdc1e2cac811472055666ddeb5b01a",
+    "fig2_datum_clamp.png": "44a470c4260d050693e0d13042f3efd4d5a1c302f795791fd6644c0a3d0d0e7c",
+    "fig3_axes_and_massing.png": "b667c2a26fe199efb34eb090f47bd1be15e65e48b2488385ec25a8f181f95875",
+    "fig4_two_authorities.png": "a1b56ef66888841057db80f82745da54e21b3f6c2709389935a36e777504123a",
+    "fig5_lattice.png": "f4d81f3017007eff1e16fdc528f993fec81ac25e3497fa7c8938456fe9151c25",
+    "fig6_fourteen_recordings.png": "9a8f634ab697586b6b4c5d01b58eb5a901aef61b7ec7c14ea09e1dbb0392d9c6",
+    "fig7_semantic_layers.png": "124d0e7a567722d5b5100b231a0ad1932a7312129cd56448399e1052e51e64b6",
+    "fig8_drawings.png": "cf5a191d7061a7892a6152a1b0fa527c05530401768f828c05465a13771b4abb",
+    "fig9_presentation_presets.png": "243e97146f168b4904af1776b6650ef7b77e0e5cfcffa71a4a24709c8eb6230f",
+    "table1_verification.png": "99ffeaa6418b6022c4b41d96104ba6107bfb643eef1bab82a6dc5971c8c77f1d"
+  }
+}

@@ -28,8 +28,11 @@ from backend.app.drawing_geometry import (
 from backend.app.drawing_standard import (
     DrawingStandard, LineType, PLAN_STANDARD, Scale, Stroke, Tone, Weight,
 )
+from backend.app.drawing_sheet import PAPER_MM, drawing_area, humanise
 from backend.app.drawings import (
-    PLAN_CUT_HEIGHT_M, building_section, floor_plans, issue_drawings,
+    CAPTION_MM, DrawingSet, Mark, PLAN_CUT_HEIGHT_M, WALL_KINDS, _clip_marks,
+    _cut_lengthwise, _plan_centre, _shaft_geometry, building_section, floor_plans,
+    issue_drawings, resolve_section_offset,
 )
 from backend.app.geometry import BoxGeometry, ExtrusionGeometry, QuadGeometry, Vector2, v3
 from backend.app.models import ArchitecturalScore, AudioFeatures
@@ -329,9 +332,9 @@ def test_the_grid_matches_the_lattice_the_elements_were_registered_to(model, iss
 def test_rooms_are_named_and_measured_from_the_program_zones(model, issued):
     programs = {group.program for group in model.element_groups
                 if group.kind == 'program_zone'}
-    labelled = {note.text for drawing in issued.plans
+    labelled = {note.text.upper() for drawing in issued.plans
                 for note in _notes(drawing, 'text')}
-    pretty = {program.replace('_', ' ').title() for program in programs}
+    pretty = {program.replace('_', ' ').upper() for program in programs}
     assert pretty & labelled, 'no room on any plan carries its name'
     assert any(note.text.endswith('m²') for drawing in issued.plans
                for note in _notes(drawing, 'text')), 'no room carries its area'
@@ -431,3 +434,243 @@ def test_a_section_through_a_plate_with_a_void_comes_back_in_two_pieces():
     plane, frame = section_frame((10.0, 10.0), 90.0)
     bands = slice_extrusion(prism, plane, frame)
     assert len(bands) == 2, 'the void should split the slab into two bands'
+
+
+# --- the issued set: paper, sheets, cover ------------------------------------------
+
+def test_the_set_is_issued_on_one_paper_size(issued):
+    """The largest drawing chooses the paper and every sheet takes it. A set in
+    mixed formats cannot be pinned in a row and reads as separate exhibits."""
+    assert issued.paper in PAPER_MM
+    assert issued.sheets, 'the set laid out no sheets'
+    for sheet in issued.sheets:
+        assert sheet.spec.paper == issued.paper
+    for drawing in issued.all:
+        assert drawing.sheet is not None and drawing.sheet.paper == issued.paper
+
+
+def test_every_drawing_is_placed_once_on_a_sheet_of_its_kind(issued):
+    placed = [drawing.id for sheet in issued.sheets for drawing in sheet.drawings]
+    assert sorted(placed) == sorted(drawing.id for drawing in issued.all)
+    assert len(placed) == len(set(placed))
+    series = {'plan': 'A-1', 'elevation': 'A-2', 'section': 'A-3'}
+    for sheet in issued.sheets:
+        assert sheet.number.startswith(series[sheet.kind]), sheet.number
+        assert all(drawing.kind == sheet.kind for drawing in sheet.drawings)
+    numbers = [sheet.number for sheet in issued.sheets]
+    assert numbers == sorted(numbers), 'sheets are issued in order'
+
+
+def test_a_composed_sheet_keeps_every_drawing_inside_the_drawing_area(issued):
+    """Two sections on one sheet, or three small plans: each with room for its
+    caption, none over the frame or the title block."""
+    area_x, area_y, area_w, area_h = drawing_area(issued.paper)
+    for sheet in issued.sheets:
+        for placement in sheet.placements:
+            width, height = placement.drawing.content_mm
+            assert placement.x >= area_x - 1e-6 and placement.y >= area_y - 1e-6
+            assert placement.x + width <= area_x + area_w + 1e-6, sheet.number
+            assert placement.y + height + CAPTION_MM <= area_y + area_h + 1e-6, sheet.number
+    assert any(len(sheet.placements) > 1 for sheet in issued.sheets), (
+        'nothing shares a sheet; the packer is not composing')
+
+
+def test_the_title_block_is_read_off_the_model_and_carries_no_date(model, issued):
+    import re
+    svg = issued.sheets[0].to_svg()
+    assert model.model_id in svg
+    assert issued.sheets[0].number in svg
+    assert humanise(model.structural_system_id) in svg
+    assert humanise(model.lattice.massing_id) in svg
+    assert not re.search(r'20\d\d-\d\d-\d\d', svg), 'a sheet is a function of the model'
+    # Every stroke on a composed sheet is still one of the standard's weights.
+    widths = {token.split('"')[0] for token in svg.split('stroke-width="')[1:]}
+    assert widths <= {f'{weight.value:g}' for weight in Weight}, sorted(widths)
+
+
+def test_the_cover_lists_every_sheet_and_shows_the_set_small(issued):
+    assert issued.cover, 'no cover was issued'
+    assert 'A-000' in issued.cover
+    for sheet in issued.sheets:
+        assert sheet.number in issued.cover
+    assert 'THE SET AT 1:400' in issued.cover
+    assert issued.cover.count('data-element=') > 1000, 'the miniatures carry the marks'
+
+
+def test_the_manifest_carries_the_drawings_on_each_sheet(model, issued):
+    manifest = issued.manifest(model)
+    rows = manifest['sheets']
+    assert rows[0]['kind'] == 'cover' and rows[0]['sheet_number'] == 'A-000'
+    ids = [drawing['id'] for row in rows for drawing in row['drawings']]
+    assert sorted(ids) == sorted(drawing.id for drawing in issued.all)
+    assert manifest['paper'] == issued.paper
+    for row in rows[1:]:
+        assert row['marks'] == sum(drawing['marks'] for drawing in row['drawings'])
+        assert row['sheet_mm'] == [round(value, 1) for value in PAPER_MM[issued.paper]]
+
+
+# --- elevations ---------------------------------------------------------------------
+
+def test_the_set_covers_four_faces_and_cuts_nothing_on_them(issued):
+    """An elevation is a section whose plane is outside the building: everything is
+    beyond it, nothing is cut, and there is no poché."""
+    assert [drawing.id for drawing in issued.elevations] == [
+        'DWG-ELEV-NORTH', 'DWG-ELEV-EAST', 'DWG-ELEV-SOUTH', 'DWG-ELEV-WEST']
+    for drawing in issued.elevations:
+        assert drawing.audit.elements_cut == 0, drawing.id
+        assert all(mark.state == 'beyond' for mark in drawing.marks), drawing.id
+        assert all(mark.fill is None for mark in drawing.marks), drawing.id
+        assert drawing.audit.marks > 100
+
+
+def test_elevations_reach_what_no_cut_reaches(model, issued):
+    """The account's `on_no_cut` bucket is what elevations exist to empty."""
+    without = DrawingSet(model_id=model.model_id, plans=issued.plans,
+                         sections=issued.sections)
+    before = without.element_coverage(model)['on_no_cut']
+    after = issued.element_coverage(model)['on_no_cut']
+    assert after < before, (before, after)
+
+
+def test_elevations_carry_datums_and_bubbles_but_no_north_point(model, issued):
+    for drawing in issued.elevations:
+        assert not any(note.text == 'N' for note in _notes(drawing, 'text'))
+        triangles = [note for note in drawing.annotations if note.kind == 'polygon']
+        assert len(triangles) == len(model.lattice.levels), drawing.id
+        assert _notes(drawing, 'circle'), f'{drawing.id} has no grid bubbles'
+
+
+# --- what the cut does, and what it refuses to do ------------------------------------
+
+def test_a_lift_shaft_is_cut_hollow():
+    """The model carries the shaft solid; the drawing shows walls around a void."""
+    ring = [Vector2(x=x, y=y) for x, y in ((0, 0), (4, 0), (4, 4), (0, 4))]
+    shaft = _shaft_geometry(ExtrusionGeometry(boundary=ring, z_base=0.0, z_top=4.0))
+    assert len(shaft.holes) == 1
+    plane, frame = plan_frame(1.2)
+    rings = slice_extrusion(shaft, plane, frame)
+    assert len(rings) == 2, 'an outer ring and the void inside it'
+    plane, frame = section_frame((2.0, 2.0), 90.0)
+    bands = slice_extrusion(shaft, plane, frame)
+    assert len(bands) == 2, 'two walls, not one block'
+    widths = [abs(band[1][0] - band[0][0]) for band in bands]
+    assert all(width == pytest.approx(0.2, abs=1e-6) for width in widths)
+
+
+def test_a_figure_is_a_glyph_beyond_the_cut_and_never_in_plan(model, issued):
+    figures = {instance.id for group in model.element_groups
+               if group.kind == 'figure' for instance in group.instances}
+    assert figures, 'the fixture has no scale figures'
+    for drawing in issued.plans:
+        assert not any(mark.element_id in figures for mark in drawing.marks), drawing.id
+    vertical = [mark for drawing in issued.sections + issued.elevations
+                for mark in drawing.marks if mark.element_id in figures]
+    assert vertical, 'no figure stands in any section or elevation'
+    assert all(mark.state == 'beyond' and mark.fill is None for mark in vertical)
+
+
+def test_thin_elements_beyond_the_cut_collapse_to_lines(model, issued):
+    """A guard post seen side-on at 1:100 is half a millimetre wide: two strokes
+    with no paper between them. It is drawn as its axis."""
+    posts = {instance.id for group in model.element_groups if group.kind == 'railing'
+             for instance in group.instances
+             if instance.id.rsplit('-', 1)[-1].startswith('P')}
+    marks = [mark for drawing in issued.sections + issued.elevations
+             for mark in drawing.marks
+             if mark.element_id in posts and mark.state == 'beyond']
+    assert marks, 'no post is seen beyond any cut'
+    assert all(not mark.closed and len(mark.points) == 2 for mark in marks)
+    # A column at 305 mm is wider than a line and keeps its outline.
+    columns = {instance.id for group in model.element_groups if group.kind == 'column'
+               for instance in group.instances}
+    kept = [mark for drawing in issued.elevations for mark in drawing.marks
+            if mark.element_id in columns and mark.state == 'beyond']
+    assert kept and any(mark.closed for mark in kept)
+
+
+def test_the_earth_is_hatched_in_section_and_absent_in_elevation(model, issued):
+    ground = {instance.id for group in model.element_groups
+              if group.kind == 'site_ground' for instance in group.instances}
+    assert ground
+    for drawing in issued.sections:
+        cut = [mark for mark in drawing.marks
+               if mark.element_id in ground and mark.state == 'cut' and mark.closed]
+        assert cut and all(mark.hatch == 'earth' for mark in cut), drawing.id
+        assert 'url(#earth)' in drawing.to_svg()
+    for drawing in issued.elevations:
+        assert not any(mark.element_id in ground for mark in drawing.marks), drawing.id
+
+
+def test_the_sheet_edge_is_never_drawn_as_a_line():
+    """A polygon clipped by the sheet keeps its fill and loses the edge the clip made."""
+    stroke = Stroke(Weight.HEAVY, Tone.CUT)
+    big = Mark('X', 'site_ground', 'site', 'cut', stroke,
+               [(-50.0, -50.0), (50.0, -50.0), (50.0, 5.0), (-50.0, 5.0)],
+               fill=Tone.MIDDLE)
+    rect = (-10.0, -10.0, 10.0, 10.0)
+    clipped = _clip_marks([big], rect)
+    fills = [mark for mark in clipped if mark.closed]
+    lines = [mark for mark in clipped if not mark.closed]
+    assert len(fills) == 1 and not fills[0].outline and fills[0].fill is Tone.MIDDLE
+    assert lines, 'the real top edge of the ground survives'
+    for mark in lines:
+        for (ax, ay), (bx, by) in zip(mark.points, mark.points[1:]):
+            on_side = any(abs(a - bound) < 1e-6 and abs(b - bound) < 1e-6
+                          for a, b, bound in ((ax, bx, -10.0), (ax, bx, 10.0),
+                                              (ay, by, -10.0), (ay, by, 10.0)))
+            assert not on_side, 'a clip edge was stroked'
+
+
+def test_furniture_is_drawn_at_one_to_one_hundred_at_the_lightest_weight(model, issued):
+    furniture = {instance.id for group in model.element_groups
+                 if group.kind in ('desk', 'seat', 'shelving_run')
+                 for instance in group.instances}
+    assert furniture, 'the fixture has no loose furniture'
+    marks = [mark for drawing in issued.plans for mark in drawing.marks
+             if mark.element_id in furniture]
+    assert marks, 'a 1:100 plan without its furniture is a diagram of walls'
+    assert all(mark.stroke.weight.value <= Weight.LIGHT.value for mark in marks)
+
+
+def test_railings_above_the_cut_are_not_dashed_onto_the_plan(model, issued):
+    rails = {instance.id for group in model.element_groups
+             if group.kind == 'railing' for instance in group.instances}
+    for drawing in issued.plans:
+        assert not any(mark.element_id in rails and mark.state == 'above'
+                       for mark in drawing.marks), drawing.id
+
+
+def test_a_section_names_the_rooms_it_passes_through(model, issued):
+    programs = {group.program.replace('_', ' ').upper()
+                for group in model.element_groups if group.kind == 'program_zone'}
+    labelled = {note.text for drawing in issued.sections
+                for note in _notes(drawing, 'text')}
+    assert programs & labelled, 'no section names a room'
+
+
+def test_a_section_steps_off_a_wall_that_runs_along_it(model):
+    """A plane inside a partition draws the whole wall as a block across the room.
+    The resolver keeps the requested cut when it is clear and steps off it when not."""
+    box = BoxGeometry(center=v3(0.0, 0.0, 1.5), size=v3(6.0, 0.25, 3.0))
+    inside, _ = section_frame((0.0, 0.0), 0.0)
+    clear, _ = section_frame((0.0, 1.0), 0.0)
+    assert _cut_lengthwise(box, inside)
+    assert not _cut_lengthwise(box, clear)
+    walls = [instance.geometry for group in model.element_groups
+             if group.kind in WALL_KINDS or group.kind == 'elevator_shaft'
+             for instance in group.instances]
+    centre = _plan_centre(model.lattice)
+    for bearing in (0.0, 90.0):
+        offset = resolve_section_offset(model, bearing, 0.0)
+        angle = math.radians(bearing)
+        origin = (centre[0] - math.sin(angle) * offset,
+                  centre[1] - math.cos(angle) * offset)
+        plane, _ = section_frame(origin, bearing)
+        assert not any(_cut_lengthwise(wall, plane) for wall in walls), (bearing, offset)
+
+
+def test_a_moved_section_says_so_on_the_sheet(issued):
+    for drawing, (_name, _bearing, offset) in zip(issued.sections, issued.section_cuts):
+        assert f'offset {offset:+.2f} m' in drawing.subtitle
+        if abs(offset) > 1e-6:
+            assert 'moved' in drawing.subtitle

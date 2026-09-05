@@ -393,7 +393,7 @@ class SpatialReport(BaseModel):
     """
 
     schema_version: Literal['mta.spatial/1.0'] = 'mta.spatial/1.0'
-    status: Literal['passed', 'failed']
+    status: Literal['passed', 'failed', 'unevaluated']
     findings: list[Finding] = Field(default_factory=list)
     counts: dict[str, int] = Field(default_factory=dict)
     # What each rule watches for, carried with the result so a reader does not have to
@@ -409,14 +409,102 @@ def check_spatial_rules(model, *, limit: int = 40) -> SpatialReport:
     index = SpatialIndex(model)
     findings: list[Finding] = []
     counts: dict[str, int] = {}
+    has_violation = False
+    has_warning = False
     for rule in RULES:
         found = rule.check(index)
         counts[rule.id] = len(found)
-        findings.extend(sorted(found, key=lambda item: -item.measure)[:limit])
-    # Only violations fail. A warning is a consequence the pipeline named and could
-    # not design away; a gate that fails on those is a gate nobody can ever clear, and
-    # a permanently red light is read as broken rather than as informative.
-    failed = any(finding.severity == 'violation' for finding in findings)
-    return SpatialReport(status='failed' if failed else 'passed',
+        has_violation = has_violation or any(
+            finding.severity == 'violation' for finding in found)
+        has_warning = has_warning or any(finding.severity == 'warning' for finding in found)
+        # Preserve violations in the capped display. A warning with a larger numeric
+        # measure must not push the actual collision out of the report readers use.
+        findings.extend(sorted(
+            found,
+            key=lambda item: (0 if item.severity == 'violation' else 1,
+                              -item.measure),
+        )[:limit])
+    # Warnings mean a rule ran but the available geometry could not support a finding;
+    # that is an honest third state for the report, even when no measured violation was
+    # found. Status is derived from the complete result set, not the capped display.
+    status = ('failed' if has_violation else
+              'unevaluated' if has_warning else 'passed')
+    return SpatialReport(status=status,
                          findings=findings, counts=counts,
                          watches={rule.id: rule.sees for rule in RULES})
+
+
+# The checks below are kept at the end of this module so the existing broad-phase
+# rules remain readable and stable.  `geometry_review` deliberately does not import
+# this module: it returns Finding-shaped records, and this adapter is the only place
+# where those records enter the established spatial-report schema.
+from .geometry_review import (  # noqa: E402
+    GeometryFinding,
+    review_geometry,
+)
+
+
+def _as_spatial_findings(records: list[GeometryFinding]) -> list[Finding]:
+    return [Finding(
+        rule_id=record.rule_id,
+        severity=record.severity,
+        elements=record.elements,
+        measure=record.measure,
+        unit=record.unit,
+        detail=record.detail,
+    ) for record in records]
+
+
+def _geometry_review_for_rule(index: SpatialIndex, rule_id: str) -> list[Finding]:
+    # One model run shares one SpatialIndex.  Cache the exact geometry pass there so
+    # five report entries do not rebuild the same Shapely polygons five times.
+    if not hasattr(index, '_geometry_review_cache'):
+        index._geometry_review_cache = review_geometry(index.model)
+    return _as_spatial_findings([
+        record for record in index._geometry_review_cache
+        if record.rule_id == rule_id
+    ])
+
+
+def rule_stair_head_clearance(index: SpatialIndex) -> list[Finding]:
+    return _geometry_review_for_rule(index, 'SP-STAIR-HEAD-CLEARANCE')
+
+
+def rule_tread_floor_slab_overlap(index: SpatialIndex) -> list[Finding]:
+    return _geometry_review_for_rule(index, 'SP-STAIR-TREAD-SLAB-OVERLAP')
+
+
+def rule_tread_elevator_shaft_overlap(index: SpatialIndex) -> list[Finding]:
+    return _geometry_review_for_rule(index, 'SP-STAIR-TREAD-LIFT-OVERLAP')
+
+
+def rule_intercore_stair_overlap(index: SpatialIndex) -> list[Finding]:
+    return _geometry_review_for_rule(index, 'SP-STAIR-INTERCORE-OVERLAP')
+
+
+def rule_invalid_plan_rings(index: SpatialIndex) -> list[Finding]:
+    return _geometry_review_for_rule(index, 'SP-INVALID-PLAN-RING')
+
+
+RULES = RULES + (
+    SpatialRule(
+        'SP-STAIR-HEAD-CLEARANCE',
+        'Stair treads retain a two metre design-review clearance to slabs and ceilings.',
+        'violation', rule_stair_head_clearance),
+    SpatialRule(
+        'SP-STAIR-TREAD-SLAB-OVERLAP',
+        'Stair tread bodies do not pass through floor slabs.',
+        'violation', rule_tread_floor_slab_overlap),
+    SpatialRule(
+        'SP-STAIR-TREAD-LIFT-OVERLAP',
+        'Stair tread bodies do not occupy a lift shaft solid.',
+        'violation', rule_tread_elevator_shaft_overlap),
+    SpatialRule(
+        'SP-STAIR-INTERCORE-OVERLAP',
+        'Distinct stair core pairs do not share positive tread volume.',
+        'violation', rule_intercore_stair_overlap),
+    SpatialRule(
+        'SP-INVALID-PLAN-RING',
+        'Closed plan solids have evaluable rings before intersections are measured.',
+        'violation', rule_invalid_plan_rings),
+)

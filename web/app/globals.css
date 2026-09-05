@@ -977,7 +977,7 @@ details.disclosure .disclosure-body { padding: 0 16px 14px; }
   backdrop-filter: blur(12px);
   box-shadow: var(--shadow-raise);
   color: var(--text-2); font-family: var(--mono);
-  font-size: 9.5px; line-height: 1.55; text-align: left; cursor: pointer;
+  font-size: 10px; line-height: 1.55; text-align: left; cursor: pointer;
   animation: callout-in 240ms var(--ease-sheet);
 }
 @keyframes callout-in { from { opacity: 0; transform: translate(-50%, calc(-100% + 6px)); } }
@@ -1062,3 +1062,83 @@ details.disclosure .disclosure-body { padding: 0 16px 14px; }
   display: grid; gap: 8px;
 }
 .bim-receiving-notes p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+
+
+/* --- derivation: how each family was reasoned ----------------------------- */
+
+/* The picker and the chain side by side, so choosing a family never scrolls the
+   reasoning out of view. Collapses to one column where that no longer fits. */
+.drv-layout {
+  display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 16px; align-items: start;
+}
+@media (max-width: 1000px) { .drv-layout { grid-template-columns: 1fr; } }
+
+.drv-list { max-height: 620px; overflow-y: auto; }
+.drv-item {
+  display: block; width: 100%; padding: 9px 14px; border: 0;
+  border-bottom: 1px solid var(--hairline-soft);
+  background: transparent; color: inherit; cursor: pointer; text-align: left;
+}
+.drv-item:hover { background: var(--hover); }
+.drv-item.is-active { background: var(--accent-soft); }
+.drv-item.is-active b { color: var(--accent); }
+.drv-item-head { display: flex; align-items: baseline; gap: 8px; }
+.drv-item-head b { font-size: 13px; font-weight: 600; }
+.drv-item-count {
+  margin-left: auto; color: var(--muted); font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.drv-item-meta { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+
+.drv-chain-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 10px;
+}
+.drv-kind { margin: 0 0 3px; font-size: 15px; font-weight: 650; letter-spacing: -0.02em; }
+.drv-summary { margin: 0; max-width: 70ch; color: var(--text-2); font-size: 13px; line-height: 1.55; }
+.drv-provenance {
+  margin: 0 0 12px; padding: 9px 12px; border-radius: var(--r-sm);
+  background: var(--surface-2); color: var(--muted); font-size: 11.5px; line-height: 1.6;
+}
+.drv-provenance b { color: var(--text-2); font-weight: 600; }
+.drv-provenance .id { font-family: var(--mono); font-size: 10.5px; color: var(--text-2); }
+
+/* The chain itself: one rail, a dot per step, so the order reads as a sequence
+   rather than as a list of unrelated facts. */
+.drv-steps { margin: 0; padding: 0; list-style: none; }
+.drv-step { position: relative; padding: 0 0 16px 26px; }
+.drv-step::before {
+  content: ''; position: absolute; left: 5px; top: 14px; bottom: 0;
+  width: 1px; background: var(--line);
+}
+.drv-step.is-last::before { display: none; }
+.drv-dot {
+  position: absolute; left: 0; top: 5px;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--line-strong);
+}
+/* Where the step sits in the reasoning, in the palette the rest of the app uses:
+   the music is the accent, the building is structure, the checks are their status. */
+.drv-dot.stage-feature, .drv-dot.stage-dimension { border-color: var(--accent); }
+.drv-dot.stage-rule { border-color: var(--program); }
+.drv-dot.stage-datum { border-color: var(--envelope); }
+.drv-dot.stage-point, .drv-dot.stage-line, .drv-dot.stage-surface { border-color: var(--site); }
+.drv-dot.stage-solid { border-color: var(--structure); }
+.drv-dot.stage-host { border-color: var(--circulation); }
+.drv-dot.stage-check { border-color: var(--service); }
+
+.drv-step-head {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 0 0 3px;
+}
+.drv-step-head b { font-size: 13px; font-weight: 620; }
+.drv-stage {
+  color: var(--muted); font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.drv-value { color: var(--text-2); font-size: 11.5px; }
+.drv-why { margin: 0; max-width: 78ch; color: var(--text-2); font-size: 12.5px; line-height: 1.6; }
+.drv-source {
+  margin: 3px 0 0; color: var(--muted); font-size: 10.5px;
+  letter-spacing: 0.02em; text-transform: lowercase;
+}

@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1600 1080" width="1600" height="1080">
+<rect x="0" y="0" width="1600" height="1080" fill="#ffffff"/>
+<text x="205.0" y="40.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="17" font-weight="bold" text-anchor="middle" fill="#000">Recording</text>
+<line x1="55.0" y1="58.0" x2="355.0" y2="58.0" stroke="#000" stroke-width="1.0"/>
+<text x="600.0" y="40.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="17" font-weight="bold" text-anchor="middle" fill="#000">Shared score</text>
+<line x1="450.0" y1="58.0" x2="750.0" y2="58.0" stroke="#000" stroke-width="1.0"/>
+<text x="995.0" y="40.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="17" font-weight="bold" text-anchor="middle" fill="#000">Massing</text>
+<line x1="845.0" y1="58.0" x2="1145.0" y2="58.0" stroke="#000" stroke-width="1.0"/>
+<text x="1390.0" y="40.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="17" font-weight="bold" text-anchor="middle" fill="#000">Structure</text>
+<line x1="1240.0" y1="58.0" x2="1540.0" y2="58.0" stroke="#000" stroke-width="1.0"/>
+<line x1="402.5" y1="24.0" x2="402.5" y2="64.0" stroke="#000" stroke-width="1.0" stroke-dasharray="6 5"/>
+<line x1="797.5" y1="24.0" x2="797.5" y2="64.0" stroke="#000" stroke-width="1.0" stroke-dasharray="6 5"/>
+<line x1="1192.5" y1="24.0" x2="1192.5" y2="64.0" stroke="#000" stroke-width="1.0" stroke-dasharray="6 5"/>
+<line x1="37.0" y1="24.0" x2="37.0" y2="64.0" stroke="#000" stroke-width="1.0"/>
+<line x1="1558.0" y1="24.0" x2="1558.0" y2="64.0" stroke="#000" stroke-width="1.0"/>
+<rect x="55.0" y="155.0" width="300.0" height="80.0" fill="#f2f2f2" stroke="#bfbfbf" stroke-width="1"/>
+<image href="assets/wave_mozart-symphony-29.png" x="55.0" y="155.0" width="300.0" height="80.0" preserveAspectRatio="xMidYMid meet"/>
+<text x="205.0" y="318.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="middle" fill="#000">Classical orchestral</text>
+<rect x="450.0" y="92.0" width="300.0" height="206.0" fill="#f2f2f2" stroke="#bfbfbf" stroke-width="1"/>
+<circle cx="600.0" cy="195.0" r="86.5" fill="none" stroke="#8c8c8c" stroke-width="1"/>
+<circle cx="600.0" cy="195.0" r="43.3" fill="none" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="600.0" y2="108.5" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="650.9" y2="125.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="682.3" y2="168.3" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="682.3" y2="221.7" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="650.9" y2="265.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="600.0" y2="281.5" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="549.1" y2="265.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="517.7" y2="221.7" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="517.7" y2="168.3" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="195.0" x2="549.1" y2="125.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<polygon points="600.0,145.2 606.2,186.5 648.0,179.4 645.0,209.6 611.0,210.1 600.0,262.4 566.1,241.7 568.1,205.4 539.3,175.3 577.3,163.7" fill="#bfbfbf" fill-opacity="0.85" stroke="#000" stroke-width="1.2"/>
+<image href="assets/mass_mozart-symphony-29.png" x="845.0" y="92.0" width="300.0" height="206.2" preserveAspectRatio="xMidYMid meet"/>
+<text x="995.0" y="318.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="middle" fill="#000">theater · split mass</text>
+<image href="assets/str_mozart-symphony-29.png" x="1240.0" y="92.0" width="300.0" height="206.2" preserveAspectRatio="xMidYMid meet"/>
+<text x="1390.0" y="318.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="middle" fill="#000">steel frame</text>
+<line x1="365.0" y1="195.0" x2="431.0" y2="195.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="440.0,195.0 431.0,199.9 431.0,190.1" fill="#6b6b6b"/>
+<line x1="760.0" y1="195.0" x2="826.0" y2="195.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="835.0,195.0 826.0,199.9 826.0,190.1" fill="#6b6b6b"/>
+<line x1="1155.0" y1="195.0" x2="1221.0" y2="195.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="1230.0,195.0 1221.0,199.9 1221.0,190.1" fill="#6b6b6b"/>
+<rect x="55.0" y="423.0" width="300.0" height="80.0" fill="#f2f2f2" stroke="#bfbfbf" stroke-width="1"/>
+<image href="assets/wave_m-pex-bueid.png" x="55.0" y="423.0" width="300.0" height="80.0" preserveAspectRatio="xMidYMid meet"/>
+<text x="205.0" y="586.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="middle" fill="#000">Portuguese guitar</text>
+<rect x="450.0" y="360.0" width="300.0" height="206.0" fill="#f2f2f2" stroke="#bfbfbf" stroke-width="1"/>
+<circle cx="600.0" cy="463.0" r="86.5" fill="none" stroke="#8c8c8c" stroke-width="1"/>
+<circle cx="600.0" cy="463.0" r="43.3" fill="none" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="600.0" y2="376.5" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="650.9" y2="393.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="682.3" y2="436.3" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="682.3" y2="489.7" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="650.9" y2="533.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="600.0" y2="549.5" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="549.1" y2="533.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="517.7" y2="489.7" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="517.7" y2="436.3" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="463.0" x2="549.1" y2="393.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<polygon points="600.0,423.1 624.0,430.0 607.9,460.4 642.2,476.7 617.4,487.0 600.0,501.0 577.0,494.7 564.5,474.5 542.6,444.3 579.2,434.4" fill="#bfbfbf" fill-opacity="0.85" stroke="#000" stroke-width="1.2"/>
+<image href="assets/mass_m-pex-bueid.png" x="845.0" y="360.0" width="300.0" height="206.2" preserveAspectRatio="xMidYMid meet"/>
+<text x="995.0" y="586.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="middle" fill="#000">museum · stepped terraces</text>
+<image href="assets/str_m-pex-bueid.png" x="1240.0" y="360.0" width="300.0" height="206.2" preserveAspectRatio="xMidYMid meet"/>
+<text x="1390.0" y="586.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="middle" fill="#000">steel frame</text>
+<line x1="365.0" y1="463.0" x2="431.0" y2="463.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="440.0,463.0 431.0,467.9 431.0,458.1" fill="#6b6b6b"/>
+<line x1="760.0" y1="463.0" x2="826.0" y2="463.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="835.0,463.0 826.0,467.9 826.0,458.1" fill="#6b6b6b"/>
+<line x1="1155.0" y1="463.0" x2="1221.0" y2="463.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="1230.0,463.0 1221.0,467.9 1221.0,458.1" fill="#6b6b6b"/>
+<rect x="55.0" y="691.0" width="300.0" height="80.0" fill="#f2f2f2" stroke="#bfbfbf" stroke-width="1"/>
+<image href="assets/wave_affen-like-life-easily-ended.png" x="55.0" y="691.0" width="300.0" height="80.0" preserveAspectRatio="xMidYMid meet"/>
+<text x="205.0" y="854.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="middle" fill="#000">Indie rock</text>
+<rect x="450.0" y="628.0" width="300.0" height="206.0" fill="#f2f2f2" stroke="#bfbfbf" stroke-width="1"/>
+<circle cx="600.0" cy="731.0" r="86.5" fill="none" stroke="#8c8c8c" stroke-width="1"/>
+<circle cx="600.0" cy="731.0" r="43.3" fill="none" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="600.0" y2="644.5" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="650.9" y2="661.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="682.3" y2="704.3" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="682.3" y2="757.7" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="650.9" y2="801.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="600.0" y2="817.5" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="549.1" y2="801.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="517.7" y2="757.7" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="517.7" y2="704.3" stroke="#d9d9d9" stroke-width="0.8"/>
+<line x1="600.0" y1="731.0" x2="549.1" y2="661.0" stroke="#d9d9d9" stroke-width="0.8"/>
+<polygon points="600.0,705.9 637.9,678.8 608.6,728.2 650.7,747.5 606.9,740.5 600.0,756.5 585.1,751.4 592.9,733.3 555.6,716.6 572.0,692.5" fill="#bfbfbf" fill-opacity="0.85" stroke="#000" stroke-width="1.2"/>
+<image href="assets/mass_affen-like-life-easily-ended.png" x="845.0" y="628.0" width="300.0" height="206.2" preserveAspectRatio="xMidYMid meet"/>
+<text x="995.0" y="854.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="middle" fill="#000">library · courtyard block</text>
+<image href="assets/str_affen-like-life-easily-ended.png" x="1240.0" y="628.0" width="300.0" height="206.2" preserveAspectRatio="xMidYMid meet"/>
+<text x="1390.0" y="854.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="middle" fill="#000">reinforced concrete frame and wall</text>
+<line x1="365.0" y1="731.0" x2="431.0" y2="731.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="440.0,731.0 431.0,736.0 431.0,726.0" fill="#6b6b6b"/>
+<line x1="760.0" y1="731.0" x2="826.0" y2="731.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="835.0,731.0 826.0,736.0 826.0,726.0" fill="#6b6b6b"/>
+<line x1="1155.0" y1="731.0" x2="1221.0" y2="731.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="1230.0,731.0 1221.0,736.0 1221.0,726.0" fill="#6b6b6b"/>
+<rect x="55.0" y="896.0" width="300.0" height="110.0" fill="none" stroke="#2f3f4f" stroke-width="1.2"/>
+<text x="205.0" y="959.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#000">• • •</text>
+<rect x="450.0" y="896.0" width="300.0" height="110.0" fill="none" stroke="#2f3f4f" stroke-width="1.2"/>
+<text x="600.0" y="959.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#000">• • •</text>
+<rect x="845.0" y="896.0" width="300.0" height="110.0" fill="none" stroke="#2f3f4f" stroke-width="1.2"/>
+<text x="995.0" y="959.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#000">• • •</text>
+<rect x="1240.0" y="896.0" width="300.0" height="110.0" fill="none" stroke="#2f3f4f" stroke-width="1.2"/>
+<text x="1390.0" y="959.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#000">• • •</text>
+<line x1="365.0" y1="951.0" x2="431.0" y2="951.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="440.0,951.0 431.0,956.0 431.0,946.0" fill="#6b6b6b"/>
+<line x1="760.0" y1="951.0" x2="826.0" y2="951.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="835.0,951.0 826.0,956.0 826.0,946.0" fill="#6b6b6b"/>
+<line x1="1155.0" y1="951.0" x2="1221.0" y2="951.0" stroke="#6b6b6b" stroke-width="2.0"/>
+<polygon points="1230.0,951.0 1221.0,956.0 1221.0,946.0" fill="#6b6b6b"/>
+<text x="205.0" y="1050.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="15" text-anchor="middle" fill="#000"><tspan x="205.0" dy="0">Source audio, 30 s</tspan></text>
+<text x="600.0" y="1050.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="15" text-anchor="middle" fill="#000"><tspan x="600.0" dy="0">10 bounded dimensions</tspan></text>
+<text x="995.0" y="1050.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="15" text-anchor="middle" fill="#000"><tspan x="995.0" dy="0">Massing, south-west</tspan></text>
+<text x="1390.0" y="1050.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="15" text-anchor="middle" fill="#000"><tspan x="1390.0" dy="0">Structure only</tspan></text>
+</svg>

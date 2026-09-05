@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1600 1298" width="1600" height="1298">
+<rect x="0" y="0" width="1600" height="1298" fill="#ffffff"/>
+<text x="40.0" y="40.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="20" font-weight="bold" text-anchor="start" fill="#000">(a)</text>
+<text x="210.0" y="82.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="end" fill="#000">tension_release</text>
+<rect x="60.0" y="88.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="60.0" y="88.0" width="31.8" height="6.0" fill="#000" stroke="none" stroke-width="1.0"/>
+<text x="218.0" y="93.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.21</text>
+<text x="210.0" y="140.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="end" fill="#000">continuity</text>
+<rect x="60.0" y="146.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="60.0" y="146.0" width="77.7" height="6.0" fill="#000" stroke="none" stroke-width="1.0"/>
+<text x="218.0" y="151.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.52</text>
+<text x="210.0" y="198.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="end" fill="#6b6b6b">genre_style</text>
+<rect x="60.0" y="204.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="60.0" y="204.0" width="89.1" height="6.0" fill="#9a9a9a" stroke="none" stroke-width="1.0"/>
+<text x="218.0" y="209.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.59</text>
+<text x="210.0" y="256.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="end" fill="#000">polyphony</text>
+<rect x="60.0" y="262.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="60.0" y="262.0" width="73.6" height="6.0" fill="#000" stroke="none" stroke-width="1.0"/>
+<text x="218.0" y="267.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.49</text>
+<text x="210.0" y="314.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="end" fill="#000">repetition</text>
+<rect x="60.0" y="320.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="60.0" y="320.0" width="76.0" height="6.0" fill="#000" stroke="none" stroke-width="1.0"/>
+<text x="218.0" y="325.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.51</text>
+<text x="210.0" y="372.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="end" fill="#000">hierarchy</text>
+<rect x="60.0" y="378.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="60.0" y="378.0" width="109.1" height="6.0" fill="#000" stroke="none" stroke-width="1.0"/>
+<text x="218.0" y="383.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.73</text>
+<line x1="256.0" y1="90.0" x2="272.0" y2="140.0" stroke="#6b6b6b" stroke-width="1.4"/>
+<line x1="256.0" y1="148.0" x2="272.0" y2="140.0" stroke="#6b6b6b" stroke-width="1.4"/>
+<line x1="256.0" y1="206.0" x2="272.0" y2="140.0" stroke="#6b6b6b" stroke-width="1.4" stroke-dasharray="4 4"/>
+<circle cx="284.0" cy="140.0" r="12.0" fill="#fff" stroke="#000" stroke-width="1.2"/>
+<text x="284.0" y="144.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#000">d</text>
+<text x="284.0" y="170.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="middle" fill="#6b6b6b">decisive</text>
+<text x="262.0" y="220.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">nudge ≤ 0.12</text>
+<text x="60.0" y="166.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">enters as 1 − continuity</text>
+<line x1="296.0" y1="140.0" x2="383.0" y2="147.3" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="392.0,148.0 382.6,152.2 383.4,142.3" fill="#6b6b6b"/>
+<line x1="256.0" y1="264.0" x2="383.0" y2="264.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="392.0,264.0 383.0,268.9 383.0,259.1" fill="#6b6b6b"/>
+<line x1="256.0" y1="322.0" x2="383.0" y2="322.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="392.0,322.0 383.0,326.9 383.0,317.1" fill="#6b6b6b"/>
+<line x1="256.0" y1="380.0" x2="383.0" y2="380.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="392.0,380.0 383.0,384.9 383.0,375.1" fill="#6b6b6b"/>
+<text x="400.0" y="140.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" font-weight="bold" text-anchor="start" fill="#000">mass</text>
+<rect x="400.0" y="146.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="400.0" y="146.0" width="28.4" height="6.0" fill="#000" stroke="none" stroke-width="1.0"/>
+<text x="558.0" y="151.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.19</text>
+<text x="400.0" y="256.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" font-weight="bold" text-anchor="start" fill="#000">layering</text>
+<rect x="400.0" y="262.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="400.0" y="262.0" width="73.6" height="6.0" fill="#000" stroke="none" stroke-width="1.0"/>
+<text x="558.0" y="267.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.49</text>
+<text x="400.0" y="314.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" font-weight="bold" text-anchor="start" fill="#000">regularity</text>
+<rect x="400.0" y="320.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="400.0" y="320.0" width="76.0" height="6.0" fill="#000" stroke="none" stroke-width="1.0"/>
+<text x="558.0" y="325.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.51</text>
+<text x="400.0" y="372.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" font-weight="bold" text-anchor="start" fill="#000">incident</text>
+<rect x="400.0" y="378.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="400.0" y="378.0" width="109.1" height="6.0" fill="#000" stroke="none" stroke-width="1.0"/>
+<text x="558.0" y="383.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.73</text>
+<text x="400.0" y="430.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="start" fill="#6b6b6b">density</text>
+<rect x="400.0" y="436.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="400.0" y="436.0" width="39.5" height="6.0" fill="#9a9a9a" stroke="none" stroke-width="1.0"/>
+<text x="558.0" y="441.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.26</text>
+<text x="400.0" y="474.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12" text-anchor="start" fill="#6b6b6b">tempo_of_change</text>
+<rect x="400.0" y="480.0" width="150.0" height="6.0" fill="#e6e6e6" stroke="none" stroke-width="1.0"/>
+<rect x="400.0" y="480.0" width="20.5" height="6.0" fill="#9a9a9a" stroke="none" stroke-width="1.0"/>
+<text x="558.0" y="485.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">0.14</text>
+<line x1="640.0" y1="60.0" x2="640.0" y2="1120.0" stroke="#bfbfbf" stroke-width="0.8" stroke-dasharray="6 5"/>
+<text x="680.0" y="40.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="20" font-weight="bold" text-anchor="start" fill="#000">(b)</text>
+<rect x="760.0" y="82.0" width="180.0" height="34.0" fill="#fff" stroke="#000" stroke-width="1.2"/>
+<text x="850.0" y="104.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="middle" fill="#000">four axes, density, tempo</text>
+<line x1="850.0" y1="116.0" x2="850.0" y2="187.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="850.0,195.0 845.6,187.0 854.4,187.0" fill="#6b6b6b"/>
+<polygon points="850.0,195.0 1000.0,234.0 850.0,273.0 700.0,234.0" fill="#fff" stroke="#000" stroke-width="1.2"/>
+<text x="850.0" y="231.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="middle" fill="#000"><tspan x="850.0" dy="0">1 − regularity ≥ 0.68</tspan><tspan x="850.0" dy="16">and incident ≥ 0.55</tspan></text>
+<text x="690.0" y="238.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="end" fill="#6b6b6b">1 − regularity 0.49 · incident 0.73</text>
+<line x1="1000.0" y1="234.0" x2="1094.0" y2="234.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="1102.0,234.0 1094.0,238.4 1094.0,229.6" fill="#6b6b6b"/>
+<text x="1014.0" y="228.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">yes</text>
+<image href="assets/mass_mozart-symphony-29.png" x="1110.0" y="168.5" width="190.0" height="130.7" preserveAspectRatio="xMidYMid meet"/>
+<text x="1314.0" y="230.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="start" fill="#000">Split mass</text>
+<text x="1314.0" y="248.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">n = 3 of 14</text>
+<line x1="850.0" y1="273.0" x2="850.0" y2="344.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="850.0,352.0 845.6,344.0 854.4,344.0" fill="#6b6b6b"/>
+<text x="860.0" y="316.5" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">no</text>
+<polygon points="850.0,352.0 1000.0,391.0 850.0,430.0 700.0,391.0" fill="#fff" stroke="#000" stroke-width="1.2"/>
+<text x="850.0" y="395.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="middle" fill="#000"><tspan x="850.0" dy="0">1 − regularity ≥ 0.68</tspan></text>
+<text x="690.0" y="395.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="end" fill="#6b6b6b">1 − regularity 0.49</text>
+<line x1="1000.0" y1="391.0" x2="1094.0" y2="391.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="1102.0,391.0 1094.0,395.4 1094.0,386.6" fill="#6b6b6b"/>
+<text x="1014.0" y="385.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">yes</text>
+<image href="assets/mass_affen-like-life-easily-ended.png" x="1110.0" y="325.5" width="190.0" height="130.7" preserveAspectRatio="xMidYMid meet"/>
+<text x="1314.0" y="387.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="start" fill="#000">Courtyard block</text>
+<text x="1314.0" y="405.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">n = 1 of 14</text>
+<line x1="850.0" y1="430.0" x2="850.0" y2="501.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="850.0,509.0 845.6,501.0 854.4,501.0" fill="#6b6b6b"/>
+<text x="860.0" y="473.5" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">no</text>
+<polygon points="850.0,509.0 1000.0,548.0 850.0,587.0 700.0,548.0" fill="#fff" stroke="#000" stroke-width="1.2"/>
+<text x="850.0" y="552.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="middle" fill="#000"><tspan x="850.0" dy="0">incident ≥ 0.66</tspan></text>
+<text x="690.0" y="552.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="end" fill="#6b6b6b">incident 0.73</text>
+<line x1="1000.0" y1="548.0" x2="1094.0" y2="548.0" stroke="#E8362D" stroke-width="1.6"/>
+<polygon points="1102.0,548.0 1094.0,552.4 1094.0,543.6" fill="#E8362D"/>
+<text x="1014.0" y="542.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#E8362D">yes</text>
+<image href="assets/mass_deadbone-wake-up-call.png" x="1110.0" y="482.5" width="190.0" height="130.7" preserveAspectRatio="xMidYMid meet"/>
+<rect x="1106.0" y="478.5" width="198.0" height="139.0" fill="none" stroke="#E8362D" stroke-width="2.5"/>
+<text x="1314.0" y="544.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="start" fill="#000">Bar on a podium</text>
+<text x="1314.0" y="562.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">n = 2 of 14</text>
+<line x1="850.0" y1="587.0" x2="850.0" y2="658.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="850.0,666.0 845.6,658.0 854.4,658.0" fill="#6b6b6b"/>
+<text x="860.0" y="630.5" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">no</text>
+<polygon points="850.0,666.0 1000.0,705.0 850.0,744.0 700.0,705.0" fill="#fff" stroke="#000" stroke-width="1.2"/>
+<text x="850.0" y="709.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="middle" fill="#000"><tspan x="850.0" dy="0">regularity &lt; 0.48</tspan></text>
+<text x="690.0" y="709.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="end" fill="#6b6b6b">regularity 0.51</text>
+<line x1="1000.0" y1="705.0" x2="1094.0" y2="705.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="1102.0,705.0 1094.0,709.4 1094.0,700.6" fill="#6b6b6b"/>
+<text x="1014.0" y="699.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">yes</text>
+<image href="assets/mass_m-pex-bueid.png" x="1110.0" y="639.5" width="190.0" height="130.7" preserveAspectRatio="xMidYMid meet"/>
+<text x="1314.0" y="701.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="start" fill="#000">Stepped terraces</text>
+<text x="1314.0" y="719.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">n = 3 of 14</text>
+<line x1="850.0" y1="744.0" x2="850.0" y2="815.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="850.0,823.0 845.6,815.0 854.4,815.0" fill="#6b6b6b"/>
+<text x="860.0" y="787.5" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">no</text>
+<polygon points="850.0,823.0 1000.0,862.0 850.0,901.0 700.0,862.0" fill="#fff" stroke="#000" stroke-width="1.2"/>
+<text x="850.0" y="859.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="middle" fill="#000"><tspan x="850.0" dy="0">density ≥ 0.58</tspan><tspan x="850.0" dy="16">and mass ≥ 0.40</tspan></text>
+<text x="690.0" y="866.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="end" fill="#6b6b6b">density 0.26 · mass 0.19</text>
+<line x1="1000.0" y1="862.0" x2="1094.0" y2="862.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="1102.0,862.0 1094.0,866.4 1094.0,857.6" fill="#6b6b6b"/>
+<text x="1014.0" y="856.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">yes</text>
+<image href="assets/mass_nienvox-visions.png" x="1110.0" y="796.5" width="190.0" height="130.7" preserveAspectRatio="xMidYMid meet"/>
+<text x="1314.0" y="858.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="start" fill="#000">Compact tower</text>
+<text x="1314.0" y="876.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">n = 3 of 14</text>
+<line x1="850.0" y1="901.0" x2="850.0" y2="972.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="850.0,980.0 845.6,972.0 854.4,972.0" fill="#6b6b6b"/>
+<text x="860.0" y="944.5" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">no</text>
+<polygon points="850.0,980.0 1000.0,1019.0 850.0,1058.0 700.0,1019.0" fill="#fff" stroke="#000" stroke-width="1.2"/>
+<text x="850.0" y="1016.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="middle" fill="#000"><tspan x="850.0" dy="0">density &lt; 0.34</tspan><tspan x="850.0" dy="16">or tempo &lt; 0.22</tspan></text>
+<text x="690.0" y="1023.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="end" fill="#6b6b6b">density 0.26 · tempo 0.14</text>
+<line x1="1000.0" y1="1019.0" x2="1094.0" y2="1019.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="1102.0,1019.0 1094.0,1023.4 1094.0,1014.6" fill="#6b6b6b"/>
+<text x="1014.0" y="1013.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">yes</text>
+<rect x="1110.0" y="953.5" width="190.0" height="131.0" fill="none" stroke="#8c8c8c" stroke-width="1.0" stroke-dasharray="6 4"/>
+<text x="1205.0" y="1023.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="middle" fill="#6b6b6b">not reached by the corpus</text>
+<text x="1314.0" y="1015.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="start" fill="#000">Single-volume pavilion</text>
+<text x="1314.0" y="1033.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">n = 0 of 14</text>
+<line x1="850.0" y1="1058.0" x2="850.0" y2="1129.0" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="850.0,1137.0 845.6,1129.0 854.4,1129.0" fill="#6b6b6b"/>
+<text x="860.0" y="1101.5" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="10.5" font-style="italic" text-anchor="start" fill="#6b6b6b">no</text>
+<rect x="810.0" y="1185.5" width="80.0" height="34.0" fill="#fff" stroke="#000" stroke-width="1.2"/>
+<text x="850.0" y="1206.5" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="middle" fill="#000">else</text>
+<line x1="890.0" y1="1202.5" x2="1094.0" y2="1202.5" stroke="#6b6b6b" stroke-width="1.6"/>
+<polygon points="1102.0,1202.5 1094.0,1206.9 1094.0,1198.1" fill="#6b6b6b"/>
+<image href="assets/mass_dub-riots-silience-is-gold.png" x="1110.0" y="1137.0" width="190.0" height="130.7" preserveAspectRatio="xMidYMid meet"/>
+<text x="1314.0" y="1198.5" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="12.5" text-anchor="start" fill="#000">Stacked slab</text>
+<text x="1314.0" y="1216.5" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="11" text-anchor="start" fill="#6b6b6b">n = 2 of 14</text>
+</svg>

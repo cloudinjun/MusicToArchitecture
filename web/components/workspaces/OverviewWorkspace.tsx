@@ -43,10 +43,12 @@ function DecisionCard({
 }
 
 export function OverviewWorkspace({
-  run, onOpenCompliance,
+  run, onOpenCompliance, onReplay,
 }: {
   run: GenerationResponse | null;
   onOpenCompliance?: () => void;
+  /** Closes the panel and replays the narrated build on the stage. */
+  onReplay?: () => void;
 }) {
   if (!run) {
     return (
@@ -133,7 +135,9 @@ export function OverviewWorkspace({
           <p className="prose">
             The music preferred <b>{humanize(selection.preferred_grammar_id, /^FCD-\d+-/)}</b> on{' '}
             <b>{humanize(selection.preferred_system_id, /^STR-SYS-/)}</b>.{' '}
-            {selection.overrule_reason}
+            {(selection.overrule_reason ?? '').replace(
+              /(STR-SYS|FCD-\d+|FRM|ENV)-[A-Z0-9-]+/g,
+              (id) => humanize(id, /^(STR-SYS|FCD-\d+|FRM|ENV)-/))}
           </p>
         </Panel>
       )}
@@ -195,13 +199,18 @@ export function OverviewWorkspace({
             Previews are presentation only — accepted geometry is owned by Rhino, and
             every result remains subject to professional review.
           </p>
-          {onOpenCompliance && (
-            <div style={{ marginTop: 12 }}>
+          <div className="btn-row" style={{ marginTop: 12 }}>
+            {onReplay && (
+              <button type="button" className="btn btn-primary" onClick={onReplay}>
+                Play the story
+              </button>
+            )}
+            {onOpenCompliance && (
               <button type="button" className="btn" onClick={onOpenCompliance}>
                 Review every check
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </Panel>
       )}
 

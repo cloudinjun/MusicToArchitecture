@@ -6,4 +6,4 @@ numpy>=2,<3
 soundfile>=0.13,<1
 pytest>=8.3,<9
 httpx>=0.28,<1
-
+shapely>=2.1,<3

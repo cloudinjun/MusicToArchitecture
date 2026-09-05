@@ -79,8 +79,9 @@ class TypologyKit(BaseModel):
 # `briefs.BRIEFS` and the demand from `coupling.PROGRAM_DEMANDS`, both looked up --
 # and insisted upon -- by `_build`.
 _SPECS: dict[str, tuple[str, str, bool, str | None]] = {
-    'library': ('PRG-LIBRARY-MID-RISE', 'MAS-SLAB', False, None),
-    'museum': ('PRG-MUSEUM-MID-RISE', 'MAS-COURTYARD', True, None),
+    'library': ('PRG-LIBRARY-MID-RISE', 'MAS-SLAB', False, 'ARCH-READING-ROOM'),
+    'museum': ('PRG-MUSEUM-MID-RISE', 'MAS-COURTYARD', True,
+               'ARCH-GALLERY-SEQUENCE'),
     # The theatre's bias was MAS-BAR-PODIUM -- one large volume beside a low base --
     # until the bowl archetype measured the pairing: the bar stands centred exactly
     # where the house must be, so the house's clear height guts the bar's floors and
@@ -90,7 +91,7 @@ _SPECS: dict[str, tuple[str, str, bool, str | None]] = {
     # give the bowl its section and keep their remainders; the bar-podium comes back
     # when the fly tower gives it a reason (decision 0016).
     'theater': ('PRG-THEATER-MID-RISE', 'MAS-SLAB', True, 'ARCH-THEATRE-BOWL'),
-    'pavilion': ('PRG-PAVILION-SINGLE-VOLUME', 'MAS-PAVILION', False, None),
+    'pavilion': ('PRG-PAVILION-SINGLE-VOLUME', 'MAS-PAVILION', False, 'ARCH-HALL'),
 }
 
 
@@ -127,6 +128,12 @@ def _build() -> dict[str, TypologyKit]:
             raise LookupError(
                 f'typology {typology!r} asks for massing {massing_bias!r}, which is '
                 f'not a massing family')
+        if archetype is not None:
+            from .archetypes import _CARVERS
+            if archetype not in _CARVERS:
+                raise LookupError(
+                    f'typology {typology!r} names archetype {archetype!r}, which '
+                    f'has no carver in archetypes._CARVERS')
         kits[typology] = TypologyKit(
             id=typology, program_id=program_id, brief=tuple(brief),
             massing_bias=massing_bias, demand=demand,

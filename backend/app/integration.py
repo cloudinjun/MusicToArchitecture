@@ -271,9 +271,16 @@ def compile_pipeline_manifest(
     model: BuildingModel,
     mapping_report: MappingReport,
     facade_handoff: FacadeHostHandoff,
-    model_asset: ModelAsset,
+    model_asset: ModelAsset | None,
     run_id: str | None = None,
+    *,
+    preview_error: str | None = None,
+    has_other_preview: bool = False,
 ) -> PipelineRunManifest:
+    preview_available = model_asset is not None or has_other_preview
+    v2_preview_message = preview_error or (
+        'The optional v2 Blender presentation export did not produce a preview asset.'
+    )
     artifacts = [
         *(_project_file_artifact(*specification) for specification in PROJECT_SPECIFICATIONS),
         _inline_artifact('audio-features', 'audio_features', 'source_observation', features),
@@ -281,31 +288,55 @@ def compile_pipeline_manifest(
         _inline_artifact('building-model', 'building_model_v2', 'candidate', model),
         _inline_artifact('mapping-report', 'mapping_report', 'validation_report', mapping_report),
         _inline_artifact('facade-host-handoff', 'facade_host_handoff', 'preview_only', facade_handoff),
-        PipelineArtifactReference(
-            id='blender-glb', kind='glb', status='available',
-            authority='presentation_only', sha256=model_asset.asset_sha256,
-            uri=model_asset.asset_url,
-        ),
-        PipelineArtifactReference(
-            id='blender-manifest', kind='blender_manifest', status='available',
-            authority='presentation_only', sha256=model_asset.manifest_sha256,
-            uri=model_asset.manifest_url,
-        ),
-        PipelineArtifactReference(
-            id='blender-native-scene', kind='blend', status='available',
-            authority='presentation_only', sha256=model_asset.native_blend_sha256,
-            uri=model_asset.native_blend_path,
-        ),
-        PipelineArtifactReference(
-            id='blender-scene-state', kind='scene_state', status='available',
-            authority='presentation_only', sha256=model_asset.scene_state_sha256,
-            uri=model_asset.scene_state_path,
-        ),
+    ]
+    if model_asset is None:
+        artifacts.extend([
+            PipelineArtifactReference(
+                id='blender-glb', kind='glb', status='blocked',
+                authority='presentation_only',
+            ),
+            PipelineArtifactReference(
+                id='blender-manifest', kind='blender_manifest', status='blocked',
+                authority='presentation_only',
+            ),
+            PipelineArtifactReference(
+                id='blender-native-scene', kind='blend', status='blocked',
+                authority='presentation_only',
+            ),
+            PipelineArtifactReference(
+                id='blender-scene-state', kind='scene_state', status='blocked',
+                authority='presentation_only',
+            ),
+        ])
+    else:
+        artifacts.extend([
+            PipelineArtifactReference(
+                id='blender-glb', kind='glb', status='available',
+                authority='presentation_only', sha256=model_asset.asset_sha256,
+                uri=model_asset.asset_url,
+            ),
+            PipelineArtifactReference(
+                id='blender-manifest', kind='blender_manifest', status='available',
+                authority='presentation_only', sha256=model_asset.manifest_sha256,
+                uri=model_asset.manifest_url,
+            ),
+            PipelineArtifactReference(
+                id='blender-native-scene', kind='blend', status='available',
+                authority='presentation_only', sha256=model_asset.native_blend_sha256,
+                uri=model_asset.native_blend_path,
+            ),
+            PipelineArtifactReference(
+                id='blender-scene-state', kind='scene_state', status='available',
+                authority='presentation_only', sha256=model_asset.scene_state_sha256,
+                uri=model_asset.scene_state_path,
+            ),
+        ])
+    artifacts.append(
         PipelineArtifactReference(
             id='rhino-accepted-geometry', kind='rhino_geometry_manifest',
             status='blocked', authority='accepted_geometry',
-        ),
-    ]
+        )
+    )
     stages = [
         PipelineStageState(
             id='audio_extraction', route='portable_core', status='pass',
@@ -371,11 +402,19 @@ def compile_pipeline_manifest(
             message='Only an explicit Rhino acceptance record may establish accepted geometry for this run.',
         ),
         PipelineStageState(
-            id='blender_web_preview', route='web_preview', status='pass',
-            authority='presentation_only', producer=model_asset.producer,
+            id='blender_web_preview', route='web_preview',
+            status='pass' if model_asset is not None else 'fail',
+            authority='presentation_only',
+            producer=model_asset.producer if model_asset is not None else 'blender_headless_5',
             input_refs=['building-model'],
-            output_refs=['blender-glb', 'blender-manifest', 'blender-native-scene', 'blender-scene-state'],
-            message='Blender/Web provide semantic inspection and presentation without changing design authority.',
+            output_refs=(
+                ['blender-glb', 'blender-manifest', 'blender-native-scene', 'blender-scene-state']
+                if model_asset is not None else []
+            ),
+            message=(
+                'Blender/Web provide semantic inspection and presentation without changing design authority.'
+                if model_asset is not None else v2_preview_message
+            ),
         ),
     ]
     accepted_blockers = ['RHINO_ACCEPTANCE_NOT_RECORDED']
@@ -384,7 +423,7 @@ def compile_pipeline_manifest(
         # to shape the run; the pipeline passes one minted from the full run identity,
         # and the fallback keeps scripted v2-only callers working.
         run_id=run_id or f'run-{features.provenance.sha256[:12]}',
-        overall_status='preview_ready',
+        overall_status='preview_ready' if preview_available else 'blocked',
         model_id=model.model_id,
         score_id=score.score_id,
         artifacts=artifacts,

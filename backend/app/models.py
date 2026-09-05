@@ -425,6 +425,21 @@ class ModelAssetV3(BaseModel):
     authority_status: Literal['presentation_only'] = 'presentation_only'
 
 
+class DrawingOnSheetRef(BaseModel):
+    """One drawing placed on a sheet, with the audit that belongs to that cut."""
+
+    id: str
+    title: str
+    kind: Literal['plan', 'section', 'elevation']
+    scale: str
+    subtitle: str = ''
+    content_mm: list[float] = Field(default_factory=list)
+    marks: int = 0
+    elements_cut: int = 0
+    elements_drawn: int = 0
+    omitted_by_scale: dict[str, int] = Field(default_factory=dict)
+
+
 class DrawingSheetRef(BaseModel):
     """One issued sheet, and where the client can fetch it.
 
@@ -435,15 +450,23 @@ class DrawingSheetRef(BaseModel):
 
     id: str
     title: str
-    kind: Literal['plan', 'section', 'elevation']
+    kind: Literal['plan', 'section', 'elevation', 'cover']
     scale: str
     subtitle: str = ''
     url: str
+    # The paper the sheet is issued on and its number in the set. Both come from the
+    # set's layout, so every sheet of one issue shares a paper size.
+    sheet_number: str = ''
+    paper: str = ''
     sheet_mm: list[float] = Field(default_factory=list)
+    content_mm: list[float] = Field(default_factory=list)
     marks: int = 0
     elements_cut: int = 0
     elements_drawn: int = 0
     omitted_by_scale: dict[str, int] = Field(default_factory=dict)
+    # The drawings composed on this sheet. A sheet with two sections carries two;
+    # the cover carries none.
+    drawings: list[DrawingOnSheetRef] = Field(default_factory=list)
 
 
 class RenderRef(BaseModel):
@@ -477,13 +500,14 @@ class RunSummary(BaseModel):
 class GenerationResponse(BaseModel):
     run_id: str = ''
     generated_at: str = ''
+    compiler_source_sha256: str = ''
     elapsed_seconds: float | None = None
     audio_features: AudioFeatures
     architectural_score: ArchitecturalScore
     building_model: BuildingModel
     mapping_report: MappingReport
     facade_handoff: FacadeHostHandoff
-    model_asset: ModelAsset
+    model_asset: ModelAsset | None
     pipeline_manifest: PipelineRunManifest
     # Schema 3.0 runs in parallel with v2. v2 remains the massing contract the
     # Grasshopper watcher, the facade handoff, and the acceptance manifest already read;

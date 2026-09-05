@@ -1,4 +1,9 @@
-# Native Modeling Workflow
+# Historical native smoke workflow
+
+This page records the 2026-08-26 v2 smoke test. It is not the current model workflow.
+Current Rhino and Blender files are selected only through
+`artifacts/model_versions/latest.json`; see `artifacts/model_versions/README.md`. The
+current Rhino slot is blocked until a matching `.3dm` and acceptance sidecar are published.
 
 All three modeling environments consume the same shared model contract. Per-run
 accepted geometry requires an explicit Rhino acceptance manifest:
@@ -39,7 +44,10 @@ the source JSON remains unchanged.
 
 ## Rhino
 
-Open `rhino/MusicToArchitecture_Gemini_SmokeTest.3dm`. The file contains:
+For historical inspection only, open
+`artifacts/model_versions/archive/20260827T062803Z-rhino-smoke-unversioned/rhino/model.3dm`.
+It has no exact run acceptance manifest and cannot be used for current drawings or Revit.
+The file contains:
 
 - `MTA_Massing`: 5 named Breps;
 - `MTA_Structure`: 12 named Breps;
@@ -50,7 +58,9 @@ Each building object carries `mta:model_id`, `mta:score_id`, `mta:element_id`,
 
 ## Blender
 
-Open `blender/examples/MusicToArchitecture_Gemini_SmokeTest.blend`, or regenerate it with:
+The historical presentation fixture is
+`blender/examples/MusicToArchitecture_Gemini_SmokeTest.blend`. Current rendering uses
+`artifacts/model_versions/latest/blender/scene_v3.blend`. To regenerate the old fixture:
 
 ```powershell
 $env:BLENDER_EXE = (Get-Command blender).Source

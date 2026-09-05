@@ -1,0 +1,15 @@
+{
+  "status": "blocked",
+  "authority": "accepted_geometry",
+  "owner": "rhino",
+  "purposes": [
+    "issued_drawings",
+    "revit_handoff"
+  ],
+  "model_id": "building-v3-7519e839871f",
+  "run_id": "run-817bcf25ee3b",
+  "files": [],
+  "blocked_by": [
+    "MATCHING_RHINO_3DM_AND_ACCEPTANCE_MANIFEST_REQUIRED"
+  ]
+}

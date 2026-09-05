@@ -1,0 +1,86 @@
+{
+  "schema_version": "mta.model_version_legacy_index/1.0",
+  "entries": [
+    {
+      "version_id": "20260903T235413Z-unversioned-c64269ebc1a8",
+      "status": "superseded_known_defects",
+      "manifest": "archive/20260903T235413Z-unversioned-c64269ebc1a8/manifest.json",
+      "model_id": "building-v3-c64269ebc1a8",
+      "reason": "Former README/portfolio model; superseded after circulation and exported-hole defects were found."
+    },
+    {
+      "version_id": "20260904T080325Z-unversioned-c9ec365949c5",
+      "status": "superseded_intermediate",
+      "manifest": "archive/20260904T080325Z-unversioned-c9ec365949c5/manifest.json",
+      "model_id": "building-v3-c9ec365949c5",
+      "reason": "Intermediate model; not a promoted current release and not Rhino accepted."
+    },
+    {
+      "version_id": "20260827T062803Z-rhino-smoke-unversioned",
+      "status": "historical_smoke_only",
+      "manifest": "archive/20260827T062803Z-rhino-smoke-unversioned/manifest.json",
+      "model_id": null,
+      "reason": "Rhino 8 smoke-test file predates the exact per-run acceptance contract; never use as current design/Revit source."
+    },
+    {
+      "version_id": "20260904T070705Z-mixed-portfolio-plates",
+      "status": "stale_mixed_sources",
+      "manifest": "archive/20260904T070705Z-mixed-portfolio-plates/manifest.json",
+      "model_id": "building-v3-c64269ebc1a8",
+      "reason": "Retired portfolio plates mixed one superseded model with separate corpus runs and hard-coded figures."
+    },
+    {
+      "version_id": "20260904T170325Z-v3.3.2-87ba4b85f8b0",
+      "status": "superseded_pre_source_fingerprint",
+      "manifest": "archive/20260904T170325Z-v3.3.2-87ba4b85f8b0/manifest.json",
+      "model_id": "building-v3-7519e839871f",
+      "reason": "Early publisher archive before canonical contract and compiler-source fingerprints."
+    },
+    {
+      "version_id": "20260904T170325Z-v3.3.2-87ba4b85f8b0-4a053ce16dbc",
+      "status": "superseded_pre_source_fingerprint",
+      "manifest": "archive/20260904T170325Z-v3.3.2-87ba4b85f8b0-4a053ce16dbc/manifest.json",
+      "model_id": "building-v3-7519e839871f",
+      "reason": "Canonical-URL predecessor that did not record the exact generation source."
+    },
+    {
+      "version_id": "20260904T232538Z-v3.3.2-2dd80d2c5c61-3c577a655756",
+      "status": "superseded_pre_source_fingerprint",
+      "manifest": "archive/20260904T232538Z-v3.3.2-2dd80d2c5c61-3c577a655756/manifest.json",
+      "model_id": "building-v3-7519e839871f",
+      "reason": "Generated before concurrent source edits completed; content differs from the later run while the old model ID stayed equal."
+    },
+    {
+      "version_id": "20260904T232945Z-v3.3.2-64d2cba790c3-0005ab7bf73a",
+      "status": "superseded_pre_source_fingerprint",
+      "manifest": "archive/20260904T232945Z-v3.3.2-64d2cba790c3-0005ab7bf73a/manifest.json",
+      "model_id": "building-v3-7519e839871f",
+      "reason": "Later source state with the same pre-fingerprint model ID; retained only as evidence of the identity defect."
+    },
+    {
+      "version_id": "20260904T234614Z-v3.4.0-d7cb03bc14a1-fac746b9b59b",
+      "status": "superseded_pre_bundle_measurement",
+      "manifest": "archive/20260904T234614Z-v3.4.0-d7cb03bc14a1-fac746b9b59b/manifest.json",
+      "model_id": "building-v3-5b3193b619f5",
+      "reason": "First source-fingerprinted release before exact visual geometry measurements joined the immutable bundle."
+    }
+  ],
+  "external_experiments": [
+    {
+      "path": "artifacts/visual_audit/2026-09-03/baseline-frozen",
+      "status": "rejected_negative_evidence"
+    },
+    {
+      "path": "artifacts/visual_audit/2026-09-03/after-frozen",
+      "status": "rejected_negative_evidence"
+    },
+    {
+      "path": "artifacts/visual_audit/2026-09-03/final-frozen",
+      "status": "rejected_negative_evidence"
+    },
+    {
+      "path": "artifacts/visual_audit/2026-09-03/verified-frozen",
+      "status": "archived_visual_audit"
+    }
+  ]
+}

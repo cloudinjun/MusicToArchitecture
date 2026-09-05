@@ -473,8 +473,18 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
             host = floor_host(record)
             if host:
                 add(record, host, 'bears_on', 'gravity',
-                    'Floor landing is flush with and overlaps the served slab.',
+                    'Floor landing is flush with the served slab and abuts its edge; '
+                    'the slab gives up the landing footprint so one surface owns it.',
                     topology='geometry_checked')
+        elif record.kind == 'door':
+            # A lift landing door sits in the shaft wall of its own level. Partition
+            # doors are hosted below with their partition run; this one has none.
+            shaft = f'CIR-SHF-{record.level_id}'
+            host_id = shaft if shaft in by_id else f'CIR-SHF-{record.level_id}-OVR'
+            if host_id in by_id:
+                add(record, host_id, 'hosts', 'assembly',
+                    'Lift landing door is an opening in the shaft segment of its level.',
+                    topology='rule_checked')
         elif record.kind == 'stair_half_landing':
             token = record.id.rsplit('-', 1)[-1]
             number = token[1:] if len(token) > 1 else token

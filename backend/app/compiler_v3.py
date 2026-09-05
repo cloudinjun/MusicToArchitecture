@@ -18,6 +18,9 @@ import hashlib
 import math
 from typing import Iterable
 
+from shapely.geometry import box as plan_box
+from shapely.ops import unary_union
+
 from .datums import (
     DatumSet, Lattice, build_lattice, compile_datum_set,
 )
@@ -32,7 +35,7 @@ from .geometry import (
     ProfileSpec, Vector2, Vector3, bounds, convention_profile, inset, point_inside,
     profile_from_section_id, v2, v3,
 )
-from .loads import OCCUPANCY_LIVE, composite_steel_deck, flat_roof_assembly
+from .loads import LoadCase, OCCUPANCY_LIVE, composite_steel_deck, flat_roof_assembly
 from .massing import MASSING_FAMILIES
 from .spatial_rules import check_spatial_rules
 from .materials import MATERIALS as MATERIAL_LIBRARY
@@ -49,7 +52,8 @@ from .constitution import validate_model
 from .facade_gates import correction_for, evaluate
 from .life_safety import build as life_safety_graph
 from .archetypes import (
-    C_VALUE_DESIGN_M, CarveRefusal, TheatreCarve, carve_for, evaluate_archetype,
+    C_VALUE_DESIGN_M, PORTAL_H_M, Carve, CarveRefusal, MuseumCarve, TheatreCarve,
+    carve_for, evaluate_archetype,
 )
 from .briefs import brief_for
 from .typology import kit_for
@@ -57,16 +61,17 @@ from .program import (
     DEFAULT_CIRCULATION_ALLOWANCE, LIBRARY_BRIEF, ProgramAllocation,
     UnplacedSpace, allocate_program, level_bands,
 )
+from .plan_regions import polygon as plan_polygon, extrusions as plan_extrusions
 from .registry import catalogue, profile_for
 from .partitions import (
     DOOR_CLEAR_M, DOOR_LEAF_M, required_separation, select_partition,
 )
 from .selection import select_massing, select_project
 from .site import SiteParameters, resolve_site, to_jurisdiction
-from .version import COMPILER_VERSION
+from .version import COMPILER_VERSION, compiler_source_fingerprint
 from . import site_loads
 from .validators import set_site_loads
-from .sizing import size_gravity_frame
+from .sizing import select_beam, size_gravity_frame
 from .tectonics import (
     ENVELOPE_TECTONICS, FRAME_TECTONICS, GRAMMAR_ENVELOPE, SYSTEM_BUILDABILITY,
     EnvelopeTectonic, FrameTectonic,
@@ -116,6 +121,25 @@ class _Builder:
         # too small to hold two remote cores does not get a second one.
         self.second_stair_anchor: tuple[float, float] | None = None
         self.second_stair_levels: list[str] = []
+        self.cores = core_anchors(lattice, datums)
+        # What the floor framing did about the stair and lift openings, for the
+        # limitations a reader is owed: girders that still cross an opening (a
+        # transfer this compiler does not design), and the count of headers and
+        # trimmers it did size. A floor system with no members to trim is listed.
+        self.opening_conflicts: list[str] = []
+        self.headers_emitted = 0
+        self.trimmers_emitted = 0
+        self.unframed_levels: list[str] = []
+        # The lift as built: which occupied levels have a landing door, and the
+        # sentence that says so, written by the emitter that knows.
+        self.lift_served_levels: list[str] = []
+        self.lift_note = ''
+
+    def add_plate(self, element_id, kind, layer, subsystem, boundary, holes,
+                  z_base, z_top, material, **metadata):
+        for index, geometry in enumerate(plan_extrusions(boundary, holes, z_base, z_top)):
+            part_id = element_id if index == 0 else f'{element_id}-P{index:02d}'
+            self.add(part_id, kind, layer, subsystem, geometry, material, **metadata)
 
     def profile(self, spec: ProfileSpec) -> str:
         self.profiles[spec.id] = spec
@@ -327,7 +351,37 @@ def _run_sizing(datums: DatumSet, lattice: Lattice, allocation: ProgramAllocatio
 # Structure
 # ---------------------------------------------------------------------------
 
-def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
+def _segment_crosses_rect(ax: float, ay: float, bx: float, by: float,
+                          rect: tuple[float, float, float, float]) -> bool:
+    """Whether an axis-aligned member runs through the interior of a plan rectangle."""
+    x0, y0, x1, y1 = rect
+    if abs(ay - by) < 1e-9:
+        return (y0 + 0.05 < ay < y1 - 0.05
+                and min(ax, bx) < x1 - 0.05 and max(ax, bx) > x0 + 0.05)
+    if abs(ax - bx) < 1e-9:
+        return (x0 + 0.05 < ax < x1 - 0.05
+                and min(ay, by) < y1 - 0.05 and max(ay, by) > y0 + 0.05)
+    return False
+
+
+def _point_load_tributary(cut_span_m: float, header_span_m: float, a_m: float,
+                          trimmer_span_m: float) -> float:
+    """The extra tributary width a trimmer joist carries for one header reaction.
+
+    A header at an opening edge collects the trimmed joists' reactions -- each
+    trimmed joist delivers half its remaining span -- and lands them as a point load
+    on the trimmer joist beside the opening, at `a_m` from the trimmer's support.
+    `check_beam` sizes uniform loads, so the point load is expressed as the uniform
+    load producing the same maximum moment (8·M/L²), stated per kPa of floor load
+    so it adds to the trimmer's own spacing as metres of tributary width. Hand
+    check: R = w·(Lcut/2)·(Lh/2); M = R·a·(L−a)/L; w_eq = 8M/L².
+    """
+    reaction_per_kpa = (cut_span_m / 2.0) * (header_span_m / 2.0)
+    moment_per_kpa = reaction_per_kpa * a_m * (trimmer_span_m - a_m) / trimmer_span_m
+    return 8.0 * moment_per_kpa / trimmer_span_m ** 2
+
+
+def _emit_structure(b: _Builder, sizing, frame: FrameTectonic, occupancy) -> None:
     """Emit the gravity frame in the tectonic family the selection chose.
 
     Three things change between families and all three are visible in a study model:
@@ -355,6 +409,13 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
     col_util, col_gov = sizing.column.check.max_ratio, sizing.column.check.governing
     gir_util, gir_gov = sizing.beam.check.max_ratio, sizing.beam.check.governing
     jst_util, jst_gov = sizing.joist.check.max_ratio, sizing.joist.check.governing
+
+    # The opening framing is sized here, member by member, against the same floor
+    # case the frame takedown used: a header carries a real share of the floor and
+    # gets a real section from the same catalogue, or it says it could not.
+    beam_catalogue, _column_catalogue = _catalogues(frame)
+    floor_case = LoadCase(dead_kpa=composite_steel_deck().superimposed_dead_kpa(),
+                          live_kpa=occupancy.live_kpa)
 
     # The section the calculation chose already carries the material's proportion --
     # a glulam catalogue returns a member far wider than a rolled steel one at the
@@ -460,6 +521,22 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
     for level in lattice.levels[1:]:
         z_beam = level.z - slab_t - 0.31
         plate = level.plate
+        # The stair and lift openings on this level, as the framing sees them. The
+        # slab and the ceiling cut these same rectangles out; the members now either
+        # stop at their edges or are named as crossing them.
+        openings = _opening_rects(b.cores, level.id)
+
+        def girder_reason(default: str, a, c, member_id: str) -> tuple[str, list[str]]:
+            crossing = [o for o in openings if _segment_crosses_rect(a[0], a[1], c[0], c[1], o)]
+            if not crossing:
+                return default, ['STR-STEEL-GRAVITY-001']
+            b.opening_conflicts.append(member_id)
+            return (default + ' It runs through a stair or lift opening: a girder on '
+                    'a grid line the core straddles. Kept and reported -- cutting it '
+                    'would break the load path and the transfer that resolves it is '
+                    'not designed here.'), ['STR-STEEL-GRAVITY-001',
+                                            'STR-OPENING-TRANSFER-UNRESOLVED']
+
         # --- primary beams, both grid directions --------------------------------
         for yj, y in enumerate(lattice.y_lines):
             for xi in range(len(lattice.x_lines) - 1):
@@ -470,8 +547,11 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
                                  column_below(level, xi + 1, yj)]
                 if not all(support in b.element_ids for support in beam_supports):
                     continue
-                b.add(f'STR-BMX-X{xi:02d}-Y{yj:02d}-{level.id}', 'primary_beam',
-                      'structure', 'beams',
+                member_id = f'STR-BMX-X{xi:02d}-Y{yj:02d}-{level.id}'
+                reason, rules = girder_reason(
+                    'Primary girder spans one bay between column nodes.',
+                    (x0, y), (x1, y), member_id)
+                b.add(member_id, 'primary_beam', 'structure', 'beams',
                       b.member([v3(x0, y, z_beam), v3(x1, y, z_beam)], girder_profile),
                       beam_mat, level_id=level.id,
                       lattice_index={'x': xi, 'y': yj, 'level': level.index},
@@ -479,8 +559,7 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
                       supports=beam_supports,
                       section_id=sizing.beam.check.section_id,
                       sizing_status='sized_by_calculation', utilisation=gir_util,
-                      governing_check=gir_gov, rule_refs=['STR-STEEL-GRAVITY-001'],
-                      reason='Primary girder spans one bay between column nodes.')
+                      governing_check=gir_gov, rule_refs=rules, reason=reason)
         for xi, x in enumerate(lattice.x_lines):
             for yj in range(len(lattice.y_lines) - 1):
                 y0, y1 = lattice.y_lines[yj], lattice.y_lines[yj + 1]
@@ -490,8 +569,11 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
                                  column_below(level, xi, yj + 1)]
                 if not all(support in b.element_ids for support in beam_supports):
                     continue
-                b.add(f'STR-BMY-X{xi:02d}-Y{yj:02d}-{level.id}', 'primary_beam',
-                      'structure', 'beams',
+                member_id = f'STR-BMY-X{xi:02d}-Y{yj:02d}-{level.id}'
+                reason, rules = girder_reason(
+                    'Primary girder closes the bay in the second direction.',
+                    (x, y0), (x, y1), member_id)
+                b.add(member_id, 'primary_beam', 'structure', 'beams',
                       b.member([v3(x, y0, z_beam), v3(x, y1, z_beam)], girder_profile),
                       beam_mat, level_id=level.id,
                       lattice_index={'x': xi, 'y': yj, 'level': level.index},
@@ -499,8 +581,7 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
                       supports=beam_supports,
                       section_id=sizing.beam.check.section_id,
                       sizing_status='sized_by_calculation', utilisation=gir_util,
-                      governing_check=gir_gov, rule_refs=['STR-STEEL-GRAVITY-001'],
-                      reason='Primary girder closes the bay in the second direction.')
+                      governing_check=gir_gov, rule_refs=rules, reason=reason)
         # --- ring beam across the apsidal end -----------------------------------
         for ai in range(len(lattice.apse_nodes) - 1):
             a, c = lattice.apse_nodes[ai], lattice.apse_nodes[ai + 1]
@@ -522,6 +603,55 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
         # --- the floor system, which is where the families separate -------------
         z_joist = level.z - slab_t - 0.17
         spacing = datums.value('joist_spacing_m')
+
+        def emit_header(header_id: str, xa: float, xb: float, y_edge: float,
+                        cut_span: float, supports: list[str], index: dict,
+                        material: str) -> str | None:
+            """One opening-edge beam, sized for the joists it collects.
+
+            The header spans between the members that flank the opening and carries
+            the trimmed joists' reactions -- half of each remaining span -- as the
+            uniform load `check_beam` sizes. Same floor case, same catalogue as the
+            frame takedown; where no section in the catalogue works the member is
+            still drawn, as convention, and its reason says the calculation failed.
+            """
+            span = xb - xa
+            if span < 0.3:
+                return None
+            chosen = select_beam(header_id, span, max(0.3, cut_span / 2.0), floor_case,
+                                 beam_catalogue, role='girder',
+                                 unbraced_length_m=min(spacing, span))
+            if chosen.selected and chosen.check is not None:
+                profile = sized_profile(chosen.check.section_id)
+                sizing_kwargs = dict(
+                    section_id=chosen.check.section_id,
+                    sizing_status='sized_by_calculation',
+                    utilisation=chosen.check.max_ratio,
+                    governing_check=chosen.check.governing)
+                verdict = (f'sized for {cut_span / 2.0:.2f} m of tributary floor over a '
+                           f'{span:.2f} m span; {chosen.reason}.')
+            else:
+                profile = girder_profile
+                sizing_kwargs = dict(section_id=None,
+                                     sizing_status='architectural_convention',
+                                     utilisation=None, governing_check=None)
+                verdict = (f'no catalogue section carries {cut_span / 2.0:.2f} m of '
+                           f'tributary floor over {span:.2f} m; drawn at the girder '
+                           f'section as convention and reported.')
+                b.opening_conflicts.append(header_id)
+            b.add(header_id, 'primary_beam', 'structure', 'beams',
+                  b.member([v3(xa, y_edge, z_joist), v3(xb, y_edge, z_joist)], profile),
+                  material, level_id=level.id, lattice_index=index,
+                  datum_refs=['joist_spacing_m', 'bay_y_m', 'flight_width_m'],
+                  supports=supports,
+                  rule_refs=['STR-STEEL-GRAVITY-001', 'STR-OPENING-HEADER-001'],
+                  reason=('Header framing a stair or lift opening: the members that '
+                          'ran through the opening now stop on it, and it carries them '
+                          'to the trimmers beside the opening. ' + verdict),
+                  **sizing_kwargs)
+            b.headers_emitted += 1
+            return header_id
+
         if frame.floor_system in ('joisted', 'heavy_joist'):
             # A heavy timber floor carries fewer, deeper joists at a wider centre than
             # a steel deck: the same load through a material that is weaker per unit
@@ -529,73 +659,256 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
             heavy = frame.floor_system == 'heavy_joist'
             spacing = spacing * (1.9 if heavy else 1.0)
             kind = 'heavy_joist' if heavy else 'secondary_joist'
+            joist_datums = ['joist_spacing_m', 'bay_y_m']
             for xi in range(len(lattice.x_lines) - 1):
                 x0, x1 = lattice.x_lines[xi], lattice.x_lines[xi + 1]
                 divisions = max(1, int(round((x1 - x0) / spacing)))
-                for sub in range(1, divisions):
-                    x = x0 + (x1 - x0) * sub / divisions
-                    for yj in range(len(lattice.y_lines) - 1):
-                        y0, y1 = lattice.y_lines[yj], lattice.y_lines[yj + 1]
+                joist_xs = [(sub, x0 + (x1 - x0) * sub / divisions)
+                            for sub in range(1, divisions)]
+                for yj in range(len(lattice.y_lines) - 1):
+                    y0, y1 = lattice.y_lines[yj], lattice.y_lines[yj + 1]
+                    girder_s = f'STR-BMX-X{xi:02d}-Y{yj:02d}-{level.id}'
+                    girder_n = f'STR-BMX-X{xi:02d}-Y{yj + 1:02d}-{level.id}'
+                    if not (girder_s in b.element_ids and girder_n in b.element_ids):
+                        continue
+                    bay_span = y1 - y0
+                    bay_openings = [o for o in openings
+                                    if o[0] < x1 - 0.05 and o[2] > x0 + 0.05
+                                    and o[1] < y1 - 0.05 and o[3] > y0 + 0.05]
+
+                    def joist_id(sub: int) -> str:
+                        return f'STR-JST-X{xi:02d}-S{sub:02d}-Y{yj:02d}-{level.id}'
+
+                    # The openings this bay's joists meet, the joists that flank each
+                    # one (the trimmers), and the header edges that fall inside the bay.
+                    trimmer_extra: dict[int, float] = {}
+                    header_plan: list[tuple] = []
+                    for oi, (ox0, oy0, ox1, oy1) in enumerate(bay_openings):
+                        west = [p for p in joist_xs if p[1] < ox0 - 0.05]
+                        east = [p for p in joist_xs if p[1] > ox1 + 0.05]
+                        w = max(west, key=lambda p: p[1]) if west else None
+                        e = min(east, key=lambda p: p[1]) if east else None
+                        xa = w[1] if w else x0
+                        xb = e[1] if e else x1
+                        support_w = (joist_id(w[0]) if w
+                                     else f'STR-BMY-X{xi:02d}-Y{yj:02d}-{level.id}')
+                        support_e = (joist_id(e[0]) if e
+                                     else f'STR-BMY-X{xi + 1:02d}-Y{yj:02d}-{level.id}')
+                        for tag, y_edge, cut_span in (
+                                ('S', oy0 - HEADER_SETBACK_M, oy0 - HEADER_SETBACK_M - y0),
+                                ('N', oy1 + HEADER_SETBACK_M, y1 - oy1 - HEADER_SETBACK_M)):
+                            if not (y0 + 0.3 < y_edge < y1 - 0.3):
+                                continue
+                            header_plan.append((oi, tag, y_edge, xa, xb, cut_span,
+                                                support_w, support_e))
+                            for trimmer in (w, e):
+                                if trimmer is not None:
+                                    trimmer_extra[trimmer[0]] = (
+                                        trimmer_extra.get(trimmer[0], 0.0)
+                                        + _point_load_tributary(cut_span, xb - xa,
+                                                                y_edge - y0, bay_span))
+
+                    # Pass one: the joists that run the full bay -- ordinary ones, and
+                    # the trimmers beside an opening, resized for the header they carry.
+                    crossing_by_sub: dict[int, list] = {}
+                    for sub, x in joist_xs:
                         if not point_inside(plate, x, (y0 + y1) / 2.0):
                             continue
-                        joist_supports = [
-                            f'STR-BMX-X{xi:02d}-Y{yj:02d}-{level.id}',
-                            f'STR-BMX-X{xi:02d}-Y{yj + 1:02d}-{level.id}',
-                        ]
-                        if not all(support in b.element_ids for support in joist_supports):
+                        crossing = [o for o in bay_openings if o[0] - 0.05 < x < o[2] + 0.05]
+                        if crossing:
+                            crossing_by_sub[sub] = crossing
                             continue
-                        b.add(f'STR-JST-X{xi:02d}-S{sub:02d}-Y{yj:02d}-{level.id}',
-                              kind, 'structure', 'beams',
-                              b.member([v3(x, y0, z_joist), v3(x, y1, z_joist)],
-                                       joist_profile),
-                              joist_mat, level_id=level.id,
-                              lattice_index={'x': xi, 'sub': sub, 'y': yj,
-                                             'level': level.index},
-                              datum_refs=['joist_spacing_m', 'bay_y_m'],
-                              supports=joist_supports,
-                              section_id=sizing.joist.check.section_id,
-                              sizing_status='sized_by_calculation', utilisation=jst_util,
-                              governing_check=jst_gov,
-                              rule_refs=['STR-STEEL-GRAVITY-001', 'STF-INV-04'],
-                              reason='Secondary member spans between primary girders at '
-                                     'the density the score and the material set.')
+                        index = {'x': xi, 'sub': sub, 'y': yj, 'level': level.index}
+                        extra = trimmer_extra.get(sub, 0.0)
+                        if extra <= 1e-6:
+                            b.add(joist_id(sub), kind, 'structure', 'beams',
+                                  b.member([v3(x, y0, z_joist), v3(x, y1, z_joist)],
+                                           joist_profile),
+                                  joist_mat, level_id=level.id, lattice_index=index,
+                                  datum_refs=joist_datums, supports=[girder_s, girder_n],
+                                  section_id=sizing.joist.check.section_id,
+                                  sizing_status='sized_by_calculation',
+                                  utilisation=jst_util, governing_check=jst_gov,
+                                  rule_refs=['STR-STEEL-GRAVITY-001', 'STF-INV-04'],
+                                  reason='Secondary member spans between primary '
+                                         'girders at the density the score and the '
+                                         'material set.')
+                            continue
+                        chosen = select_beam(joist_id(sub), bay_span, spacing + extra,
+                                             floor_case, beam_catalogue, role='beam',
+                                             unbraced_length_m=0.0)
+                        if chosen.selected and chosen.check is not None:
+                            profile = sized_profile(chosen.check.section_id)
+                            kwargs = dict(section_id=chosen.check.section_id,
+                                          sizing_status='sized_by_calculation',
+                                          utilisation=chosen.check.max_ratio,
+                                          governing_check=chosen.check.governing)
+                            verdict = f'{chosen.reason}.'
+                        else:
+                            profile = joist_profile
+                            kwargs = dict(section_id=None,
+                                          sizing_status='architectural_convention',
+                                          utilisation=None, governing_check=None)
+                            verdict = ('no catalogue section carries the header '
+                                       'reaction; drawn at the joist section and '
+                                       'reported.')
+                            b.opening_conflicts.append(joist_id(sub))
+                        b.add(joist_id(sub), kind, 'structure', 'beams',
+                              b.member([v3(x, y0, z_joist), v3(x, y1, z_joist)], profile),
+                              joist_mat, level_id=level.id, lattice_index=index,
+                              datum_refs=joist_datums + ['flight_width_m'],
+                              supports=[girder_s, girder_n],
+                              rule_refs=['STR-STEEL-GRAVITY-001', 'STF-INV-04',
+                                         'STR-OPENING-HEADER-001'],
+                              reason=(f'Trimmer joist beside a stair or lift opening: '
+                                      f'it carries its own {spacing:.2f} m of floor plus '
+                                      f'the header reactions, taken as {extra:.2f} m of '
+                                      f'equivalent tributary width (8M/L² of the point '
+                                      f'load). ' + verdict),
+                              **kwargs)
+                        b.trimmers_emitted += 1
+
+                    # Pass two: the headers, now that the trimmers they land on exist.
+                    header_ids: dict[tuple[int, str], str] = {}
+                    for oi, tag, y_edge, xa, xb, cut_span, support_w, support_e in header_plan:
+                        supports = [s for s in (support_w, support_e) if s in b.element_ids]
+                        header_id = emit_header(
+                            f'STR-HDR-X{xi:02d}-Y{yj:02d}-{level.id}-O{oi}{tag}',
+                            xa, xb, y_edge, cut_span, supports,
+                            {'x': xi, 'y': yj, 'level': level.index, 'opening': oi},
+                            joist_mat)
+                        if header_id:
+                            header_ids[(oi, tag)] = header_id
+
+                    # Pass three: the trimmed joists, as the pieces that remain outside
+                    # the opening, each bearing on a girder at one end and a header at
+                    # the other.
+                    for sub, crossing in crossing_by_sub.items():
+                        x = x0 + (x1 - x0) * sub / divisions
+                        cuts = sorted((max(y0, o[1] - HEADER_SETBACK_M),
+                                       min(y1, o[3] + HEADER_SETBACK_M),
+                                       bay_openings.index(o)) for o in crossing)
+                        # Each remaining piece is bounded by the girder at the bay edge
+                        # or by the header of the opening it stops at: the south edge
+                        # header of the opening ahead, the north edge header of the
+                        # opening behind.
+                        cursor, pieces, behind = y0, [], None
+                        for c0, c1, oi in cuts:
+                            if c0 - cursor > 0.3:
+                                pieces.append((cursor, c0, behind, oi))
+                            cursor = max(cursor, c1)
+                            behind = oi
+                        if y1 - cursor > 0.3:
+                            pieces.append((cursor, y1, behind, None))
+                        for n, (pa, pb, behind_oi, ahead_oi) in enumerate(pieces):
+                            start_support = (girder_s if behind_oi is None
+                                             else header_ids.get((behind_oi, 'N')))
+                            end_support = (girder_n if ahead_oi is None
+                                           else header_ids.get((ahead_oi, 'S')))
+                            supports = [s for s in (start_support, end_support) if s]
+                            b.add(f'{joist_id(sub)}-T{n}', kind, 'structure', 'beams',
+                                  b.member([v3(x, pa, z_joist), v3(x, pb, z_joist)],
+                                           joist_profile),
+                                  joist_mat, level_id=level.id,
+                                  lattice_index={'x': xi, 'sub': sub, 'y': yj,
+                                                 'level': level.index, 'piece': n},
+                                  datum_refs=joist_datums + ['flight_width_m'],
+                                  supports=sorted(set(supports)),
+                                  section_id=sizing.joist.check.section_id,
+                                  sizing_status='sized_by_calculation',
+                                  utilisation=jst_util, governing_check=jst_gov,
+                                  rule_refs=['STR-STEEL-GRAVITY-001', 'STF-INV-04',
+                                             'STR-OPENING-HEADER-001'],
+                                  reason=('Trimmed joist: the part of a secondary '
+                                          'member left outside a stair or lift opening, '
+                                          'bearing on the girder at one end and the '
+                                          'opening header at the other. Its section is '
+                                          'the full joist\'s, which is conservative on '
+                                          'the shorter span.'))
         elif frame.floor_system == 'panel':
             # CLT bands span girder to girder. They are drawn, not implied, because a
             # panel floor reads completely differently from a ribbed one in section --
-            # and they are recorded as convention, because no panel check was run.
+            # and they are recorded as convention, because no panel check was run. A
+            # band an opening interrupts is emitted as the pieces outside the opening,
+            # and a glulam header spans the bay at each opening edge so those pieces
+            # have an edge to bear on.
             for xi in range(len(lattice.x_lines) - 1):
                 x0, x1 = lattice.x_lines[xi], lattice.x_lines[xi + 1]
                 bands = max(1, int(round((x1 - x0) / 2.4)))
-                for band in range(bands):
-                    xa = x0 + (x1 - x0) * band / bands
-                    xb = x0 + (x1 - x0) * (band + 1) / bands
-                    for yj in range(len(lattice.y_lines) - 1):
-                        y0, y1 = lattice.y_lines[yj], lattice.y_lines[yj + 1]
+                for yj in range(len(lattice.y_lines) - 1):
+                    y0, y1 = lattice.y_lines[yj], lattice.y_lines[yj + 1]
+                    panel_supports = [
+                        f'STR-BMX-X{xi:02d}-Y{yj:02d}-{level.id}',
+                        f'STR-BMX-X{xi:02d}-Y{yj + 1:02d}-{level.id}',
+                    ]
+                    if not all(support in b.element_ids for support in panel_supports):
+                        continue
+                    bay_openings = [o for o in openings
+                                    if o[0] < x1 - 0.05 and o[2] > x0 + 0.05
+                                    and o[1] < y1 - 0.05 and o[3] > y0 + 0.05]
+                    header_ids: dict[tuple[int, str], str] = {}
+                    for oi, (ox0, oy0, ox1, oy1) in enumerate(bay_openings):
+                        girders_y = [f'STR-BMY-X{xi:02d}-Y{yj:02d}-{level.id}',
+                                     f'STR-BMY-X{xi + 1:02d}-Y{yj:02d}-{level.id}']
+                        supports = [g for g in girders_y if g in b.element_ids]
+                        for tag, y_edge, cut_span in (
+                                ('S', oy0 - HEADER_SETBACK_M, oy0 - HEADER_SETBACK_M - y0),
+                                ('N', oy1 + HEADER_SETBACK_M, y1 - oy1 - HEADER_SETBACK_M)):
+                            if not (y0 + 0.3 < y_edge < y1 - 0.3):
+                                continue
+                            header_id = emit_header(
+                                f'STR-HDR-X{xi:02d}-Y{yj:02d}-{level.id}-O{oi}{tag}',
+                                x0, x1, y_edge, cut_span, supports,
+                                {'x': xi, 'y': yj, 'level': level.index, 'opening': oi},
+                                beam_mat)
+                            if header_id:
+                                header_ids[(oi, tag)] = header_id
+                    for band in range(bands):
+                        xa = x0 + (x1 - x0) * band / bands
+                        xb = x0 + (x1 - x0) * (band + 1) / bands
                         if not point_inside(plate, (xa + xb) / 2.0, (y0 + y1) / 2.0):
                             continue
-                        panel_supports = [
-                            f'STR-BMX-X{xi:02d}-Y{yj:02d}-{level.id}',
-                            f'STR-BMX-X{xi:02d}-Y{yj + 1:02d}-{level.id}',
-                        ]
-                        if not all(support in b.element_ids for support in panel_supports):
-                            continue
-                        b.add(f'STR-CLT-X{xi:02d}-B{band:02d}-Y{yj:02d}-{level.id}',
-                              'clt_panel', 'structure', 'floor_panels',
-                              BoxGeometry(
-                                  center=v3((xa + xb) / 2.0, (y0 + y1) / 2.0,
-                                            z_joist + 0.05),
-                                  size=v3((xb - xa) * 0.97, (y1 - y0) * 0.99,
-                                          slab_t * frame.slab_thickness_factor)),
-                              beam_mat, level_id=level.id,
-                              lattice_index={'x': xi, 'sub': band, 'y': yj,
-                                             'level': level.index},
-                              datum_refs=['bay_y_m', 'slab_thickness_m'],
-                              supports=panel_supports,
-                              rule_refs=['STR-TIMBER-FLOOR-001'],
-                              reason='CLT band spanning girder to girder. No panel '
-                                     'bending check is implemented, so this is carried '
-                                     'as convention and says so.')
+                        crossing = [o for o in bay_openings
+                                    if o[0] < xb - 0.05 and o[2] > xa + 0.05]
+                        cuts = sorted((max(y0, o[1] - HEADER_SETBACK_M),
+                                       min(y1, o[3] + HEADER_SETBACK_M),
+                                       bay_openings.index(o)) for o in crossing)
+                        cursor, pieces, behind = y0, [], None
+                        for c0, c1, oi in cuts:
+                            if c0 - cursor > 0.3:
+                                pieces.append((cursor, c0, behind, oi))
+                            cursor = max(cursor, c1)
+                            behind = oi
+                        if y1 - cursor > 0.3:
+                            pieces.append((cursor, y1, behind, None))
+                        for n, (pa, pb, behind_oi, ahead_oi) in enumerate(pieces):
+                            start = (panel_supports[0] if behind_oi is None
+                                     else header_ids.get((behind_oi, 'N')))
+                            end = (panel_supports[1] if ahead_oi is None
+                                   else header_ids.get((ahead_oi, 'S')))
+                            piece_supports = [s for s in (start, end) if s]
+                            suffix = '' if not crossing else f'-T{n}'
+                            b.add(f'STR-CLT-X{xi:02d}-B{band:02d}-Y{yj:02d}-{level.id}{suffix}',
+                                  'clt_panel', 'structure', 'floor_panels',
+                                  BoxGeometry(
+                                      center=v3((xa + xb) / 2.0, (pa + pb) / 2.0,
+                                                z_joist + 0.05),
+                                      size=v3((xb - xa) * 0.97, (pb - pa) * 0.99,
+                                              slab_t * frame.slab_thickness_factor)),
+                                  beam_mat, level_id=level.id,
+                                  lattice_index={'x': xi, 'sub': band, 'y': yj,
+                                                 'level': level.index},
+                                  datum_refs=['bay_y_m', 'slab_thickness_m'],
+                                  supports=piece_supports or panel_supports,
+                                  rule_refs=['STR-TIMBER-FLOOR-001'],
+                                  reason='CLT band spanning girder to girder. No panel '
+                                         'bending check is implemented, so this is carried '
+                                         'as convention and says so.'
+                                         + (' Cut back to the opening header.' if crossing
+                                            else ''))
         else:
+            if openings:
+                b.unframed_levels.append(level.id)
             # A flat slab has no secondary tier at all. What it has instead is a drop
             # panel over every column, and the absence of ribs is the thing a section
             # drawing shows.
@@ -625,10 +938,11 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
         if not floor_supports:
             floor_supports = b.ids(kinds=['primary_beam'], level_id=level.id)
         slab_id = f'STR-SLB-{level.id}'
-        b.add(slab_id, 'floor_slab', 'structure', 'slabs',
-              ExtrusionGeometry(boundary=inset(plate, 0.0),
-                                holes=[list(hole) for hole in level.voids],
-                                z_base=round(level.z - slab_t, 4), z_top=level.z),
+        b.add_plate(slab_id, 'floor_slab', 'structure', 'slabs',
+              inset(plate, 0.0),
+              [list(hole) for hole in level.voids] + _core_openings(b.cores, level.id)
+              + [_rect_ring(*rect) for rect in _landing_footprints(b.cores, level.id)],
+              round(level.z - slab_t, 4), level.z,
               'concrete_light', level_id=level.id,
               lattice_index={'level': level.index},
               datum_refs=['slab_thickness_m', 'void_count', 'void_scale',
@@ -653,11 +967,10 @@ def _emit_structure(b: _Builder, sizing, frame: FrameTectonic) -> None:
             ceiling_holes = [list(hole) for hole in level.voids] + [
                 [v2(cx0, cy0), v2(cx1, cy0), v2(cx1, cy1), v2(cx0, cy1)]
                 for cx0, cy0, cx1, cy1 in lattice.carved.get(level.index, ())]
-            b.add(f'ARC-CLG-{level.id}', 'ceiling', 'program', 'finishes',
-                  ExtrusionGeometry(boundary=inset(plate, 0.15),
-                                    holes=ceiling_holes,
-                                    z_base=round(ceiling_z - CEILING_THICKNESS_M, 4),
-                                    z_top=round(ceiling_z, 4)),
+            ceiling_holes += _core_openings(b.cores, level.id, ceiling=True)
+            b.add_plate(f'ARC-CLG-{level.id}', 'ceiling', 'program', 'finishes',
+                  inset(plate, 0.15), ceiling_holes,
+                  round(ceiling_z - CEILING_THICKNESS_M, 4), round(ceiling_z, 4),
                   'white', category='public', program='ceiling', level_id=level.id,
                   lattice_index={'level': level.index},
                   datum_refs=['floor_to_floor_m', 'slab_thickness_m', *PLATE_DATUMS],
@@ -1181,41 +1494,91 @@ def _stair_sites(lattice, width: float, run: float, levels: list,
     16.8 m requirement -- a 1.4 % miss that was resolution, not geometry, and it
     cost the building its second exit.
     """
-    plates = [level.plate for level in levels if level.plate]
+    plates = [plan_polygon(level.plate).difference(
+        unary_union([plan_polygon(hole) for hole in level.voids]))
+        for level in levels if level.plate]
     if not plates:
         return []
-    margin_x = width * 1.2
-    margin_y = run / 2.0 + LANDING_OVERLAP_M + 1.0
+    # Sample the floor the run actually shares, not the plan rectangle. The plan
+    # bounds are the orthogonal figure the family declares; an apsidal end or a
+    # projecting level stands outside them, and sampling the rectangle alone never
+    # visited the seventeen metres of plate west of a theatre's house -- so a slab
+    # that had room for its stairs reported that no stair could serve any level.
+    x_min = max(min(p.x for p in level.plate) for level in levels if level.plate)
+    x_max = min(max(p.x for p in level.plate) for level in levels if level.plate)
+    y_min = max(min(p.y for p in level.plate) for level in levels if level.plate)
+    y_max = min(max(p.y for p in level.plate) for level in levels if level.plate)
+    if x_max - x_min < 1.0 or y_max - y_min < 1.0:
+        return []
     sites: list[tuple[float, float]] = []
     for u in range(5, 36):
         for v in range(5, 36):
-            x = lattice.plan.fx(u / 40.0)
-            y = lattice.plan.fy(v / 40.0)
-            # the whole footprint of the stair has to be inside, not just its centre
-            corners = ((x - margin_x, y - margin_y), (x + margin_x, y - margin_y),
-                       (x + margin_x, y + margin_y), (x - margin_x, y + margin_y))
-            if all(point_inside(plate, cx, cy)
-                   for plate in plates for cx, cy in corners):
+            x = x_min + (x_max - x_min) * u / 40.0
+            y = y_min + (y_max - y_min) * v / 40.0
+            footprint = plan_box(*_core_box(x, y, width, run))
+            if all(plate.covers(footprint) for plate in plates):
                 sites.append((x, y))
     return sites
 
 
 def _core_box(ax: float, ay: float, width: float,
               run: float) -> tuple[float, float, float, float]:
-    """The floor a core at this anchor takes: stair, lift bay, landings.
+    """Whole stair footprint, including either landing direction and edge clearance."""
+    return (ax - width * 1.1 - CORE_CLEARANCE_M,
+            ay - run / 2.0 - 1.7 - CORE_CLEARANCE_M,
+            ax + width * 1.1 + CORE_CLEARANCE_M,
+            ay + run / 2.0 + 1.7 + CORE_CLEARANCE_M)
 
-    One formula, read by the reservation that cuts the program around the core and
-    by the feasibility filter that keeps a core out of carved floor. Two copies of
-    this box is two opinions about where the core is, which is the shape of every
-    collision this pipeline has produced.
-    """
-    return (ax - width * 1.4, ay - run / 2.0 - LANDING_OVERLAP_M * 1.6,
-            ax + width * 1.4 + LIFT_SHAFT_M, ay + run / 2.0 + 1.4)
 
 
 def _box_overlaps(a, b) -> bool:
     return (min(a[2], b[2]) > max(a[0], b[0])
             and min(a[3], b[3]) > max(a[1], b[1]))
+
+
+def _opening_span(ax: float, ay: float, width: float, run: float,
+                  facing: float) -> tuple[float, float, float, float]:
+    """The flight-and-turn opening a stair at this anchor cuts, facing this way."""
+    y0, y1 = ay - facing * run / 2.0, ay + facing * (run / 2.0 + 1.4)
+    return (ax - width - 0.12, min(y0, y1) - 0.12, ax + width + 0.12, max(y0, y1) + 0.12)
+
+
+def _rect_crosses_grid(lattice, rect: tuple[float, float, float, float]) -> bool:
+    x0, y0, x1, y1 = rect
+    return (any(x0 + 0.05 < x < x1 - 0.05 for x in lattice.x_lines)
+            or any(y0 + 0.05 < y < y1 - 0.05 for y in lattice.y_lines))
+
+
+def _grid_crossings(lattice, rect: tuple[float, float, float, float]) -> int:
+    x0, y0, x1, y1 = rect
+    return (sum(1 for x in lattice.x_lines if x0 + 0.05 < x < x1 - 0.05)
+            + sum(1 for y in lattice.y_lines if y0 + 0.05 < y < y1 - 0.05))
+
+
+def _opening_grid_crossings(lattice, ax: float, ay: float, width: float,
+                            run: float) -> int:
+    """How many grid lines a stair at this anchor must straddle, at best.
+
+    A grid line inside the flight opening means a primary girder runs through the
+    stair. The opening is not symmetric -- the turn extends it on the landing
+    side -- so the count is the better of the two facings; `_core_layout` then takes
+    that facing. Zero is a stair inside one bay. A stair deeper than the bay it
+    stands in can never reach zero, and then the fewest crossings is the honest best:
+    one transfer girder rather than two.
+    """
+    return min(_grid_crossings(lattice, _opening_span(ax, ay, width, run, facing))
+               for facing in (1.0, -1.0))
+
+
+def _opening_crosses_grid(lattice, ax: float, ay: float, width: float,
+                          run: float) -> bool:
+    return _opening_grid_crossings(lattice, ax, ay, width, run) > 0
+
+
+# The header's centre-line stands this far outside the opening edge, so its inner
+# face is flush with the cut rather than its centre: the member frames the hole, it
+# does not hang half into it.
+HEADER_SETBACK_M = 0.20
 
 
 def _stair_anchor(lattice, width: float, run: float, levels: list,
@@ -1240,12 +1603,22 @@ def _stair_anchor(lattice, width: float, run: float, levels: list,
     region, not one preferred point of it.
     """
     sites = _stair_sites(lattice, width, run, levels)
+    # A core whose flight opening straddles a grid line puts a girder through the
+    # stair -- a transfer this compiler does not design. Sites are taken in order of
+    # how many grid lines they must straddle: inside one bay first, then one line,
+    # then two. A stair deeper than its bay never reaches zero, and the fewest
+    # transfers is then the honest best; each one is reported rather than cut.
+    usable = [site for site in sites
+              if not any(_box_overlaps(_core_box(*site, width, run), rect)
+                         for rect in keep_out)]
+    if not usable:
+        return None
+    fewest = min(_opening_grid_crossings(lattice, *site, width, run) for site in usable)
     best = None
-    for x, y in sites:
-        # An archetype's carved floor is not available, however well a core there
-        # would score: a stair in the auditorium is the collision this filter ends.
-        if any(_box_overlaps(_core_box(x, y, width, run), rect)
-               for rect in keep_out):
+    for x, y in usable:
+        # `usable` already excludes an archetype's carved floor: a stair in the
+        # auditorium is the collision that filter ends.
+        if _opening_grid_crossings(lattice, x, y, width, run) > fewest:
             continue
         if away_from is None:
             # prefer the back of the plan, then the east side
@@ -1265,12 +1638,14 @@ def _emit_floor_landing(
     b: _Builder, landing_id: str, x: float, y: float, level, size_x: float,
     size_y: float,
 ) -> None:
-    """A landing at a floor level, flush with the plate and overlapping it.
+    """A landing at a floor level, flush with the plate and owning its footprint.
 
-    Flush matters as much as overlapping: a landing whose top sits at the plate's z is
-    a floor a person steps onto, and one sitting a few centimetres proud or shy is a
-    trip hazard drawn to look like a landing. The slab is emitted *below* `level.z` so
-    its top surface is the floor.
+    Flush matters: a landing whose top sits at the plate's z is a floor a person steps
+    onto, and one sitting a few centimetres proud or shy is a trip hazard drawn to look
+    like a landing. The slab is emitted *below* `level.z` so its top surface is the
+    floor -- and the slab gives up the landing's footprint (`_landing_footprints`), so
+    the two walking surfaces abut instead of lying one inside the other: two coplanar
+    surfaces in one place drew as a striped fight and counted the same floor twice.
     """
     thickness = max(0.18, b.datums.value('slab_thickness_m') * 0.6)
     b.add(landing_id, 'stair_landing', 'circulation', 'stairs',
@@ -1280,9 +1655,10 @@ def _emit_floor_landing(
           level_id=level.id, lattice_index={'level': level.index},
           datum_refs=['flight_width_m', 'slab_thickness_m'],
           rule_refs=['CIR-INV-LANDING-MEETS-PLATE'],
-          reason='Floor landing. Its top is flush with the plate and its footprint '
-                 'overlaps it, so the flight arrives on the floor rather than beside '
-                 'it.')
+          reason='Floor landing. Its top is flush with the plate and it owns its own '
+                 'footprint -- the slab is cut back to its edge -- so the flight '
+                 'arrives on one floor surface rather than on two drawn in the same '
+                 'place.')
 
 
 def _emit_accessible_approach(b: _Builder, levels, flight_width: float,
@@ -1469,11 +1845,13 @@ def core_anchors(lattice, datums) -> dict:
     keep_out = tuple(rect for rects in lattice.carved.values() for rect in rects)
 
     primary, served = None, list(lattice.levels)
-    while len(served) >= 3:
+    while len(served) >= 2:
         primary = _stair_anchor(lattice, width, run, served, keep_out=keep_out)
         if primary is not None:
             break
         served = served[:-1]
+    if primary is None:
+        served = []
 
     def run_diagonal(levels_run) -> float:
         # IBC 1007.1.1 measures the diagonal of the area served -- the plates of
@@ -1498,9 +1876,10 @@ def core_anchors(lattice, datums) -> dict:
         # stair stood in the far corner of a podium it served three storeys of.
         chosen, chosen_served, best = None, [], -1.0
         trial = list(served)
-        while len(trial) >= 3:
+        while len(trial) >= 2:
             candidate = _stair_anchor(lattice, width, run, trial,
-                                      away_from=anchor_point, keep_out=keep_out)
+                                      away_from=anchor_point, keep_out=keep_out + (
+                                          _core_box(*anchor_point, width, run),))
             if candidate is not None:
                 gap = math.hypot(candidate[0] - anchor_point[0],
                                  candidate[1] - anchor_point[1])
@@ -1513,7 +1892,7 @@ def core_anchors(lattice, datums) -> dict:
             return None, []
         return chosen, chosen_served
 
-    def pick_extras(anchor_point, second_run):
+    def pick_extras(anchor_point, second_run, second_point):
         # At most `MAX_EXTRA_CORES`, which is what the emitter names flights for. A
         # building needing a fourth core is one this compiler should report on rather
         # than keep adding stairs to.
@@ -1536,12 +1915,17 @@ def core_anchors(lattice, datums) -> dict:
             top_missing = missing[-1].id
             placed, best_gap = None, -1.0
             trial = list(served)
-            while len(trial) >= 3:
+            occupied = [_core_box(*anchor_point, width, run)]
+            if second_point is not None:
+                occupied.append(_core_box(*second_point, width, run))
+            occupied += [_core_box(*point, width, run)
+                         for point, _levels in chosen]
+            while len(trial) >= 2:
                 if not any(level.id == top_missing for level in trial):
                     break  # truncated below the storey this core exists for
                 candidate = _stair_anchor(lattice, width, run, trial,
                                           away_from=anchor_point,
-                                          keep_out=keep_out)
+                                          keep_out=keep_out + tuple(occupied))
                 if candidate is not None:
                     gap = math.hypot(candidate[0] - anchor_point[0],
                                      candidate[1] - anchor_point[1])
@@ -1556,7 +1940,7 @@ def core_anchors(lattice, datums) -> dict:
         return chosen
 
     second, second_served = (None, []) if primary is None else pick_second(primary)
-    extras = [] if primary is None else pick_extras(primary, second_served)
+    extras = [] if primary is None else pick_extras(primary, second_served, second)
 
     # Two exits are a pair, not one stair plus an afterthought. The primary is placed
     # where a service stair likes to be and its partner is then found as far away as
@@ -1585,28 +1969,42 @@ def core_anchors(lattice, datums) -> dict:
             best_pair, best_span = None, gap
             for px, py in sites_primary:
                 for qx, qy in sites_extra:
+                    if _box_overlaps(_core_box(px, py, width, run),
+                                     _core_box(qx, qy, width, run)):
+                        continue
                     span = math.hypot(px - qx, py - qy)
                     if span > best_span:
                         best_pair, best_span = ((px, py), (qx, qy)), span
             if best_pair is not None:
                 primary = best_pair[0]
                 second, second_served = pick_second(primary)
-                extras = pick_extras(primary, second_served)
+                extras = pick_extras(primary, second_served, second)
                 # The moved pair is the point; if the re-picked extra strayed, pin
                 # the partner this adjustment chose for the run it was chosen for.
                 # Replacing at the cap rather than appending: `pick_extras` yields at
                 # most two, the emitter names exactly two, and a third would have been
                 # an IndexError in a branch that only fires on a massing whose greedy
                 # pair fails -- the kind that ships.
-                if not extras or extras[-1][1][-1].id != top_run[-1].id:
+                pinned_box = _core_box(*best_pair[1], width, run)
+                occupied_boxes = ([_core_box(*second, width, run)]
+                                  if second is not None else [])
+                occupied_boxes += [_core_box(*point, width, run)
+                                   for point, _run in extras]
+                if ((not extras or extras[-1][1][-1].id != top_run[-1].id)
+                        and not any(_box_overlaps(pinned_box, box) for box in occupied_boxes)):
                     pinned = (best_pair[1], top_run)
                     if len(extras) >= MAX_EXTRA_CORES:
                         extras[-1] = pinned
                     else:
                         extras.append(pinned)
 
-    return {'width': width, 'run': run, 'primary': primary, 'served': served,
-            'second': second, 'second_served': second_served, 'extras': extras}
+    anchors = {'width': width, 'run': run, 'primary': primary, 'served': served,
+               'second': second, 'second_served': second_served, 'extras': extras,
+               # The layout reads the grid off this to settle which way each stair
+               # faces; it is the one place the facing is decided.
+               'lattice': lattice}
+    anchors['lift'] = _place_lift(lattice, anchors, keep_out)
+    return anchors
 
 
 # How far the brief may resize a massing family's plate, as a linear factor. Inside
@@ -1662,11 +2060,25 @@ def _carve_and_allocate(grid, datums, typology: str, brief):
     a flat rectangle.
     """
     carve = carve_for(typology, grid, datums, brief)
-    if isinstance(carve, TheatreCarve):
+    if isinstance(carve, Carve):
+        original_voids = {level.index: [list(ring) for ring in level.voids]
+                          for level in grid.levels}
+        for level_index, rects in carve.removed.items():
+            level = grid.level(level_index)
+            for x0, y0, x1, y1 in rects:
+                # A music void that lands inside the carved volume is swallowed by it: a
+                # hole inside a hole is nothing, and two overlapping rings confuse every
+                # consumer that triangulates the plate.
+                level.voids[:] = [
+                    void for void in level.voids
+                    if not (min(x1, max(p.x for p in void)) - max(x0, min(p.x for p in void)) > 0
+                            and min(y1, max(p.y for p in void)) - max(y0, min(p.y for p in void)) > 0)]
+                level.voids.append([v2(x0, y0), v2(x1, y0), v2(x1, y1), v2(x0, y1)])
         # Written to the lattice, not passed around: every later reader of the
         # cores -- the emitter, a test recomputing the reservation -- must see the
         # same carved floor this allocation saw.
-        grid.carved = {grid.occupied[0].index: [carve.house, carve.stage]}
+        grid.carved = {index: list(rects)
+                       for index, rects in carve.reservations.items()}
         # A storey no stair can reach once the house has its floor is a storey the
         # carve stranded. The carver's own gutting check catches the levels the
         # claim erases; this catches the ones it orphans -- on a bar over a podium
@@ -1680,6 +2092,8 @@ def _carve_and_allocate(grid, datums, typology: str, brief):
         stranded = [level.id for level in grid.occupied if level.id not in covered]
         if stranded:
             grid.carved = {}
+            for level in grid.levels:
+                level.voids[:] = original_voids[level.index]
             carve = CarveRefusal(
                 archetype_id=carve.archetype_id,
                 precluded=[UnplacedSpace(
@@ -1698,17 +2112,6 @@ def _carve_and_allocate(grid, datums, typology: str, brief):
     if isinstance(carve, CarveRefusal):
         return allocate_program(grid, datums, brief, reserved=cores,
                                 precluded=tuple(carve.precluded)), carve
-    for level_index, rects in carve.removed.items():
-        level = grid.level(level_index)
-        for x0, y0, x1, y1 in rects:
-            # A music void that lands inside the carved volume is swallowed by it: a
-            # hole inside a hole is nothing, and two overlapping rings confuse every
-            # consumer that triangulates the plate.
-            level.voids[:] = [
-                void for void in level.voids
-                if not (min(x1, max(p.x for p in void)) - max(x0, min(p.x for p in void)) > 0
-                        and min(y1, max(p.y for p in void)) - max(y0, min(p.y for p in void)) > 0)]
-            level.voids.append([v2(x0, y0), v2(x1, y0), v2(x1, y1), v2(x0, y1)])
     allocation = allocate_program(
         grid, datums, brief, reserved=cores,
         carved={index: tuple(rects) for index, rects in carve.reservations.items()},
@@ -1816,6 +2219,142 @@ def _fit_plan_to_brief(datums, massing, lattice, typology: str, *, cutaway: bool
 
 # A passenger lift shaft with its structure. Not a function of the stair beside it.
 LIFT_SHAFT_M = 2.6
+LIFT_GAP_M = 0.30  # architectural clearance between the stair and shaft wall
+LIFT_WALL_M = 0.20  # schematic wall thickness, not a calculated assembly
+CORE_CLEARANCE_M = 0.20
+# The shaft beyond its landings. A car cannot stop at the top floor without headroom
+# above it for the car, its counterweight run-by and, on a machine-room-less drive,
+# the machine itself; nor at the bottom without a pit for the buffers. The figures
+# are practice for a mid-speed MRL passenger lift (EN 81-20 sets the refuge spaces
+# they derive from), not a manufacturer's dimension, and the reason says so.
+LIFT_OVERRUN_M = 3.8
+LIFT_PIT_M = 1.4
+# Landing door: 900 mm clear is the accessible passenger-lift norm (EN 81-70 minimum
+# 800; ADA 407.3.1 minimum 915 for larger cars), 2100 mm high.
+LIFT_DOOR_W_M = 0.9
+LIFT_DOOR_H_M = 2.1
+
+
+def _core_layout(anchors):
+    """One set of positions and directions for reservations, voids and stairs.
+
+    A stair faces away from its egress partner so the doors of a pair open away
+    from each other -- unless that facing puts a grid line through its opening and
+    the other does not, in which case the girder wins: a stair a person can use is
+    worth more than a metre of door separation, and the separation is measured and
+    reported either way.
+    """
+    primary = anchors['primary']
+    if primary is None:
+        return []
+    lattice = anchors.get('lattice')
+    width, run = anchors['width'], anchors['run']
+
+    def settle(point, preferred: float) -> float:
+        if lattice is None:
+            return preferred
+        crossings = {facing: _grid_crossings(lattice, _opening_span(*point, width, run, facing))
+                     for facing in (preferred, -preferred)}
+        return preferred if crossings[preferred] <= crossings[-preferred] else -preferred
+
+    partner = anchors['extras'][0][0] if anchors['extras'] else anchors['second']
+    facing = settle(primary, -1.0 if partner is not None and partner[1] < primary[1] else 1.0)
+    cores = [(primary, anchors['served'], ('A', 'B'), 'LND', facing)]
+    others = []
+    if anchors['second'] is not None:
+        others.append((anchors['second'], anchors['second_served'], SECOND_FLIGHT_PAIR, 'LND2'))
+    others.extend((point, levels, EXTRA_FLIGHT_PAIRS[index], f'LND{3 + index}')
+                  for index, (point, levels) in enumerate(anchors['extras']))
+    for point, levels, tags, label in others:
+        cores.append((point, levels, tags, label,
+                      settle(point, -1.0 if primary[1] < point[1] else 1.0)))
+    return cores
+
+
+def _rect_ring(x0, y0, x1, y1):
+    return [v2(x0, y0), v2(x1, y0), v2(x1, y1), v2(x0, y1)]
+
+
+def _place_lift(lattice, anchors, keep_out):
+    """Try each side of a stair; a lift never consumes a stair's clear volume."""
+    if anchors['primary'] is None:
+        return None
+    ax, ay = anchors['primary']
+    width, run = anchors['width'], anchors['run']
+    half = LIFT_SHAFT_M / 2.0
+    dx = width * 1.1 + CORE_CLEARANCE_M + LIFT_GAP_M + half
+    dy = run / 2.0 + 1.7 + CORE_CLEARANCE_M + LIFT_GAP_M + half
+    stair_boxes = [_core_box(*point, width, run) for point, *_rest in _core_layout(anchors)]
+    candidates = [(ax + dx, ay), (ax - dx, ay), (ax, ay + dy), (ax, ay - dy)]
+    # A shaft straddling a grid line puts a girder through the lift. Candidates that
+    # sit inside one bay are tried first; the rest are the fallback, reported.
+    def crosses_grid(candidate) -> bool:
+        cx, cy = candidate
+        return (any(cx - half + 0.05 < x < cx + half - 0.05 for x in lattice.x_lines)
+                or any(cy - half + 0.05 < y < cy + half - 0.05 for y in lattice.y_lines))
+    candidates = sorted(candidates, key=crosses_grid)
+    for count in range(len(anchors['served']), 1, -1):
+        served = anchors['served'][:count]
+        regions = [plan_polygon(level.plate).difference(
+            unary_union([plan_polygon(h) for h in level.voids])) for level in served]
+        for cx, cy in candidates:
+            bounds = (cx - half, cy - half, cx + half, cy + half)
+            footprint = plan_box(*bounds).buffer(CORE_CLEARANCE_M, join_style=2)
+            if (all(region.covers(footprint) for region in regions)
+                    and not any(_box_overlaps(bounds, other) for other in (*keep_out, *stair_boxes))):
+                return (cx, cy, served)
+    return None
+
+
+def _opening_rects(anchors, level_id, *, ceiling=False):
+    """The structural openings on one level: each flight with its turn, each shaft.
+
+    Plan rectangles, because three readers need the same answer -- the slab and the
+    ceiling cut them out, and the floor framing now frames them. The floor landing
+    is not among them: it is floor, carried on the joists that run beneath it.
+    """
+    width, run = anchors['width'], anchors['run']
+    rects = []
+    for (ax, ay), levels, tags, _label, facing in _core_layout(anchors):
+        cut_levels = levels[:-1] if ceiling else levels[1:]
+        if level_id not in {level.id for level in cut_levels}:
+            continue
+        y0, y1 = ay - facing * run / 2.0, ay + facing * (run / 2.0 + 1.4)
+        rects.append((ax - width - 0.12, min(y0, y1) - 0.12,
+                      ax + width + 0.12, max(y0, y1) + 0.12))
+    if anchors['lift'] is not None:
+        cx, cy, levels = anchors['lift']
+        cut_levels = levels[:-1] if ceiling else levels[1:]
+        if level_id in {level.id for level in cut_levels}:
+            half = LIFT_SHAFT_M / 2.0
+            rects.append((cx - half, cy - half, cx + half, cy + half))
+    return rects
+
+
+def _landing_footprints(anchors, level_id):
+    """Where each floor landing stands on this level, as the plan rectangle it owns.
+
+    The slab gives this floor up to the landing rather than lying under it: two
+    coplanar walking surfaces in one place drew as a striped fight between them and
+    counted the same floor twice. One surface owns each square metre; the landing is
+    that surface here, flush with the plate it abuts, bearing on the joists below.
+    """
+    width, run = anchors['width'], anchors['run']
+    rects = []
+    for (ax, ay), levels, _tags, _label, facing in _core_layout(anchors):
+        if level_id not in {level.id for level in levels[1:]}:
+            continue
+        y0 = ay - facing * run / 2.0
+        centre_y = y0 - facing * 0.8
+        rects.append((ax - width * 1.1, centre_y - LANDING_OVERLAP_M,
+                      ax + width * 1.1, centre_y + LANDING_OVERLAP_M))
+    return rects
+
+
+def _core_openings(anchors, level_id, *, ceiling=False):
+    """Clear the flight and turn as rings; the floor landing remains supported at
+    its edge and, on the slab, owns its own floor (see `_landing_footprints`)."""
+    return [_rect_ring(*rect) for rect in _opening_rects(anchors, level_id, ceiling=ceiling)]
 
 
 def core_reservations(lattice, datums,
@@ -1830,12 +2369,13 @@ def core_reservations(lattice, datums,
     width, run = anchors['width'], anchors['run']
     anchor_points = [anchors['primary'], anchors['second']]
     anchor_points += [point for point, _levels in anchors['extras']]
-    # The stair itself, plus the lift bay beside it and the landings at each end.
-    # (A lift car is a lift car: the shaft width is `LIFT_SHAFT_M` inside `_core_box`,
-    # not a function of the flight width -- scaling it by the stair once handed an
-    # 11.6 m reservation to a 2.6 m flight.)
-    return tuple(_core_box(anchor[0], anchor[1], width, run)
-                 for anchor in anchor_points if anchor is not None)
+    rectangles = [_core_box(*anchor, width, run)
+                  for anchor in anchor_points if anchor is not None]
+    if anchors['lift'] is not None:
+        cx, cy, _levels = anchors['lift']
+        half = LIFT_SHAFT_M / 2.0 + CORE_CLEARANCE_M
+        rectangles.append((cx - half, cy - half, cx + half, cy + half))
+    return tuple(rectangles)
 
 
 def _emit_circulation(b: _Builder) -> None:
@@ -1851,137 +2391,45 @@ def _emit_circulation(b: _Builder) -> None:
     # stackable -- not one drawn through the levels it cannot reach. Falling back to a
     # centroid was the first attempt and it produced landings that were flush with a
     # floor and a metre and a half outside it, which is worse than none.
-    anchors = core_anchors(lattice, datums)
-    anchor, served = anchors['primary'], anchors['served']
-    if anchor is None:
-        served = levels[:3]
-        podium = levels[0].plate
-        anchor = (sum(p.x for p in podium) / len(podium),
-                  sum(p.y for p in podium) / len(podium))
-    unreached = [level.id for level in levels[len(served):] if level.kind == 'occupied']
-    b.unreached_levels = unreached
-    ax, ay = anchor
-
-    # --- the main switchback, level by level ---------------------------------
-    # Each storey is: a flight up to the half-landing, the turn, a flight up to the
-    # next floor, and a floor landing there. The floor landing is what the old emitter
-    # never drew, which is why every flight arrived in mid-air.
-    #
-    # The stair faces away from its egress partner. The landing is where a person
-    # enters the stair -- it is the exit the life-safety graph measures -- and its
-    # side of the core is a free design choice, so the doors of a pair open away from
-    # each other. On the theatre bar the anchors could stand no further apart than
-    # 9.4 m against a 10.3 m third-diagonal ask, and the doors facing away from each
-    # other is what a person would draw before moving either core.
-    partner = (anchors['extras'][0][0] if anchors['extras']
-               else anchors['second'])
-    facing = -1.0 if partner is not None and partner[1] < ay else 1.0
-
-    for k in range(len(served) - 1):
-        lower, upper = served[k], served[k + 1]
-        za, zb = lower.z, upper.z
-        if zb - za < 0.4:
-            continue
-        zm = (za + zb) / 2.0
-        y0 = ay - facing * run / 2.0
-        y1 = ay + facing * run / 2.0
-        half_x = ax - width / 2.0
-        up_x = ax + width / 2.0
-
-        _emit_flight(b, f'A{k:02d}', v3(half_x, y0, za), v3(half_x, y1, zm), width,
-                     lower.id)
-        # the turn, at half height and flush with nothing, which is what it is
-        b.add(f'CIR-HLF-A{k:02d}', 'stair_half_landing', 'circulation', 'stairs',
-              BoxGeometry(center=v3(ax, y1 + facing * 0.7, zm - 0.12),
-                          size=v3(width * 2.0, 1.4, 0.24)),
-              'white', category='circulation', program='circulation',
-              level_id=lower.id, lattice_index={'level': lower.index},
-              datum_refs=['flight_width_m', 'floor_to_floor_m'],
-              reason='Switchback turn at half storey height.')
-        _emit_flight(b, f'B{k:02d}', v3(up_x, y1, zm), v3(up_x, y0, zb), width,
-                     lower.id)
-
-        # and the floor landing the second flight arrives on
-        _emit_floor_landing(b, f'CIR-LND-{upper.id}', ax, y0 - facing * 0.8, upper,
-                            width * 2.2, LANDING_OVERLAP_M * 2.0)
-
-    # --- the second egress stair, remote from the first -----------------------
-    # A building with four hundred occupants and one stair does not comply with IBC
-    # 1006.3.2, and two stairs beside each other do not comply with 1007.1.1 either:
-    # the life-safety graph reported remoteness failing at 2.11 against the one-third
-    # diagonal rule before this existed. The second core is placed by maximising
-    # distance from the first rather than by where a service stair would prefer to be.
-    #
-    # It does not have to reach the top. Requiring a second core inside *every*
-    # plate found exactly one valid point on this plan -- the same point as the
-    # first -- because a building whose upper floors shrink has only one region
-    # common to all of them. A second stair that serves the lower storeys and stops
-    # is a real building; two coincident stairs are not an egress strategy. The
-    # storeys it cannot reach then fail 1006.3.2 in the graph, which is the correct
-    # report rather than a hidden compromise.
-    # IBC 1007.1.1 measures the diagonal of the *area served*, which is a storey's
-    # plate rather than the site footprint. Using the plan bounds asked for a
-    # separation larger than any single floor needs, and the life-safety graph --
-    # which correctly uses the plate -- would then have passed a target the emitter
-    # had already failed to hit. Both now measure the same thing.
-    # The same search the reservation was cut from. Two of these existed -- this one
-    # stopped at the first candidate clearing the third-diagonal rule, the other took
-    # the most remote candidate outright -- and on a stepped plate they chose different
-    # points. The program was then banded around a core the stair was not drawn at, and
-    # nine partitions ran through the flights of the one that was.
-    #
-    # IBC 1007.1.1 measures the diagonal of the area served, and the shortfall when no
-    # candidate clears it is reported by the life-safety graph rather than hidden here:
-    # a second exit twelve metres away is not compliant and is still a second exit.
-    second, second_served = anchors['second'], anchors['second_served']
-
-    def emit_scissor_stair(anchor_point, levels_run, tags, landing_tag: str,
-                           why: str) -> None:
-        bx, by = anchor_point
-        # Entered from the side away from the primary, for the same reason the
-        # primary faces away from here: the landings are the exits, and the pair is
-        # measured door to door.
-        away = -1.0 if ay < by else 1.0
-        for k in range(len(levels_run) - 1):
-            lower, upper = levels_run[k], levels_run[k + 1]
+    anchors = b.cores
+    layout = _core_layout(anchors)
+    reached = {level.id for _point, run_levels, _tags, _label, _facing in layout
+               for level in run_levels}
+    b.unreached_levels = [level.id for level in lattice.occupied if level.id not in reached]
+    b.second_stair_anchor = anchors['second']
+    b.second_stair_levels = [level.id for level in anchors['second_served']]
+    for (ax, ay), served, tags, landing_tag, facing in layout:
+        for k, (lower, upper) in enumerate(zip(served, served[1:])):
             if upper.z - lower.z < 0.4:
                 continue
             zm = (lower.z + upper.z) / 2.0
-            y0, y1 = by - away * run / 2.0, by + away * run / 2.0
-            _emit_flight(b, f'{tags[0]}{k:02d}', v3(bx - width / 2.0, y0, lower.z),
-                         v3(bx - width / 2.0, y1, zm), width, lower.id)
-            b.add(f'CIR-HLF-{tags[0]}{k:02d}', 'stair_half_landing', 'circulation',
-                  'stairs',
-                  BoxGeometry(center=v3(bx, y1 + away * 0.7, zm - 0.12),
+            y0, y1 = ay - facing * run / 2.0, ay + facing * run / 2.0
+            _emit_flight(b, f'{tags[0]}{k:02d}',
+                         v3(ax - width / 2.0, y0, lower.z),
+                         v3(ax - width / 2.0, y1, zm), width, lower.id)
+            b.add(f'CIR-HLF-{tags[0]}{k:02d}', 'stair_half_landing', 'circulation', 'stairs',
+                  BoxGeometry(center=v3(ax, y1 + facing * 0.7, zm - 0.12),
                               size=v3(width * 2.0, 1.4, 0.24)),
                   'white', category='circulation', program='circulation',
                   level_id=lower.id, lattice_index={'level': lower.index},
                   datum_refs=['flight_width_m', 'floor_to_floor_m'],
-                  rule_refs=['IBC-1007.1.1'],
-                  reason=f'{why}, turn at half storey height.')
-            _emit_flight(b, f'{tags[1]}{k:02d}', v3(bx + width / 2.0, y1, zm),
-                         v3(bx + width / 2.0, y0, upper.z), width, lower.id)
-            _emit_floor_landing(b, f'CIR-{landing_tag}-{upper.id}', bx,
-                                y0 - away * 0.8, upper,
-                                width * 2.2, LANDING_OVERLAP_M * 2.0)
-
-    if second is not None:
-        emit_scissor_stair(second, second_served, SECOND_FLIGHT_PAIR, 'LND2',
-                           'Second egress stair')
-        b.second_stair_anchor = second
-        b.second_stair_levels = [lv.id for lv in second_served]
-
-    # The storeys the second stops short of get their own way down. On a bar over a
-    # podium this is the bar's second stair: the podium keeps its remote pair and no
-    # storey counts one exit because another storey's remoteness was worth more.
-    for index, (anchor_point, levels_run) in enumerate(
-            anchors['extras'][:MAX_EXTRA_CORES]):
-        # Named from `EXTRA_FLIGHT_PAIRS`, which the dependency graph reads too: the
-        # half landing between a pair of flights is hosted by looking those letters up,
-        # so a name invented here and not there leaves the landing supported by nothing.
-        emit_scissor_stair(anchor_point, levels_run, EXTRA_FLIGHT_PAIRS[index],
-                           f'LND{3 + index}',
-                           'Egress stair for the storeys the remote core stops short of')
+                  reason='Switchback turn at half storey height.')
+            _emit_flight(b, f'{tags[1]}{k:02d}',
+                         v3(ax + width / 2.0, y1, zm),
+                         v3(ax + width / 2.0, y0, upper.z), width, lower.id)
+            _emit_floor_landing(b, f'CIR-{landing_tag}-{upper.id}', ax,
+                                y0 - facing * 0.8, upper, width * 2.2,
+                                LANDING_OVERLAP_M * 2.0)
+            # Guard the three closed sides of the floor opening. The fourth side
+            # remains open where the arriving floor landing connects to the plate.
+            edge_x = width + 0.17
+            edge_start = y0 - facing * 0.12
+            edge_end = y1 + facing * 1.57
+            corners = [(ax - edge_x, edge_start), (ax - edge_x, edge_end),
+                       (ax + edge_x, edge_end), (ax + edge_x, edge_start)]
+            for edge, (start, end) in enumerate(zip(corners, corners[1:])):
+                _emit_railing(b, f'CORE-{landing_tag}-{upper.id}-{edge}',
+                              v3(*start, upper.z), v3(*end, upper.z), 0.0, upper.id)
 
     # --- the external approach, from grade to the podium ----------------------
     # It genuinely starts outside the building; what it must not do is finish outside.
@@ -2006,22 +2454,91 @@ def _emit_circulation(b: _Builder) -> None:
                             width * 1.9, landing_depth)
 
     # --- the lift and service core, inside the plan and full height -----------
-    core_w = max(2.6, width * 1.6)
-    core_x = ax + width * 1.4
-    if all(point_inside(level.plate, core_x, ay) for level in served if level.plate):
-        for k in range(len(served) - 1):
-            b.add(f'CIR-SHF-{served[k].id}', 'elevator_shaft', 'circulation',
-                  'vertical_core',
+    # A shaft is not a lift. The lift is the shaft plus the pit the buffers stand in,
+    # the headroom above the top landing that the car, its run-by and the machine
+    # need, and a door at every floor it serves. The first version emitted the shaft
+    # between the levels in its served run and stopped at the top floor's slab: a
+    # car could not have stopped there, and the compiler's own text said the level
+    # was served. What is served is now read off the doors that were built.
+    if anchors['lift'] is not None:
+        cx, cy, served = anchors['lift']
+        half = LIFT_SHAFT_M / 2.0
+        floors = [level for level in served if level.kind != 'roof']
+
+        def shaft_segment(segment_id: str, z_base: float, z_top: float, level,
+                          reason: str) -> None:
+            b.add(segment_id, 'elevator_shaft', 'circulation', 'vertical_core',
                   ExtrusionGeometry(
-                      boundary=[v2(core_x - core_w / 2.0, ay - core_w / 2.0),
-                                v2(core_x + core_w / 2.0, ay - core_w / 2.0),
-                                v2(core_x + core_w / 2.0, ay + core_w / 2.0),
-                                v2(core_x - core_w / 2.0, ay + core_w / 2.0)],
-                      z_base=served[k].z, z_top=served[k + 1].z),
+                      boundary=_rect_ring(cx - half, cy - half, cx + half, cy + half),
+                      holes=[_rect_ring(cx - half + LIFT_WALL_M, cy - half + LIFT_WALL_M,
+                                        cx + half - LIFT_WALL_M, cy + half - LIFT_WALL_M)],
+                      z_base=round(z_base, 4), z_top=round(z_top, 4)),
                   'concrete', category='service', program='vertical_circulation',
-                  level_id=served[k].id, lattice_index={'level': k},
-                  datum_refs=['flight_width_m'],
-                  reason='Service and lift core, continuous and inside every plate.')
+                  level_id=level.id, lattice_index={'level': level.index},
+                  datum_refs=['flight_width_m'], reason=reason)
+
+        for lower, upper in zip(served, served[1:]):
+            shaft_segment(f'CIR-SHF-{lower.id}', lower.z, upper.z, lower,
+                          'Hollow lift shaft beside the stair, on the shared core '
+                          'layout. Wall thickness is schematic, not a calculated '
+                          'assembly.')
+        if floors:
+            bottom, top = floors[0], floors[-1]
+            shaft_segment(f'CIR-SHF-{bottom.id}-PIT', bottom.z - LIFT_PIT_M, bottom.z,
+                          bottom,
+                          f'Lift pit, {LIFT_PIT_M:.1f} m below the lowest landing, for '
+                          f'the buffers and the car\'s bottom run-by. Practice for a '
+                          f'mid-speed passenger lift, not a manufacturer\'s figure; the '
+                          f'pit floor bears on the ground it is dug into and its '
+                          f'waterproofing is not designed.')
+            # The overrun starts at the top landing floor, where the last storey
+            # segment ended; the top landing's door sits in it.
+            shaft_segment(f'CIR-SHF-{top.id}-OVR', top.z, top.z + LIFT_OVERRUN_M, top,
+                          f'Lift overrun, {LIFT_OVERRUN_M:.1f} m above the top landing: '
+                          f'car headroom, counterweight run-by and the machine-room-'
+                          f'less drive in the headroom. Practice, not a manufacturer\'s '
+                          f'dimension; the machine, controller and hoist ropes are not '
+                          f'modelled.')
+            # Doors face the stair the shaft was placed beside, on the shaft face
+            # nearest the primary anchor.
+            ax, ay = anchors['primary']
+            if abs(ax - cx) >= abs(ay - cy):
+                side = 1.0 if ax > cx else -1.0
+                door_size = v3(LIFT_WALL_M, LIFT_DOOR_W_M, LIFT_DOOR_H_M)
+                door_at = lambda z: v3(cx + side * (half - LIFT_WALL_M / 2.0), cy, z)
+            else:
+                side = 1.0 if ay > cy else -1.0
+                door_size = v3(LIFT_DOOR_W_M, LIFT_WALL_M, LIFT_DOOR_H_M)
+                door_at = lambda z: v3(cx, cy + side * (half - LIFT_WALL_M / 2.0), z)
+            for level in floors:
+                b.add(f'CIR-SHF-{level.id}-DR', 'door', 'circulation', 'vertical_core',
+                      BoxGeometry(center=door_at(level.z + LIFT_DOOR_H_M / 2.0),
+                                  size=door_size),
+                      'frame_dark', category='service', program='vertical_circulation',
+                      level_id=level.id, lattice_index={'level': level.index},
+                      datum_refs=['flight_width_m'],
+                      rule_refs=['ADA-407.3.1'],
+                      reason=(f'Lift landing door, {LIFT_DOOR_W_M * 1000:.0f} mm clear '
+                              f'by {LIFT_DOOR_H_M * 1000:.0f} mm, in the shaft face '
+                              f'toward the stair. The door is the evidence the level '
+                              f'is served; the car, the operator and the hardware are '
+                              f'not modelled.'))
+                b.lift_served_levels.append(level.id)
+            unserved = [level.id for level in lattice.occupied
+                        if level.id not in b.lift_served_levels]
+            b.lift_note = (
+                f'Lift: shaft from a {LIFT_PIT_M:.1f} m pit below {bottom.id} to a '
+                f'{LIFT_OVERRUN_M:.1f} m overrun above {top.id}, landing doors at '
+                f'{", ".join(b.lift_served_levels)}. '
+                + ('Every occupied level has a landing door.' if not unserved else
+                   f'Occupied levels without a landing door: {", ".join(unserved)}.')
+                + ' Pit and overrun depths are practice for a machine-room-less '
+                  'passenger lift, not a manufacturer\'s figures; the car, drive, '
+                  'controller and door hardware are not modelled and the lift\'s '
+                  'capacity and accessible operation are unverified.')
+    if not b.lift_note:
+        b.lift_note = ('No lift: no shaft position clear of the stairs fits inside '
+                       'every plate of a run this core serves.')
 
     # --- the accessible approach, to ADA or not at all ------------------------
     if len(levels) > 1:
@@ -2303,15 +2820,48 @@ def _emit_partitions(b: _Builder, allocation, sprinklered: bool,
 
 
 def _emit_archetype(b: _Builder, carve) -> None:
-    """The theatre's own geometry: the rake, the stage floor, the proscenium wall.
+    """The archetype's own geometry, per typology.
 
-    This emitter is the promise and `evaluate_archetype` is the audit: every riser
-    top here comes from the carve's derived rows, and the sightline gate then
-    recomputes the C-value from these solids rather than trusting the derivation
-    that placed them. The bowl is emitted as solid stepped platforms -- stadia
-    construction -- each bearing on the ground slab; the 50 mm the boxes sink below
-    the slab top gives the front rows a body without moving any derived floor.
+    This emitter is the promise and `evaluate_archetype` is the audit: the theatre's
+    riser tops come from the carve's derived rows and the sightline gate recomputes
+    the C-value from the solids; the museum's party wall is built here and the
+    enfilade gate measures the portal between the built pieces. The library and the
+    pavilion emit nothing -- their archetype is a void, and the voids were already
+    entered on the lattice where every other emitter respects them.
     """
+    if isinstance(carve, MuseumCarve):
+        level = b.lattice.level(carve.level_index)
+        slab_id = f'STR-SLB-{level.id}'
+        lo, hi = carve.party_lo, carve.party_hi
+        middle = (lo + hi) / 2.0
+        half = carve.portal_w_m / 2.0
+        wall_t = 0.25
+        pieces = (('A', lo, middle - half, level.z, level.z + carve.wall_h_m,
+                   'partition'),
+                  ('B', middle + half, hi, level.z, level.z + carve.wall_h_m,
+                   'partition'),
+                  ('HD', middle - half, middle + half, level.z + PORTAL_H_M,
+                   level.z + carve.wall_h_m, 'partition_head'))
+        for tag, run0, run1, wz0, wz1, kind in pieces:
+            if run1 - run0 < 0.05 or wz1 - wz0 < 0.05:
+                continue
+            run_mid = (run0 + run1) / 2.0
+            if carve.party_axis == 'y':
+                center = v3(carve.party_pos, run_mid, (wz0 + wz1) / 2.0)
+                size = v3(wall_t, run1 - run0, wz1 - wz0)
+            else:
+                center = v3(run_mid, carve.party_pos, (wz0 + wz1) / 2.0)
+                size = v3(run1 - run0, wall_t, wz1 - wz0)
+            b.add(f'PRG-ENF-{level.id}-{tag}', kind, 'program', 'archetype',
+                  BoxGeometry(center=center, size=size),
+                  'white_soft', category='public', program='exhibition_foyer',
+                  level_id=level.id, lattice_index={'level': level.index},
+                  supports=[slab_id],
+                  reason=(f'The party wall that makes the galleries a sequence: '
+                          f'{carve.portal_w_m:.1f} m portal on the enfilade axis, '
+                          f'hanging surface both sides, no glazing. Measured by '
+                          f'the ARCH-ENFILADE gate.'))
+        return
     if not isinstance(carve, TheatreCarve):
         return
     ground = b.lattice.occupied[0]
@@ -2610,6 +3160,35 @@ def compile_building_model_v3(
         datums, massing, lattice, typology, cutaway=cutaway)
     massing_why.append(fit_note)
 
+    # The typology's archetype outranks the score's silhouette (decision 0016): a
+    # theatre whose house cannot stand on the massing the music chose is not a
+    # theatre. Where the carver refused at every plate size the fit could reach, the
+    # kit's massing bias -- the silhouette the typology asks for when the music has
+    # not been decisive -- is tried in its place, and the swap is recorded on the
+    # selection so a reader sees the music's massing and why it was left. A pinned
+    # massing is the caller's decision and is not swapped; the refusal stands and is
+    # reported. This is the bias's first consumer: it existed unread until the
+    # twenty-track audit showed three theatres with no house.
+    if isinstance(carve, CarveRefusal) and massing_id is None:
+        bias = MASSING_FAMILIES[kit_for(typology).massing_bias]
+        if bias.id != massing.id:
+            retry = _fit_plan_to_brief(
+                datums, bias, build_lattice(datums, bias, cutaway=cutaway), typology,
+                cutaway=cutaway)
+            if not isinstance(retry[3], CarveRefusal):
+                massing_why.append(
+                    f'the score\'s {massing.id} could not hold the {typology} '
+                    f'archetype ({carve.reason}); the typology\'s bias massing '
+                    f'{bias.id} was built instead, so the house exists and the '
+                    f'music\'s silhouette is recorded here as the one it lost')
+                massing, lattice, allocation, carve, fit_note = retry
+                massing_why.append(fit_note)
+            else:
+                massing_why.append(
+                    f'the {typology} archetype refused both the score\'s {massing.id} '
+                    f'and the typology\'s bias massing {bias.id} '
+                    f'({retry[3].reason}); the rooms it carves are reported unplaced')
+
     # The brief follows the typology, and the typology followed the massing. Passing
     # LIBRARY_BRIEF on every run was the last of the four constants that made every
     # recording produce the same building: a theatre tested against a library brief
@@ -2686,7 +3265,7 @@ def compile_building_model_v3(
     # pins, and the four selection outcomes. Same inputs, same id, so an identical
     # re-run replaces its own identical output; anything different builds beside it.
     identity_seed = '|'.join((
-        score.score_id, COMPILER_VERSION,
+        score.score_id, COMPILER_VERSION, compiler_source_fingerprint(),
         f'pins:{pinned_massing or "-"}/{pinned_typology or "-"}'
         f'/{grammar_id or "-"}/cutaway={cutaway}',
         selection.typology, selection.massing_id,
@@ -2745,7 +3324,7 @@ def _assemble(*, model_id, score, datums, lattice, allocation, selection, frame,
     """Emit every layer and package the result. Called twice at most."""
     builder = _Builder(datums, lattice)
     _emit_site(builder)
-    _emit_structure(builder, sizing, frame)
+    _emit_structure(builder, sizing, frame, governing_occupancy)
     _emit_roof(builder)
     _emit_envelope(builder, envelope, spec, opacity_override)
     _emit_circulation(builder)
@@ -2819,12 +3398,26 @@ def _assemble(*, model_id, score, datums, lattice, allocation, selection, frame,
              f'{governing_occupancy.live_kpa:.2f} kPa, the heaviest allocated room; the '
              f'column stack sums the real per-level loads.'),
             *([f'Circulation: no single stair core lies inside every plate, so '
-               f'{", ".join(builder.unreached_levels)} are reached by the lift core '
-               f'only. A stepped or split mass can do this and the stair stops '
-               f'rather than being drawn through floors it cannot land on.']
+               f'{", ".join(builder.unreached_levels)} have no emitted stair route. '
+               f'Circulation remains unresolved on those levels.']
               if builder.unreached_levels else []),
             *([builder.unresolved_accessible_route]
               if builder.unresolved_accessible_route else []),
+            builder.lift_note,
+            (f'Stair and lift openings: the slab and ceiling are cut, the joists that '
+             f'met an opening are trimmed to it, and {builder.headers_emitted} header '
+             f'beams and {builder.trimmers_emitted} trimmer joists were sized for the '
+             f'load they collect. '
+             + (f'{len(builder.opening_conflicts)} members still need a transfer or '
+                f'found no section and are kept for review: '
+                f'{", ".join(builder.opening_conflicts[:6])}'
+                + (', …' if len(builder.opening_conflicts) > 6 else '') + '. '
+                if builder.opening_conflicts else
+                'No girder crosses an opening. ')
+             + (f'Flat-slab levels {", ".join(builder.unframed_levels)} have openings '
+                f'with no edge reinforcement designed. '
+                if builder.unframed_levels else '')
+             + 'Connections at the headers are not designed.'),
             *([f'Accessible approach: {len(builder.accessible_route.runs)} ramp '
                f'runs at 1:'
                f'{1 / builder.accessible_route.steepest_slope:.0f} with '

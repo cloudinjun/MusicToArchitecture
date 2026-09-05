@@ -46,7 +46,13 @@ export function StructureWorkspace({ run }: { run: GenerationResponse | null }) 
 
   return (
     <div className="stack">
-      <Panel title="Frame" sub={analysis.structural_system_id}>
+      <Panel
+        title="Frame"
+        sub={analysis.structural_system_id
+          + (analysis.tectonic_system
+            ? ' · ' + titleCase(analysis.tectonic_system.replace(/^FRM-/, '').toLowerCase())
+            : '')}
+      >
         <StatGrid>
           <Stat label="Member calculations" value={analysis.sizing.length} foot="each with a stated basis" />
           <Stat
@@ -140,6 +146,42 @@ export function StructureWorkspace({ run }: { run: GenerationResponse | null }) 
             ))}
         </div>
       </Panel>
+
+      {analysis.materials && Object.keys(analysis.materials).length > 0 && (
+        <Panel
+          title="Materials"
+          sub={Object.keys(analysis.materials).length + ' finishes, as the renderer paints them'}
+          note="Colour, roughness and metallic values are what the exporter hands Blender; glass is glass because of its transmission, not its tint. Program overlays are diagrams, not built surfaces."
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 10 }}>
+            {Object.values(analysis.materials).map((material) => (
+              <div key={material.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span
+                  aria-hidden="true"
+                  style={{
+                    flex: '0 0 auto', width: 34, height: 34, borderRadius: 8,
+                    background: material.base_color,
+                    opacity: material.transmission > 0.5 ? 0.55 : 1,
+                    boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.12)',
+                  }}
+                />
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600 }}>
+                    {titleCase(material.id.replace(/_/g, ' '))}
+                    <span style={{ color: 'var(--muted)', fontWeight: 500 }}> · {material.family}</span>
+                  </div>
+                  <div style={{ color: 'var(--muted)', fontSize: 11 }}>
+                    {material.finish} · roughness {material.roughness.toFixed(2)}
+                    {material.metallic > 0 ? ' · metallic ' + material.metallic.toFixed(2) : ''}
+                    {material.transmission > 0 ? ' · transmission ' + material.transmission.toFixed(2) : ''}
+                  </div>
+                  <div className="prose" style={{ fontSize: 11, marginTop: 2 }}>{material.reason}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      )}
 
       <Panel title="Sections carried on the model" sub={Object.keys(analysis.profiles).length + ' profiles'} flush>
         <div className="table-wrap" style={{ maxHeight: 340 }}>

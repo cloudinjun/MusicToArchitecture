@@ -1,0 +1,186 @@
+{
+  "schema_version": "mta.model_version/1.0",
+  "version_id": "20260904T080325Z-unversioned-c9ec365949c5",
+  "status": "superseded_intermediate",
+  "generated_at": null,
+  "published_at": "2026-09-04T23:16:07+00:00",
+  "compiler_version": "unknown_unrecorded",
+  "run_id": null,
+  "v3_model_id": "building-v3-c9ec365949c5",
+  "authority": {
+    "rhino": {
+      "status": "blocked",
+      "authority": "accepted_geometry",
+      "owner": "rhino",
+      "purposes": [
+        "issued_drawings",
+        "revit_handoff"
+      ],
+      "files": [],
+      "blocked_by": [
+        "NO_MATCHING_RHINO_ACCEPTANCE_MANIFEST"
+      ]
+    },
+    "blender": {
+      "status": "archived",
+      "authority": "presentation_only",
+      "owner": "blender",
+      "purposes": [
+        "rendering",
+        "web_preview"
+      ]
+    },
+    "drawings": {
+      "status": "archived_candidate_preview",
+      "authority": "candidate",
+      "owner": "portable_drawing_compiler"
+    }
+  },
+  "reason": "Intermediate model; not a promoted current release and not Rhino accepted.",
+  "assets": [
+    {
+      "role": "blender_web_model_v3",
+      "authority": "presentation_only",
+      "path": "blender/model_v3.glb",
+      "source_path": "web/public/models/generated/building-v3-c9ec365949c5.glb",
+      "bytes": 2742536,
+      "sha256": "9dabf1c90daa85bcbd3a1aa6f4c25c2d7899cd9d9e78d251a0b7f5a074184741"
+    },
+    {
+      "role": "blender_export_manifest_v3",
+      "authority": "presentation_only",
+      "path": "blender/model_v3.manifest.json",
+      "source_path": "web/public/models/generated/building-v3-c9ec365949c5.manifest.json",
+      "bytes": 7359,
+      "sha256": "1369917b605aecfcc87dd85ecdb10bda8c3f1ae7f0652e24b87a59b8fc860452"
+    },
+    {
+      "role": "blender_render_scene_v3",
+      "authority": "presentation_only",
+      "path": "blender/scene_v3.blend",
+      "source_path": "blender/generated/building-v3-c9ec365949c5.blend",
+      "bytes": 688112,
+      "sha256": "6098551be3242866f3dd28491eb2321f386f51d7dca2ae0580661b5cf898fd53"
+    },
+    {
+      "role": "drawing_preview:A-000",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-000.svg",
+      "source_path": "artifacts/drawings/building-v3-c9ec365949c5/A-000.svg",
+      "bytes": 2748242,
+      "sha256": "861696b4bb4b8bd0387e6054a6a19095f684686578d29558c254eea5355c866b"
+    },
+    {
+      "role": "drawing_preview:A-101",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-101.svg",
+      "source_path": "artifacts/drawings/building-v3-c9ec365949c5/A-101.svg",
+      "bytes": 118976,
+      "sha256": "f112f61f58f13aa003d44c38adc7ea5caee022701ce8fe8d4632af105eac000d"
+    },
+    {
+      "role": "drawing_preview:A-102",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-102.svg",
+      "source_path": "artifacts/drawings/building-v3-c9ec365949c5/A-102.svg",
+      "bytes": 241882,
+      "sha256": "7844d8c096ce4ee8972bc7bc17863ba8039de11a9e556e92ea2be4ee988942f2"
+    },
+    {
+      "role": "drawing_preview:A-103",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-103.svg",
+      "source_path": "artifacts/drawings/building-v3-c9ec365949c5/A-103.svg",
+      "bytes": 200363,
+      "sha256": "3dd2e399fc588e33b0580a250ba114c96fa383499aa13c9f7d6a3e4ce37127e4"
+    },
+    {
+      "role": "drawing_preview:A-104",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-104.svg",
+      "source_path": "artifacts/drawings/building-v3-c9ec365949c5/A-104.svg",
+      "bytes": 217325,
+      "sha256": "01c91a88a79b9dac88774b4f87de660225cb798b93ea03d48b26d8f3a3e305cd"
+    },
+    {
+      "role": "drawing_preview:A-105",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-105.svg",
+      "source_path": "artifacts/drawings/building-v3-c9ec365949c5/A-105.svg",
+      "bytes": 99530,
+      "sha256": "ebc494360b1a03077805af2f3bb16708dceba1df58ce4933575fa397e2fab26b"
+    },
+    {
+      "role": "drawing_preview:A-201",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-201.svg",
+      "source_path": "artifacts/drawings/building-v3-c9ec365949c5/A-201.svg",
+      "bytes": 1305806,
+      "sha256": "1f1ca1f71be0fc5c9acfeaa006226df17995c3ea497043c9728474549e6148d1"
+    },
+    {
+      "role": "drawing_preview:A-202",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-202.svg",
+      "source_path": "artifacts/drawings/building-v3-c9ec365949c5/A-202.svg",
+      "bytes": 1271181,
+      "sha256": "165b3f2969ee1dd53ea3bb3ecab957dfd06aa710a221541798cf9c2c36296bf5"
+    },
+    {
+      "role": "drawing_preview:A-301",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-301.svg",
+      "source_path": "artifacts/drawings/building-v3-c9ec365949c5/A-301.svg",
+      "bytes": 484380,
+      "sha256": "9e6a90b7d73d588963d2685fc18ed89f939e7c13fce55aee00e1f7492db195c2"
+    },
+    {
+      "role": "building_model_v3.json",
+      "authority": "candidate",
+      "path": "portable/building_model_v3.json",
+      "source_path": "artifacts/v3_runs/building-v3-c9ec365949c5/building_model_v3.json",
+      "bytes": 3359863,
+      "sha256": "1a8b7a92fb4c02b09a2c472da9aeae6d22603d1f10101ca9e245270b625090d5"
+    },
+    {
+      "role": "01_three_quarter.png",
+      "authority": "presentation_only",
+      "path": "renders/01_three_quarter.png",
+      "source_path": "artifacts/v3_runs/building-v3-c9ec365949c5/01_three_quarter.png",
+      "bytes": 2044233,
+      "sha256": "8cf2765c04be14b88afd3717a465245d5a6cedcc3b244929d2914302eb175d8f"
+    },
+    {
+      "role": "02_section_open_side.png",
+      "authority": "presentation_only",
+      "path": "renders/02_section_open_side.png",
+      "source_path": "artifacts/v3_runs/building-v3-c9ec365949c5/02_section_open_side.png",
+      "bytes": 1958630,
+      "sha256": "c2176d044eaaf8b4e3989c86ac4ef1d5d4213540947bd22e8d21d3c7c1513d54"
+    },
+    {
+      "role": "03_structure_closeup.png",
+      "authority": "presentation_only",
+      "path": "renders/03_structure_closeup.png",
+      "source_path": "artifacts/v3_runs/building-v3-c9ec365949c5/03_structure_closeup.png",
+      "bytes": 1942448,
+      "sha256": "1163c8d3851c02e2d93cbcff095eea2b68f0b9a296efe87dd1037efa6f5ed259"
+    },
+    {
+      "role": "04_south_elevation.png",
+      "authority": "presentation_only",
+      "path": "renders/04_south_elevation.png",
+      "source_path": "artifacts/v3_runs/building-v3-c9ec365949c5/04_south_elevation.png",
+      "bytes": 1693408,
+      "sha256": "61aac2f536402c74d0df42ff988032e668c5e24285dd472b06958fcd0f9e5e92"
+    },
+    {
+      "role": "05_massing_south_west.png",
+      "authority": "presentation_only",
+      "path": "renders/05_massing_south_west.png",
+      "source_path": "artifacts/v3_runs/building-v3-c9ec365949c5/05_massing_south_west.png",
+      "bytes": 1974337,
+      "sha256": "b0a06e3fe40d9598873a1570d89694e9033b7e091c62dcc6ea437bac3873790b"
+    }
+  ]
+}

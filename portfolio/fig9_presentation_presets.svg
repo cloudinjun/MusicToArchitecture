@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1600 255" width="1600" height="255">
+<rect x="0" y="0" width="1600" height="255" fill="#ffffff"/>
+<image href="assets/preset_photoreal.png" x="30.0" y="20.0" width="296.8" height="190.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="178.4" y="232.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="middle" fill="#000">Photoreal</text>
+<image href="assets/preset_post_digital.png" x="340.8" y="20.0" width="296.8" height="190.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="489.2" y="232.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="middle" fill="#000">Post-digital</text>
+<image href="assets/preset_cinematic.png" x="651.6" y="20.0" width="296.8" height="190.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="800.0" y="232.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="middle" fill="#000">Cinematic</text>
+<image href="assets/preset_minimalist.png" x="962.4" y="20.0" width="296.8" height="190.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="1110.8" y="232.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="middle" fill="#000">Minimalist</text>
+<image href="assets/preset_watercolor.png" x="1273.2" y="20.0" width="296.8" height="190.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="1421.6" y="232.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="13" text-anchor="middle" fill="#000">Watercolour</text>
+</svg>

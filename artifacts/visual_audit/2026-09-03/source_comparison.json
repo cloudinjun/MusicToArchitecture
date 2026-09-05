@@ -1,0 +1,29 @@
+{
+  "base": "baseline_source.zip",
+  "after": "after_source.zip",
+  "overlay_files": [
+    "backend/app/blender_export.py",
+    "backend/app/blender_export_v3.py",
+    "backend/app/compiler_v3.py",
+    "backend/app/datums.py",
+    "backend/app/geometry_review.py",
+    "backend/app/integration.py",
+    "backend/app/models.py",
+    "backend/app/pipeline.py",
+    "backend/app/plan_regions.py",
+    "backend/app/spatial_rules.py",
+    "backend/app/version.py"
+  ],
+  "isolation": "Concurrent drawing_sheet.py/drawings.py changes are excluded from the controlled audit; their baseline versions are retained.",
+  "intermediate": "after_source.zip (3.3.0; rejected visually because exported holes were filled)",
+  "final": "verified_source.zip / verified-frozen (3.3.2; simple polygon decomposition)",
+  "final_overlay_from_intermediate": [
+    "backend/app/plan_regions.py",
+    "backend/app/version.py"
+  ],
+  "rejected_winding_only": "final_source.zip / final-frozen (3.3.1; Valse GLB contains false hole faces)",
+  "final_overlay_from_winding_only": [
+    "backend/app/plan_regions.py",
+    "backend/app/version.py"
+  ]
+}

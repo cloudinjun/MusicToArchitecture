@@ -1,0 +1,3447 @@
+{
+  "schema_version": "visual-geometry-measurement-summary-1",
+  "batch": "baseline-frozen",
+  "measurement_script": "backend/scripts/measure_visual_geometry.py",
+  "measurement_function": "measure(dict)",
+  "measurement_basis": "Each compiled building_model_v3.json was decoded and passed directly to measure(dict); failed runs have no geometry measurement.",
+  "check_classes": [
+    "primitive_invalid_plan_ring",
+    "stair_head_clearance",
+    "stair_tread_floor_slab_intersection",
+    "stair_tread_elevator_shaft_intersection",
+    "stair_intercore_tread_volume_intersection",
+    "program_zone_positive_overlap",
+    "landing_slab_contact"
+  ],
+  "track_count": 20,
+  "compiled_track_count": 19,
+  "failed_track_count": 1,
+  "tracks": [
+    {
+      "track_id": "android-sock-hop",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-0d60860fa64d",
+      "massing": "MAS-SLAB",
+      "typology": "library",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/android-sock-hop/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 1668,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 350
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 2074,
+          "unevaluated_count": 26
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 56,
+          "evaluated_count": 2100,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 160,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 64,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 13
+        }
+      },
+      "finding_count": 69,
+      "evaluated_count": 6066,
+      "unevaluated_count": 389,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 12,
+        "emitted_count_by_level": {
+          "L01": 2,
+          "L02": 2,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-7c5909a544d5-library-steel-international-v1.glb?v=1788506821521985300",
+        "asset_sha256": "3565657954f74919fa7ae1e79cd4dbbe7acbccf89a7182d44ae7f5866da88a73",
+        "manifest_url": "/models/generated/building-7c5909a544d5-library-steel-international-v1.manifest.json?v=1788506821523985500",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "ace7f0f63128483a3aeb748ebe879d53eea7946417a6c89e0977bc689924cbbb",
+        "architectural_score_canonical_sha256": "408b420960cb706686573e0acef4f25f7b05a51397733d5078d1bdd5aab2b005",
+        "audio_features_source_audio_sha256": "7c5909a544d52b0a913876bbc4ed5d85f00cbead015d931fda040d37de3b5205",
+        "architectural_score_source_audio_sha256": "7c5909a544d52b0a913876bbc4ed5d85f00cbead015d931fda040d37de3b5205",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "blue-ska",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-2d775ac01faf",
+      "massing": "MAS-SLAB",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/blue-ska/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 1207,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 330
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 1954,
+          "unevaluated_count": 26
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 61,
+          "evaluated_count": 1980,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 150,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 52,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 13
+        }
+      },
+      "finding_count": 74,
+      "evaluated_count": 5343,
+      "unevaluated_count": 369,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 12,
+        "emitted_count_by_level": {
+          "L01": 2,
+          "L02": 2,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-d2635c46d6c2-library-steel-international-v1.glb?v=1788506579721709200",
+        "asset_sha256": "66854afe6bae1aadc3e8b44925943696d466b88480a3a96e5ffe34e3b4c9572f",
+        "manifest_url": "/models/generated/building-d2635c46d6c2-library-steel-international-v1.manifest.json?v=1788506579724795900",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "dc4b1802f5c0612a8be320f40469760a97615cc80d100422f5fd646b4cfe9eff",
+        "architectural_score_canonical_sha256": "8f47c17d8d87c01697edc38df80b2af0a927d68e44df98aab94c0fcc44c0e2c7",
+        "audio_features_source_audio_sha256": "d2635c46d6c2f1acdf23952d708a0b300628ba6dbaf374f7d7285bed2ad28568",
+        "architectural_score_source_audio_sha256": "d2635c46d6c2f1acdf23952d708a0b300628ba6dbaf374f7d7285bed2ad28568",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "bossa-bossa",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-a5a7d378ca85",
+      "massing": "MAS-SLAB",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-09-CRITICAL-REGIONALISM",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/bossa-bossa/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 4783,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 331
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 1960,
+          "unevaluated_count": 26
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 61,
+          "evaluated_count": 1986,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 150,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 52,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 13
+        }
+      },
+      "finding_count": 74,
+      "evaluated_count": 8931,
+      "unevaluated_count": 370,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 12,
+        "emitted_count_by_level": {
+          "L01": 2,
+          "L02": 2,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-a89ec158f911-library-steel-international-v1.glb?v=1788506546523791000",
+        "asset_sha256": "05e70fb2c38e8e940ce70debfe0d0ef0fd6bf34451c1d06c9208ab32b9d6e521",
+        "manifest_url": "/models/generated/building-a89ec158f911-library-steel-international-v1.manifest.json?v=1788506546526895600",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "80112cb5b160e00cf875923ce08269a30d3bab79914aed042ef19bf40bfb623d",
+        "architectural_score_canonical_sha256": "ea35bff92da931b2c60a185bfb3fffe264b9b7f1c80835a034fa87c3ce230c5c",
+        "audio_features_source_audio_sha256": "a89ec158f9113531e7cbd98955cdd1a557e88e19713a3ef8a5084e2f9f039a12",
+        "architectural_score_source_audio_sha256": "a89ec158f9113531e7cbd98955cdd1a557e88e19713a3ef8a5084e2f9f039a12",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "cantina-blues",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-5be07ee53010",
+      "massing": "MAS-BAR-PODIUM",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/cantina-blues/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 5,
+          "evaluated_count": 1396,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 145,
+          "evaluated_count": 382,
+          "unevaluated_count": 57
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 20,
+          "evaluated_count": 3063,
+          "unevaluated_count": 10
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 66,
+          "evaluated_count": 3073,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 278,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 81,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 11,
+          "unevaluated_count": 5
+        }
+      },
+      "finding_count": 236,
+      "evaluated_count": 8284,
+      "unevaluated_count": 72,
+      "invalid_plan_ring_count": 5,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L07"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 15,
+        "emitted_count_by_level": {
+          "L01": 3,
+          "L02": 3,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2,
+          "L07": 1
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 7,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1,
+          "L06": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "failed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 4,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 4,
+        "severity_counts_reported": {
+          "violation": 4
+        },
+        "severity_counts_complete": true,
+        "reported_finding_count": 4,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-a7136f611851-library-steel-international-v1.glb?v=1788506305007652200",
+        "asset_sha256": "5cb893e938b0293bde693419035d1fb3f444c79c6080e957a8b4668eaa03a181",
+        "manifest_url": "/models/generated/building-a7136f611851-library-steel-international-v1.manifest.json?v=1788506305009652000",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "5052813f5c79ca79c2a37f32e016c5ef97d6c4699f2708992dc24d45fdc183f3",
+        "architectural_score_canonical_sha256": "4cb87ac0c2e267a9c51aa4e2db05ad99598f75eb0797342fb01a5c76efe5dce7",
+        "audio_features_source_audio_sha256": "a7136f611851f5759d546f29ea8c8a21084a59c73131119bf276ea5b9407db8a",
+        "architectural_score_source_audio_sha256": "a7136f611851f5759d546f29ea8c8a21084a59c73131119bf276ea5b9407db8a",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "carefree",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-ba8c48930674",
+      "massing": "MAS-SLAB",
+      "typology": "library",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-09-CRITICAL-REGIONALISM",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/carefree/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 5061,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 533
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 3156,
+          "unevaluated_count": 42
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 61,
+          "evaluated_count": 3198,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 126,
+          "evaluated_count": 636,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 58,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 21
+        }
+      },
+      "finding_count": 200,
+      "evaluated_count": 12109,
+      "unevaluated_count": 596,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 20,
+        "emitted_count_by_level": {
+          "L01": 4,
+          "L02": 4,
+          "L03": 4,
+          "L04": 3,
+          "L05": 3,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-8433b770a630-library-steel-international-v1.glb?v=1788506259846190000",
+        "asset_sha256": "589289bf455ea07fe063e023b75a5676b00241da859fe707834215ddf5e3d662",
+        "manifest_url": "/models/generated/building-8433b770a630-library-steel-international-v1.manifest.json?v=1788506259848694200",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "9719db16e2b3760d0f96e6a0b7390677190ef93fc3270ae68b21e6a5e99d3573",
+        "architectural_score_canonical_sha256": "846f80546b64349c6402f4678218d3ab030221affb07da3908333e132af335a4",
+        "audio_features_source_audio_sha256": "8433b770a630d9b1594fd484442c677907ece899a4d149954cd2e74fd733e311",
+        "architectural_score_source_audio_sha256": "8433b770a630d9b1594fd484442c677907ece899a4d149954cd2e74fd733e311",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "cloud-dancer",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-3d71bb4e797f",
+      "massing": "MAS-SLAB",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/cloud-dancer/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 1207,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 331
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 1960,
+          "unevaluated_count": 26
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 61,
+          "evaluated_count": 1986,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 150,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 36,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 13
+        }
+      },
+      "finding_count": 74,
+      "evaluated_count": 5339,
+      "unevaluated_count": 370,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 12,
+        "emitted_count_by_level": {
+          "L01": 2,
+          "L02": 2,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 6,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 6,
+        "severity_counts_reported": {
+          "warning": 6
+        },
+        "severity_counts_complete": true,
+        "reported_finding_count": 6,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-d329666f15f5-library-steel-international-v1.glb?v=1788506477009725800",
+        "asset_sha256": "5c50817113e84ce3f7f685fec34165a46814d981a351c32b76c99c3487019eae",
+        "manifest_url": "/models/generated/building-d329666f15f5-library-steel-international-v1.manifest.json?v=1788506477012238400",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "a9ac33a32934e46019960afdb33ab31f4848c5e3d1b11266d30869cef6c8b2f9",
+        "architectural_score_canonical_sha256": "081da0267122630b876789cdff6b3d2c21cd4948737f1fa0a86304efe9b7d135",
+        "audio_features_source_audio_sha256": "d329666f15f516b8742532d9dc45309e2019cc1505d4636fdadb7bf6000a8d5c",
+        "architectural_score_source_audio_sha256": "d329666f15f516b8742532d9dc45309e2019cc1505d4636fdadb7bf6000a8d5c",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "couperin-harpsichord",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-40b0b8a262e4",
+      "massing": "MAS-BAR-PODIUM",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-04-ORGANIC",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/couperin-harpsichord/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 5,
+          "evaluated_count": 2806,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 145,
+          "evaluated_count": 360,
+          "unevaluated_count": 55
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 20,
+          "evaluated_count": 2895,
+          "unevaluated_count": 10
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 72,
+          "evaluated_count": 2905,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 12,
+          "evaluated_count": 264,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 57,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 11,
+          "unevaluated_count": 5
+        }
+      },
+      "finding_count": 254,
+      "evaluated_count": 9298,
+      "unevaluated_count": 70,
+      "invalid_plan_ring_count": 5,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L07"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 15,
+        "emitted_count_by_level": {
+          "L01": 3,
+          "L02": 3,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2,
+          "L07": 1
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 7,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1,
+          "L06": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-c1a8ee251c91-library-steel-international-v1.glb?v=1788506238112470700",
+        "asset_sha256": "eda870095d15b54657380a8995151550b6479848efc4e8712604fd4d6d809c15",
+        "manifest_url": "/models/generated/building-c1a8ee251c91-library-steel-international-v1.manifest.json?v=1788506238114470800",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "ab366f6026cf3c9074317e7062ac7a54fe1894e1e9733277fbac456045774adc",
+        "architectural_score_canonical_sha256": "9933e51f0234d78d57a1b40f043dbeb0c74f4ad793f8a0cb92e32dd0f8615411",
+        "audio_features_source_audio_sha256": "c1a8ee251c914135055c6acebd36b4949b66ce40dbf7494d85cacfbfdbe2a5fc",
+        "architectural_score_source_audio_sha256": "c1a8ee251c914135055c6acebd36b4949b66ce40dbf7494d85cacfbfdbe2a5fc",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "dama-may",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-b773b6a9655c",
+      "massing": "MAS-SLAB",
+      "typology": "library",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/dama-may/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 1755,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 432
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 2558,
+          "unevaluated_count": 34
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 61,
+          "evaluated_count": 2592,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 354,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 53,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 17
+        }
+      },
+      "finding_count": 74,
+      "evaluated_count": 7312,
+      "unevaluated_count": 483,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 16,
+        "emitted_count_by_level": {
+          "L01": 3,
+          "L02": 3,
+          "L03": 3,
+          "L04": 3,
+          "L05": 2,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "failed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 3,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 3,
+        "severity_counts_reported": {
+          "violation": 3
+        },
+        "severity_counts_complete": true,
+        "reported_finding_count": 3,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-09b18ab3d514-library-steel-international-v1.glb?v=1788506737382885400",
+        "asset_sha256": "1dcabe424d22367d2903ae2a57e19f9d93b9ffee546d0f53174bcc106fc2c7c9",
+        "manifest_url": "/models/generated/building-09b18ab3d514-library-steel-international-v1.manifest.json?v=1788506737385388200",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "cb390adfeb4f5820105b9b48c084cef629a1b52e8a8a2690017e5a3ef5fd31a5",
+        "architectural_score_canonical_sha256": "a58a6de33071c0c9bb3df5b78addec1b16c4d6eb9989c3d74488e079969f929d",
+        "audio_features_source_audio_sha256": "09b18ab3d51417b9f733f69952f3dca45285f0d10bbd63bf6e60b1ad5916460c",
+        "architectural_score_source_audio_sha256": "09b18ab3d51417b9f733f69952f3dca45285f0d10bbd63bf6e60b1ad5916460c",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "drozerix-rndd",
+      "status": "unevaluated",
+      "source_status": "failed",
+      "reason": "BlenderExportError: Blender did not create required outputs: building-35134532e4bc-library-steel-international-v1.glb, building-35134532e4bc-library-steel-international-v1.manifest.json, building-35134532e4bc-library-steel-international-v1.blend, building-35134532e4bc-library-steel-international-v1.scene.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "stair_head_clearance": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "program_zone_positive_overlap": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "landing_slab_contact": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        }
+      },
+      "landing_coverage": null,
+      "lift_coverage": null,
+      "program": null,
+      "spatial": null,
+      "v2_asset": null,
+      "source_fingerprints": null
+    },
+    {
+      "track_id": "dub-eastern",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-ed4d9bb29ad3",
+      "massing": "MAS-BAR-PODIUM",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/dub-eastern/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 5,
+          "evaluated_count": 1606,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 220,
+          "evaluated_count": 480,
+          "unevaluated_count": 55
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 30,
+          "evaluated_count": 4805,
+          "unevaluated_count": 10
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 92,
+          "evaluated_count": 4815,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 18,
+          "evaluated_count": 336,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 66,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 16,
+          "unevaluated_count": 5
+        }
+      },
+      "finding_count": 365,
+      "evaluated_count": 12124,
+      "unevaluated_count": 70,
+      "invalid_plan_ring_count": 5,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07",
+          "L08"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07",
+          "L08",
+          "L09"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L09"
+        ],
+        "occupied_count": 8,
+        "emitted_count": 9,
+        "emitted_instance_count": 20,
+        "emitted_count_by_level": {
+          "L01": 3,
+          "L02": 3,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2,
+          "L07": 2,
+          "L08": 2,
+          "L09": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07",
+          "L08"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07",
+          "L08"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 8,
+        "emitted_count": 9,
+        "emitted_instance_count": 9,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1,
+          "L06": 1,
+          "L07": 1,
+          "L08": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-a97f91b78cc7-library-steel-international-v1.glb?v=1788506511848244200",
+        "asset_sha256": "4c0f37da59622a3a7d85ce36f9443273e713779a8c998d19bf5e4d1119a13f78",
+        "manifest_url": "/models/generated/building-a97f91b78cc7-library-steel-international-v1.manifest.json?v=1788506511850243900",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "9608cab409d819711873096d30816622dd4350dd3ad57e9fa36ca674ca206bb7",
+        "architectural_score_canonical_sha256": "f92d223d50ca6c585c3f1db956e32626baeabd5e9aeef0d362f92959a32bf2c3",
+        "audio_features_source_audio_sha256": "a97f91b78cc7e27c79773e4ab889b364104babc4685a6ec5426e428f13983b26",
+        "architectural_score_source_audio_sha256": "a97f91b78cc7e27c79773e4ab889b364104babc4685a6ec5426e428f13983b26",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "exotic-battle",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-4473b64d39ac",
+      "massing": "MAS-SLAB",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/exotic-battle/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 1198,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 330
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 1954,
+          "unevaluated_count": 26
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 61,
+          "evaluated_count": 1980,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 150,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 49,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 13
+        }
+      },
+      "finding_count": 74,
+      "evaluated_count": 5331,
+      "unevaluated_count": 369,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 12,
+        "emitted_count_by_level": {
+          "L01": 2,
+          "L02": 2,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-d928a60154f4-library-steel-international-v1.glb?v=1788506722642868100",
+        "asset_sha256": "30fd33c56a93f70e21d2c37c09e75dff3cbe37d8db80cfdb943b2ac1e7758d23",
+        "manifest_url": "/models/generated/building-d928a60154f4-library-steel-international-v1.manifest.json?v=1788506722645867400",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "35bc24b3e9d9dc47c20dc22a359bc45253f35d1890fc735d85363ec38d701278",
+        "architectural_score_canonical_sha256": "c6c45ee1ff40fda96d694d5b2865eb5e263d66755b712f3991aaaa9937dd3b3b",
+        "audio_features_source_audio_sha256": "d928a60154f447528ed7412ee7b5d099cb85afa49cf1fcf33efecc9b18828dca",
+        "architectural_score_source_audio_sha256": "d928a60154f447528ed7412ee7b5d099cb85afa49cf1fcf33efecc9b18828dca",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "funky-boxstep",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-1e9c4b0e3bfb",
+      "massing": "MAS-BAR-PODIUM",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/funky-boxstep/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 5,
+          "evaluated_count": 1368,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 157,
+          "evaluated_count": 378,
+          "unevaluated_count": 55
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 22,
+          "evaluated_count": 3021,
+          "unevaluated_count": 10
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 86,
+          "evaluated_count": 3031,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 14,
+          "evaluated_count": 282,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 57,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 12,
+          "unevaluated_count": 5
+        }
+      },
+      "finding_count": 284,
+      "evaluated_count": 8149,
+      "unevaluated_count": 70,
+      "invalid_plan_ring_count": 5,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L07"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 16,
+        "emitted_count_by_level": {
+          "L01": 3,
+          "L02": 3,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2,
+          "L07": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 7,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1,
+          "L06": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-e6285714bb16-library-steel-international-v1.glb?v=1788506378892379100",
+        "asset_sha256": "1cedfba1fc6e05fbbb1c4d7fd41592a5f81f12c42cf4ac4be53f75026593b0eb",
+        "manifest_url": "/models/generated/building-e6285714bb16-library-steel-international-v1.manifest.json?v=1788506378895381600",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "1fa05fcc93c8d9423dc0dbc9d558e4fce1a88baa9dd0d78614730deb3f03ed18",
+        "architectural_score_canonical_sha256": "7a14b0dfc75f84704f29e0d3261486701f482c69a43a7a741bfec01bdadadffe",
+        "audio_features_source_audio_sha256": "e6285714bb1628e84827c3a0167c279822c376d0cf0dc82bbc6baaab82d139fc",
+        "architectural_score_source_audio_sha256": "e6285714bb1628e84827c3a0167c279822c376d0cf0dc82bbc6baaab82d139fc",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "night-in-venice",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-50aed61de2d4",
+      "massing": "MAS-SLAB",
+      "typology": "museum",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-09-CRITICAL-REGIONALISM",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/night-in-venice/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 4690,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 330
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 1954,
+          "unevaluated_count": 26
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 61,
+          "evaluated_count": 1980,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 150,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 51,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 13
+        }
+      },
+      "finding_count": 74,
+      "evaluated_count": 8825,
+      "unevaluated_count": 369,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 12,
+        "emitted_count_by_level": {
+          "L01": 2,
+          "L02": 2,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 2,
+        "unplaced_space_ids": [
+          "SP-GALLERY-A",
+          "SP-GALLERY-B"
+        ]
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-c61435f6f868-library-steel-international-v1.glb?v=1788506442014365900",
+        "asset_sha256": "29ef7b67e8f19e41d1d868923cfad40e98622516dd3beba1d6c7d7c58fe94961",
+        "manifest_url": "/models/generated/building-c61435f6f868-library-steel-international-v1.manifest.json?v=1788506442016394900",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "d7d2b3bd9fa0c6d1fc6b38593b7f6c61d5c0b1c88b7ee48223f93eebb02f2294",
+        "architectural_score_canonical_sha256": "2ae76304ddc9e0603d832ff87554da316976b4af7d326d4f19775632b5820612",
+        "audio_features_source_audio_sha256": "c61435f6f86853b5aefcf4479f3a1266f8887da97d8022c8f1137798076129e4",
+        "architectural_score_source_audio_sha256": "c61435f6f86853b5aefcf4479f3a1266f8887da97d8022c8f1137798076129e4",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "raw",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-9bef2e2724b8",
+      "massing": "MAS-BAR-PODIUM",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-04-ORGANIC",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/raw/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 5,
+          "evaluated_count": 2444,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 138,
+          "evaluated_count": 382,
+          "unevaluated_count": 57
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 20,
+          "evaluated_count": 3063,
+          "unevaluated_count": 10
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 66,
+          "evaluated_count": 3073,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 278,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 65,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 11,
+          "unevaluated_count": 5
+        }
+      },
+      "finding_count": 229,
+      "evaluated_count": 9316,
+      "unevaluated_count": 72,
+      "invalid_plan_ring_count": 5,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L07"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 15,
+        "emitted_count_by_level": {
+          "L01": 3,
+          "L02": 3,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2,
+          "L07": 1
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 7,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1,
+          "L06": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "failed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 5,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 5,
+        "severity_counts_reported": {
+          "violation": 5
+        },
+        "severity_counts_complete": true,
+        "reported_finding_count": 5,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-954195ebb05e-library-steel-international-v1.glb?v=1788506614347799200",
+        "asset_sha256": "69d1cfddb5dfbc5f7e6fb3dbe70fc4d682ef5f325cc78e76d8913cd78946ce9d",
+        "manifest_url": "/models/generated/building-954195ebb05e-library-steel-international-v1.manifest.json?v=1788506614349799200",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "a892b6aca0e73729bb773a5605a326c1d0ac7aecb2d16df1071fb25da2243f9e",
+        "architectural_score_canonical_sha256": "dd9be763f58e03e3932f3a69669d141e1a325477ddb9cab1646f140033771ab5",
+        "audio_features_source_audio_sha256": "954195ebb05e3aa58ac30ff060cb42cb6741a0b6fabea5df8876ac2bbe93f4b9",
+        "architectural_score_source_audio_sha256": "954195ebb05e3aa58ac30ff060cb42cb6741a0b6fabea5df8876ac2bbe93f4b9",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "ritual",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-6af8d47f8d8e",
+      "massing": "MAS-BAR-PODIUM",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-09-CRITICAL-REGIONALISM",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/ritual/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 0,
+          "evaluated_count": 3642,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 237,
+          "evaluated_count": 408,
+          "unevaluated_count": 31
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 32,
+          "evaluated_count": 3073,
+          "unevaluated_count": 0
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 72,
+          "evaluated_count": 3073,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 288,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 43,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 17,
+          "unevaluated_count": 0
+        }
+      },
+      "finding_count": 341,
+      "evaluated_count": 10544,
+      "unevaluated_count": 31,
+      "invalid_plan_ring_count": 0,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": false,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L07"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 16,
+        "emitted_count_by_level": {
+          "L01": 3,
+          "L02": 3,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2,
+          "L07": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 7,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1,
+          "L06": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 2,
+        "unplaced_space_ids": [
+          "SP-AUDITORIUM",
+          "SP-STAGE"
+        ]
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 1,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 1,
+        "severity_counts_reported": {
+          "warning": 1
+        },
+        "severity_counts_complete": true,
+        "reported_finding_count": 1,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-2dfdfede2f49-library-steel-international-v1.glb?v=1788506865973413100",
+        "asset_sha256": "fbfd15fbfc589c22488eb4c14a0e658f4d57d611cd66e22b468a6d85f992695e",
+        "manifest_url": "/models/generated/building-2dfdfede2f49-library-steel-international-v1.manifest.json?v=1788506865975917700",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "66850b7fac649d6afc0f4b08b190bd22278cbf0c410681ca49741996ed0fb266",
+        "architectural_score_canonical_sha256": "7bd81f3bc04f5d4c31228e057f87833ef925477ba075c6c1892caab4398b61a8",
+        "audio_features_source_audio_sha256": "2dfdfede2f491f3991f8264577f250dc6abf63dd7c7dd3cd751d41b57b995283",
+        "architectural_score_source_audio_sha256": "2dfdfede2f491f3991f8264577f250dc6abf63dd7c7dd3cd751d41b57b995283",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "scp-outer-thoughts",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-fd5ccfaeb540",
+      "massing": "MAS-BAR-PODIUM",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-09-CRITICAL-REGIONALISM",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/scp-outer-thoughts/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 0,
+          "evaluated_count": 4087,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 266,
+          "evaluated_count": 448,
+          "unevaluated_count": 32
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 38,
+          "evaluated_count": 4320,
+          "unevaluated_count": 0
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 168,
+          "evaluated_count": 4320,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 294,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 46,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 20,
+          "unevaluated_count": 0
+        }
+      },
+      "finding_count": 472,
+      "evaluated_count": 13535,
+      "unevaluated_count": 32,
+      "invalid_plan_ring_count": 0,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": false,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07",
+          "L08"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07",
+          "L08",
+          "L09"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L09"
+        ],
+        "occupied_count": 8,
+        "emitted_count": 9,
+        "emitted_instance_count": 19,
+        "emitted_count_by_level": {
+          "L01": 3,
+          "L02": 3,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2,
+          "L07": 2,
+          "L08": 2,
+          "L09": 1
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07",
+          "L08"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07",
+          "L08"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 8,
+        "emitted_count": 9,
+        "emitted_instance_count": 9,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1,
+          "L06": 1,
+          "L07": 1,
+          "L08": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 2,
+        "unplaced_space_ids": [
+          "SP-AUDITORIUM",
+          "SP-STAGE"
+        ]
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 3,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 3,
+        "severity_counts_reported": {
+          "warning": 3
+        },
+        "severity_counts_complete": true,
+        "reported_finding_count": 3,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-cb346a34d4e0-library-steel-international-v1.glb?v=1788506801343543200",
+        "asset_sha256": "c0178f33e6f34f7074a9906d55bdc83974db265792efbb717cfe64f1cbb30b76",
+        "manifest_url": "/models/generated/building-cb346a34d4e0-library-steel-international-v1.manifest.json?v=1788506801346045700",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "a4e09e98ce9dfd8adedb1dc41c106cd0c0895644cc339f9e5fd2e2211bbc5a37",
+        "architectural_score_canonical_sha256": "b626fa5a82184eb834fcada9553d5ef04aa71c5ec9b9c070ef19d3e4f17343cb",
+        "audio_features_source_audio_sha256": "cb346a34d4e074e469b41dff74acc0bd275a77d1be592e4fb8fc6b48eed1657c",
+        "architectural_score_source_audio_sha256": "cb346a34d4e074e469b41dff74acc0bd275a77d1be592e4fb8fc6b48eed1657c",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "still-pickin",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-d54b17e0f0dd",
+      "massing": "MAS-SLAB",
+      "typology": "library",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/still-pickin/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 1643,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 330
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 1954,
+          "unevaluated_count": 26
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 61,
+          "evaluated_count": 1980,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 150,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 63,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 13
+        }
+      },
+      "finding_count": 74,
+      "evaluated_count": 5790,
+      "unevaluated_count": 369,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 12,
+        "emitted_count_by_level": {
+          "L01": 2,
+          "L02": 2,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-12e9061971fb-library-steel-international-v1.glb?v=1788506659425030100",
+        "asset_sha256": "028ff9322dff07c166cbfcac33ba96341912275e7de216529b2f0b5af213d663",
+        "manifest_url": "/models/generated/building-12e9061971fb-library-steel-international-v1.manifest.json?v=1788506659428044300",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "04d0bda6334bc90d6dd4e31d500fa7001cc642cb78910b3636da9a9e4fa982d2",
+        "architectural_score_canonical_sha256": "b0725d57c180b7b99e21cd265dc0da548715cdf4753bdb823057fe61a987b09c",
+        "audio_features_source_audio_sha256": "12e9061971fb64798468d54c27b3a0b762bda15a8898b8b5b7ee9efa706f5db3",
+        "architectural_score_source_audio_sha256": "12e9061971fb64798468d54c27b3a0b762bda15a8898b8b5b7ee9efa706f5db3",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "tafi-maradi",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-73f6f2091da1",
+      "massing": "MAS-SLAB",
+      "typology": "library",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-01-INTERNATIONAL-STYLE",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/tafi-maradi/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 13,
+          "evaluated_count": 1569,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 329
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 1948,
+          "unevaluated_count": 26
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 150,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 70,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 13
+        }
+      },
+      "finding_count": 13,
+      "evaluated_count": 3737,
+      "unevaluated_count": 368,
+      "invalid_plan_ring_count": 13,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L06"
+        ],
+        "occupied_count": 5,
+        "emitted_count": 6,
+        "emitted_instance_count": 12,
+        "emitted_count_by_level": {
+          "L01": 2,
+          "L02": 2,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids": [],
+        "missing_occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05"
+        ],
+        "emitted_level_ids_outside_occupied": [],
+        "occupied_count": 5,
+        "emitted_count": 0,
+        "emitted_instance_count": 0,
+        "emitted_count_by_level": {},
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-4fa4c189f273-library-steel-international-v1.glb?v=1788506349395324900",
+        "asset_sha256": "840b0d07263605bbbd9b05bede44c94ce89a275b8bf7998d17c09077404e7a88",
+        "manifest_url": "/models/generated/building-4fa4c189f273-library-steel-international-v1.manifest.json?v=1788506349398829100",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "50fc252094c399e8f3708454dd9cb620c88c41fa5f10efec224858d0b0c3f77b",
+        "architectural_score_canonical_sha256": "bc3a9aa0ee6c8f7ed711ab549642d024fc30e75b505c3db781b2ad822c99bfff",
+        "audio_features_source_audio_sha256": "4fa4c189f2736abee4259e988fa1773bb955da2cbb2e3f885f947c129c65467d",
+        "architectural_score_source_audio_sha256": "4fa4c189f2736abee4259e988fa1773bb955da2cbb2e3f885f947c129c65467d",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "the-britons",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-068e9296bf45",
+      "massing": "MAS-PAVILION",
+      "typology": "pavilion",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-09-CRITICAL-REGIONALISM",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/the-britons/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 7,
+          "evaluated_count": 2010,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 186
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 0,
+          "evaluated_count": 544,
+          "unevaluated_count": 14
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 31,
+          "evaluated_count": 558,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 78,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 36,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 0,
+          "unevaluated_count": 7
+        }
+      },
+      "finding_count": 38,
+      "evaluated_count": 3226,
+      "unevaluated_count": 207,
+      "invalid_plan_ring_count": 7,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": true,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L03"
+        ],
+        "occupied_count": 2,
+        "emitted_count": 3,
+        "emitted_instance_count": 6,
+        "emitted_count_by_level": {
+          "L01": 2,
+          "L02": 2,
+          "L03": 2
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 2,
+        "emitted_count": 3,
+        "emitted_instance_count": 3,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 0,
+        "unplaced_space_ids": []
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 0,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 0,
+        "severity_counts_reported": {},
+        "severity_counts_complete": true,
+        "reported_finding_count": 0,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-00e766ef7a26-library-steel-international-v1.glb?v=1788506680406417400",
+        "asset_sha256": "32b4be677db1a058189975114f275f3783ff4c57abc0811394b7adf1d5b5a017",
+        "manifest_url": "/models/generated/building-00e766ef7a26-library-steel-international-v1.manifest.json?v=1788506680408921200",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "da3acacbb4876827fdb4febfd8958826435ba8993ca1277b192b12599a73618f",
+        "architectural_score_canonical_sha256": "353bf67331dca8f35306628cb5017b5d910203210e2731c661d86481d759b447",
+        "audio_features_source_audio_sha256": "00e766ef7a2635b1e7c116bfff794cb3485c17730ec26c114a9b3fb21d7a837d",
+        "architectural_score_source_audio_sha256": "00e766ef7a2635b1e7c116bfff794cb3485c17730ec26c114a9b3fb21d7a837d",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    },
+    {
+      "track_id": "valse-gymnopedie",
+      "status": "measured",
+      "source_status": "compiled",
+      "model_id": "building-v3-b7ef4618fadf",
+      "massing": "MAS-BAR-PODIUM",
+      "typology": "theater",
+      "structure": "STR-SYS-STEEL-FRAME",
+      "grammar": "FCD-09-CRITICAL-REGIONALISM",
+      "measurement_path": "artifacts/visual_audit/2026-09-03/baseline-frozen/tracks/valse-gymnopedie/geometry_measurements.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": 0,
+          "evaluated_count": 3814,
+          "unevaluated_count": 0
+        },
+        "stair_head_clearance": {
+          "count": 219,
+          "evaluated_count": 378,
+          "unevaluated_count": 31
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": 30,
+          "evaluated_count": 2863,
+          "unevaluated_count": 0
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": 71,
+          "evaluated_count": 2863,
+          "unevaluated_count": 0
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": 0,
+          "evaluated_count": 258,
+          "unevaluated_count": 0
+        },
+        "program_zone_positive_overlap": {
+          "count": 0,
+          "evaluated_count": 46,
+          "unevaluated_count": 0
+        },
+        "landing_slab_contact": {
+          "count": 0,
+          "evaluated_count": 16,
+          "unevaluated_count": 0
+        }
+      },
+      "finding_count": 320,
+      "evaluated_count": 10238,
+      "unevaluated_count": 31,
+      "invalid_plan_ring_count": 0,
+      "has_findings": true,
+      "has_unevaluated_checks": true,
+      "has_invalid_plan_rings": false,
+      "landing_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "internal stair landings; CIR-LND-ENTRY excluded",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06",
+          "L07"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L07"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 15,
+        "emitted_count_by_level": {
+          "L01": 3,
+          "L02": 3,
+          "L03": 2,
+          "L04": 2,
+          "L05": 2,
+          "L06": 2,
+          "L07": 1
+        },
+        "excluded_instance_id": "CIR-LND-ENTRY"
+      },
+      "lift_coverage": {
+        "status": "measured",
+        "context_only": true,
+        "label": "emitted elevator shaft levels",
+        "occupied_level_ids": [
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "emitted_level_ids": [
+          "L00",
+          "L01",
+          "L02",
+          "L03",
+          "L04",
+          "L05",
+          "L06"
+        ],
+        "missing_occupied_level_ids": [],
+        "emitted_level_ids_outside_occupied": [
+          "L00"
+        ],
+        "occupied_count": 6,
+        "emitted_count": 7,
+        "emitted_instance_count": 7,
+        "emitted_count_by_level": {
+          "L00": 1,
+          "L01": 1,
+          "L02": 1,
+          "L03": 1,
+          "L04": 1,
+          "L05": 1,
+          "L06": 1
+        },
+        "excluded_instance_id": null
+      },
+      "program": {
+        "status": "measured",
+        "context_only": true,
+        "unplaced_count": 2,
+        "unplaced_space_ids": [
+          "SP-AUDITORIUM",
+          "SP-STAGE"
+        ]
+      },
+      "spatial": {
+        "status": "passed",
+        "context_only": true,
+        "rule_counts_uncapped": {
+          "SP-FALL-GAP": 0,
+          "SP-STANDS-IN-VOID": 0,
+          "SP-SUBSYSTEM-OVERLAP": 1,
+          "SP-SURFACE-NOT-FLUSH": 0
+        },
+        "rule_count_total_uncapped": 1,
+        "severity_counts_reported": {
+          "warning": 1
+        },
+        "severity_counts_complete": true,
+        "reported_finding_count": 1,
+        "reported_finding_limit": 40,
+        "reported_findings_capped": false,
+        "severity_count_note": "Severity counts come from spatial.findings, whose display is capped; spatial.counts is the uncapped per-rule count."
+      },
+      "v2_asset": {
+        "status": "available",
+        "available": true,
+        "asset_url": "/models/generated/building-64acef868e26-library-steel-international-v1.glb?v=1788506421508092900",
+        "asset_sha256": "a9ea45fd5fdd66040b5d3f02b03a2878c44e0ebab749b9ceaa24eff22d4470cb",
+        "manifest_url": "/models/generated/building-64acef868e26-library-steel-international-v1.manifest.json?v=1788506421509597500",
+        "reason": null
+      },
+      "source_fingerprints": {
+        "audio_features_canonical_sha256": "be35e7ac40b87d895aba2c87367b795186c01a4d8b32b8c85ccceb8316dd6611",
+        "architectural_score_canonical_sha256": "1a92552e5cf3ace491529c37453e6f6982847a8698815e2b8b1f4ea4163ff63a",
+        "audio_features_source_audio_sha256": "64acef868e26a9f4d9559c6ddee5e8e4c0890865a186069b49d30b99e6e81684",
+        "architectural_score_source_audio_sha256": "64acef868e26a9f4d9559c6ddee5e8e4c0890865a186069b49d30b99e6e81684",
+        "canonicalization": "JSON sort_keys=true, compact separators, UTF-8, SHA-256"
+      }
+    }
+  ],
+  "failed_tracks": [
+    {
+      "track_id": "drozerix-rndd",
+      "status": "unevaluated",
+      "source_status": "failed",
+      "reason": "BlenderExportError: Blender did not create required outputs: building-35134532e4bc-library-steel-international-v1.glb, building-35134532e4bc-library-steel-international-v1.manifest.json, building-35134532e4bc-library-steel-international-v1.blend, building-35134532e4bc-library-steel-international-v1.scene.json",
+      "checks": {
+        "primitive_invalid_plan_ring": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "stair_head_clearance": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "stair_tread_floor_slab_intersection": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "stair_tread_elevator_shaft_intersection": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "stair_intercore_tread_volume_intersection": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "program_zone_positive_overlap": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        },
+        "landing_slab_contact": {
+          "count": null,
+          "evaluated_count": null,
+          "unevaluated_count": null,
+          "status": "unevaluated"
+        }
+      },
+      "landing_coverage": null,
+      "lift_coverage": null,
+      "program": null,
+      "spatial": null,
+      "v2_asset": null,
+      "source_fingerprints": null
+    }
+  ],
+  "totals": {
+    "compiled_track_count": 19,
+    "by_check": {
+      "primitive_invalid_plan_ring": {
+        "count": 162,
+        "evaluated_count": 47954,
+        "unevaluated_count": 0
+      },
+      "stair_head_clearance": {
+        "count": 1527,
+        "evaluated_count": 3216,
+        "unevaluated_count": 4185
+      },
+      "stair_tread_floor_slab_intersection": {
+        "count": 212,
+        "evaluated_count": 49119,
+        "unevaluated_count": 348
+      },
+      "stair_tread_elevator_shaft_intersection": {
+        "count": 1268,
+        "evaluated_count": 47493,
+        "unevaluated_count": 0
+      },
+      "stair_intercore_tread_volume_intersection": {
+        "count": 170,
+        "evaluated_count": 4556,
+        "unevaluated_count": 0
+      },
+      "program_zone_positive_overlap": {
+        "count": 0,
+        "evaluated_count": 1045,
+        "unevaluated_count": 0
+      },
+      "landing_slab_contact": {
+        "count": 0,
+        "evaluated_count": 114,
+        "unevaluated_count": 174
+      }
+    },
+    "finding_count": 3339,
+    "evaluated_count": 153497,
+    "unevaluated_count": 4707
+  },
+  "problem_track_count": 19,
+  "tracks_with_findings": 19,
+  "tracks_with_non_ring_findings": 18,
+  "tracks_with_unevaluated_checks": 19,
+  "tracks_with_invalid_plan_rings": 16,
+  "invalid_plan_ring_finding_count": 162,
+  "unknown_policy": "A nonzero primitive_invalid_plan_ring count is reported explicitly. Any unevaluated_count remains unknown; it is never converted to zero findings. Failed tracks and missing context remain null/unevaluated.",
+  "selection_distribution": {
+    "massing": {
+      "MAS-BAR-PODIUM": 8,
+      "MAS-PAVILION": 1,
+      "MAS-SLAB": 10
+    },
+    "typology": {
+      "library": 5,
+      "museum": 1,
+      "pavilion": 1,
+      "theater": 12
+    },
+    "structure": {
+      "STR-SYS-STEEL-FRAME": 19
+    },
+    "grammar": {
+      "FCD-01-INTERNATIONAL-STYLE": 10,
+      "FCD-04-ORGANIC": 2,
+      "FCD-09-CRITICAL-REGIONALISM": 7
+    }
+  },
+  "coverage_context": {
+    "context_only": true,
+    "landing_missing_by_track": {},
+    "lift_missing_by_track": {
+      "tafi-maradi": [
+        "L01",
+        "L02",
+        "L03",
+        "L04",
+        "L05"
+      ]
+    },
+    "program_unplaced_total": 8,
+    "tracks_with_program_unplaced": 4,
+    "spatial_severity_counts_reported": {
+      "violation": 12,
+      "warning": 11
+    },
+    "spatial_rule_counts_uncapped": {
+      "SP-FALL-GAP": 0,
+      "SP-STANDS-IN-VOID": 12,
+      "SP-SUBSYSTEM-OVERLAP": 11,
+      "SP-SURFACE-NOT-FLUSH": 0
+    },
+    "spatial_tracks_with_capped_findings": 0,
+    "v2_asset_available_count": 19,
+    "v2_asset_missing_count": 0,
+    "v2_asset_unknown_count": 0
+  },
+  "source_fingerprint_comparison": {
+    "status": "not_requested",
+    "current_batch": "D:\\School\\sciarc\\ATStudioTwo\\MusicToArchitecture\\artifacts\\visual_audit\\2026-09-03\\baseline-frozen",
+    "compared_batch": null,
+    "per_track": []
+  },
+  "source_fingerprint_note": "Canonical hashes cover the complete response audio_features and architectural_score objects; equal hashes indicate equal serialized payloads under the stated canonicalization, not a visual verdict."
+}

@@ -1,0 +1,309 @@
+{
+  "reviewer": "Codex root visual inspection",
+  "date": "2026-09-04",
+  "compiler_version": "3.3.2",
+  "tracks": [
+    {
+      "track_id": "android-sock-hop",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/android-sock-hop.jpg",
+        "closeups/android-sock-hop-floor.png",
+        "closeups/android-sock-hop-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "曲线板端与整体框架连续；主梯洞口存在、平台接层。灰梁穿过梯洞，平台与楼板有共面条纹。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "blue-ska",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/blue-ska.jpg",
+        "closeups/blue-ska-floor.png",
+        "closeups/blue-ska-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "主楼梯穿过真实洞口，平台接层；洞口内梁仍横跨路线，外观曲线板端连续。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "bossa-bossa",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/bossa-bossa.jpg",
+        "closeups/bossa-bossa-floor.png",
+        "closeups/bossa-bossa-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "双洞口及井道分离可见，梯段接通板层；楼梯和井道内的梁未改道。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "cantina-blues",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/cantina-blues.jpg",
+        "closeups/cantina-blues-floor.png",
+        "closeups/cantina-blues-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "主楼梯与次楼梯分开，板边和平台在剖面接通；梁仍穿过楼梯洞口和紫色井道。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "carefree",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/carefree.jpg",
+        "closeups/carefree-floor.png",
+        "closeups/carefree-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "曲线端部恢复连续弧边；多个核心分别开洞，井道在梯段之外；洞口内梁与平台共面条纹仍可见。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "cloud-dancer",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/cloud-dancer.jpg",
+        "closeups/cloud-dancer-floor.png",
+        "closeups/cloud-dancer-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "楼梯通至各层，主洞口及侧向开敞楼板可见；灰色梁横跨梯段上方净空。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "couperin-harpsichord",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/couperin-harpsichord.jpg",
+        "closeups/couperin-harpsichord-floor.png",
+        "closeups/couperin-harpsichord-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "裙房上部退台仍保留连续梯段；真实洞口可见，横穿洞口的梁尚未改道。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "dama-may",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/dama-may.jpg",
+        "closeups/dama-may-floor.png",
+        "closeups/dama-may-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "多层楼梯穿过真实开洞，平台接层；梁在下部梯段及井道范围横穿，平台有共面条纹。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "drozerix-rndd",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/drozerix-rndd.jpg",
+        "closeups/drozerix-rndd-floor.png",
+        "closeups/drozerix-rndd-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "首次得到可审查v3模型；楼板洞口和独立井道已显示；梁仍横跨楼梯。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "dub-eastern",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/dub-eastern.jpg",
+        "closeups/dub-eastern-floor.png",
+        "closeups/dub-eastern-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "退台板层中的梯段连续，旧核心互穿现象未在局部重现；梁仍穿过上行梯段。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "exotic-battle",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/exotic-battle.jpg",
+        "closeups/exotic-battle-floor.png",
+        "closeups/exotic-battle-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "多个开口真实保留，井道在楼梯侧面；梁占据洞口，平台存在共面条纹。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "funky-boxstep",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/funky-boxstep.jpg",
+        "closeups/funky-boxstep-floor.png",
+        "closeups/funky-boxstep-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "双核心互相避让，平台与板层相接；洞口内梁及共面条纹仍在。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "night-in-venice",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/night-in-venice.jpg",
+        "closeups/night-in-venice-floor.png",
+        "closeups/night-in-venice-section.png"
+      ],
+      "open_findings": [
+        "G7_review",
+        "G9"
+      ],
+      "note": "长条板层和柱列连续，两个核心互相避让；梁邻近洞口边缘，此视角不足以判定全部净空，保留结构复核。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "raw",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/raw.jpg",
+        "closeups/raw-floor.png",
+        "closeups/raw-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "上部逐层收窄，主楼梯仍接层；梁穿过楼梯和井道，井道顶层服务需要结合逐层记录。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "ritual",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/ritual.jpg",
+        "closeups/ritual-floor.png",
+        "closeups/ritual-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "两个独立梯洞可见，主梯接层连续；梁横穿梯段下部和井道，平台共面条纹仍可见。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "scp-outer-thoughts",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/scp-outer-thoughts.jpg",
+        "closeups/scp-outer-thoughts-floor.png",
+        "closeups/scp-outer-thoughts-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "多个核心已分离；洞口与梯段对应，平台接层。梁横穿梯段与井道仍明显，平台共面条纹仍可见。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "still-pickin",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/still-pickin.jpg",
+        "closeups/still-pickin-floor.png",
+        "closeups/still-pickin-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "楼板洞口可见、楼梯平台接层；楼梯与井道分离，梁仍穿过洞口；曲线外板端连续。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "tafi-maradi",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/tafi-maradi.jpg",
+        "closeups/tafi-maradi-floor.png",
+        "closeups/tafi-maradi-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "主洞口开通，井道与楼梯分离；梁仍横穿洞口，整体柱列与板层连续。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "the-britons",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/the-britons.jpg",
+        "closeups/the-britons-floor.png",
+        "closeups/the-britons-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "低层展亭的弧形边界连续，洞口与楼梯接通；洞口内仍留横梁。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    },
+    {
+      "track_id": "valse-gymnopedie",
+      "status": "reviewed_with_open_issues",
+      "views_reviewed": [
+        "review_cards/valse-gymnopedie.jpg",
+        "closeups/valse-gymnopedie-floor.png",
+        "closeups/valse-gymnopedie-section.png"
+      ],
+      "open_findings": [
+        "G7",
+        "G9"
+      ],
+      "note": "原先暗色伪面消失，可看到洞口内梯段；梁仍占据净空，平台共面条纹可见。",
+      "scope": "五个整体视角与主楼梯L02俯视/剖切；遮挡区、全部房间和构造节点未逐一验证。整层悬浮未在这些视图中确认。"
+    }
+  ],
+  "completed_track_count": 20,
+  "individual_views_reviewed": 140
+}

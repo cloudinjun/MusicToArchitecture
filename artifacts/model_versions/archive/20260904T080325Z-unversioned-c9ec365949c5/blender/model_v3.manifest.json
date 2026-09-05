@@ -1,0 +1,296 @@
+{
+  "producer": "blender_headless_5_v3",
+  "authority": "presentation_only",
+  "model_id": "building-v3-c9ec365949c5",
+  "score_id": "score-b7ad95fa45a6",
+  "element_count": 3533,
+  "element_groups": 167,
+  "merged_objects": 34,
+  "total_faces": 17913,
+  "objects": {
+    "circulation__ramps__circulation": {
+      "elements": 8,
+      "faces": 112,
+      "layer": "circulation",
+      "subsystem": "ramps",
+      "category": "circulation"
+    },
+    "circulation__safety__circulation": {
+      "elements": 791,
+      "faces": 5670,
+      "layer": "circulation",
+      "subsystem": "safety",
+      "category": "circulation"
+    },
+    "circulation__stairs__circulation": {
+      "elements": 30,
+      "faces": 180,
+      "layer": "circulation",
+      "subsystem": "stairs",
+      "category": "circulation"
+    },
+    "circulation__vertical_core__service": {
+      "elements": 5,
+      "faces": 60,
+      "layer": "circulation",
+      "subsystem": "vertical_core",
+      "category": "service"
+    },
+    "envelope__canopy__circulation": {
+      "elements": 1,
+      "faces": 6,
+      "layer": "envelope",
+      "subsystem": "canopy",
+      "category": "circulation"
+    },
+    "envelope__entrance__public": {
+      "elements": 3,
+      "faces": 3,
+      "layer": "envelope",
+      "subsystem": "entrance",
+      "category": "public"
+    },
+    "envelope__expressed_frame__public": {
+      "elements": 471,
+      "faces": 2983,
+      "layer": "envelope",
+      "subsystem": "expressed_frame",
+      "category": "public"
+    },
+    "envelope__roof__public": {
+      "elements": 4,
+      "faces": 24,
+      "layer": "envelope",
+      "subsystem": "roof",
+      "category": "public"
+    },
+    "envelope__screen__public": {
+      "elements": 157,
+      "faces": 942,
+      "layer": "envelope",
+      "subsystem": "screen",
+      "category": "public"
+    },
+    "program__archetype__private": {
+      "elements": 1,
+      "faces": 6,
+      "layer": "program",
+      "subsystem": "archetype",
+      "category": "private"
+    },
+    "program__archetype__public": {
+      "elements": 20,
+      "faces": 120,
+      "layer": "program",
+      "subsystem": "archetype",
+      "category": "public"
+    },
+    "program__finishes__public": {
+      "elements": 6,
+      "faces": 97,
+      "layer": "program",
+      "subsystem": "finishes",
+      "category": "public"
+    },
+    "program__furniture__circulation": {
+      "elements": 105,
+      "faces": 630,
+      "layer": "program",
+      "subsystem": "furniture",
+      "category": "circulation"
+    },
+    "program__furniture__private": {
+      "elements": 68,
+      "faces": 408,
+      "layer": "program",
+      "subsystem": "furniture",
+      "category": "private"
+    },
+    "program__furniture__public": {
+      "elements": 48,
+      "faces": 288,
+      "layer": "program",
+      "subsystem": "furniture",
+      "category": "public"
+    },
+    "program__furniture__service": {
+      "elements": 31,
+      "faces": 186,
+      "layer": "program",
+      "subsystem": "furniture",
+      "category": "service"
+    },
+    "program__partitions__circulation": {
+      "elements": 12,
+      "faces": 72,
+      "layer": "program",
+      "subsystem": "partitions",
+      "category": "circulation"
+    },
+    "program__partitions__private": {
+      "elements": 39,
+      "faces": 234,
+      "layer": "program",
+      "subsystem": "partitions",
+      "category": "private"
+    },
+    "program__partitions__public": {
+      "elements": 27,
+      "faces": 162,
+      "layer": "program",
+      "subsystem": "partitions",
+      "category": "public"
+    },
+    "program__partitions__service": {
+      "elements": 66,
+      "faces": 396,
+      "layer": "program",
+      "subsystem": "partitions",
+      "category": "service"
+    },
+    "program__scale_reference__public": {
+      "elements": 240,
+      "faces": 1440,
+      "layer": "program",
+      "subsystem": "scale_reference",
+      "category": "public"
+    },
+    "program__zones__circulation": {
+      "elements": 1,
+      "faces": 6,
+      "layer": "program",
+      "subsystem": "zones",
+      "category": "circulation"
+    },
+    "program__zones__private": {
+      "elements": 4,
+      "faces": 24,
+      "layer": "program",
+      "subsystem": "zones",
+      "category": "private"
+    },
+    "program__zones__public": {
+      "elements": 3,
+      "faces": 18,
+      "layer": "program",
+      "subsystem": "zones",
+      "category": "public"
+    },
+    "program__zones__service": {
+      "elements": 9,
+      "faces": 54,
+      "layer": "program",
+      "subsystem": "zones",
+      "category": "service"
+    },
+    "site__context__context": {
+      "elements": 3,
+      "faces": 18,
+      "layer": "site",
+      "subsystem": "context",
+      "category": "context"
+    },
+    "site__podium__context": {
+      "elements": 1,
+      "faces": 6,
+      "layer": "site",
+      "subsystem": "podium",
+      "category": "context"
+    },
+    "structure__beams__public": {
+      "elements": 168,
+      "faces": 2352,
+      "layer": "structure",
+      "subsystem": "beams",
+      "category": "public"
+    },
+    "structure__bracing__public": {
+      "elements": 19,
+      "faces": 120,
+      "layer": "structure",
+      "subsystem": "bracing",
+      "category": "public"
+    },
+    "structure__columns__public": {
+      "elements": 91,
+      "faces": 546,
+      "layer": "structure",
+      "subsystem": "columns",
+      "category": "public"
+    },
+    "structure__columns__service": {
+      "elements": 18,
+      "faces": 108,
+      "layer": "structure",
+      "subsystem": "columns",
+      "category": "service"
+    },
+    "structure__foundations__public": {
+      "elements": 45,
+      "faces": 270,
+      "layer": "structure",
+      "subsystem": "foundations",
+      "category": "public"
+    },
+    "structure__roof_truss__public": {
+      "elements": 38,
+      "faces": 228,
+      "layer": "structure",
+      "subsystem": "roof_truss",
+      "category": "public"
+    },
+    "structure__slabs__public": {
+      "elements": 24,
+      "faces": 144,
+      "layer": "structure",
+      "subsystem": "slabs",
+      "category": "public"
+    }
+  },
+  "renders": [
+    "01_three_quarter.png",
+    "02_section_open_side.png",
+    "03_structure_closeup.png",
+    "04_south_elevation.png",
+    "05_massing_south_west.png"
+  ],
+  "render_mode": "study",
+  "render_visibility": {
+    "01_three_quarter.png": [
+      "circulation",
+      "envelope",
+      "program",
+      "site",
+      "structure"
+    ],
+    "02_section_open_side.png": [
+      "circulation",
+      "envelope",
+      "program",
+      "site",
+      "structure"
+    ],
+    "03_structure_closeup.png": [
+      "circulation",
+      "envelope",
+      "program",
+      "site",
+      "structure"
+    ],
+    "04_south_elevation.png": [
+      "circulation",
+      "envelope",
+      "program",
+      "site",
+      "structure"
+    ],
+    "05_massing_south_west.png": [
+      "circulation",
+      "envelope",
+      "program",
+      "site",
+      "structure"
+    ]
+  },
+  "glb_sha256": "9dabf1c90daa85bcbd3a1aa6f4c25c2d7899cd9d9e78d251a0b7f5a074184741"
+}

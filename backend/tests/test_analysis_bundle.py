@@ -303,10 +303,13 @@ def test_the_model_identity_hears_every_input(features, score, monkeypatch):
     replaced the GLB an older stored run still pointed at, and one MP3 could not
     keep two pinned variants side by side."""
     import backend.app.compiler_v3 as c3
+    compiler_version = c3.COMPILER_VERSION
 
     free = compile_building_model_v3(features, score)
     again = compile_building_model_v3(features, score)
     assert free.model_id == again.model_id, 'the identity is not deterministic'
+    assert free.model_dump_json() == again.model_dump_json(), (
+        'the identity stayed equal while the portable model content changed')
 
     pinned = compile_building_model_v3(features, score, massing_id='MAS-SLAB')
     assert pinned.model_id != free.model_id, 'a pin left the identity unchanged'
@@ -316,3 +319,58 @@ def test_the_model_identity_hears_every_input(features, score, monkeypatch):
     assert bumped.model_id != free.model_id, (
         'a compiler version bump left the identity unchanged, so a new compiler '
         'would overwrite the artifacts of runs made by the old one')
+
+    monkeypatch.setattr(c3, 'COMPILER_VERSION', compiler_version)
+    monkeypatch.setattr(c3, 'compiler_source_fingerprint', lambda: 'changed-source')
+    changed_source = compile_building_model_v3(features, score)
+    assert changed_source.model_id != free.model_id, (
+        'a source edit left the identity unchanged before the declared version bump')
+
+
+# ---------------------------------------------------------------------------
+# Derivation chains
+# ---------------------------------------------------------------------------
+
+def test_every_element_family_carries_its_reasoning(model_v3, features, score):
+    """A chain per family, keyed so the workbench can look one up.
+
+    `derivation.py` was written to answer "how did this come to be" and then went two
+    releases without a caller -- 408 lines nothing imported outside its own test. The
+    bundle publishes it now, so the reasoning travels with every run the API stores and
+    every frozen demo, rather than existing only as a function somebody could call.
+    """
+    bundle = compile_analysis_bundle(model_v3, features=features, score=score)
+    assert bundle.derivation, 'the run published no reasoning at all'
+    assert set(bundle.derivation) == {g.group_id for g in bundle.element_groups}, (
+        'a family in the model has no chain, or a chain names no family')
+
+    # The sample is stated, not implied: each chain says which instance it was read off.
+    instances = {element.id for group in model_v3.element_groups
+                 for element in group.expand()}
+    assert set(bundle.derivation_element_ids) == set(bundle.derivation)
+    assert set(bundle.derivation_element_ids.values()) <= instances
+
+    for chain in bundle.derivation.values():
+        assert chain.steps, f'{chain.element_id} has a chain with no steps'
+
+
+def test_a_chain_reaches_the_recording_only_when_the_run_hands_over_the_music(
+        model_v3, features, score):
+    """Handing over the features is what lets a chain reach back past the datums.
+
+    Without them the chains still assemble -- the datums are what an element is a
+    function of either way -- but none of them can honestly claim a musical cause, and
+    the pipeline forgetting to pass them would be invisible without this.
+    """
+    with_music = compile_analysis_bundle(model_v3, features=features, score=score)
+    without = compile_analysis_bundle(model_v3)
+
+    reached = sum(1 for chain in with_music.derivation.values() if chain.reaches_audio)
+    assert reached > 0, 'no family reached the recording even with the music supplied'
+    assert all(not chain.reaches_audio for chain in without.derivation.values()), (
+        'a chain claimed a musical cause on a run that was handed no music')
+
+    # And the ones that do not reach it say so rather than inventing a cause -- a fire
+    # stair is required by code whatever the piece sounds like.
+    assert reached < len(with_music.derivation), (
+        'every family claims a musical driver, which no building has')

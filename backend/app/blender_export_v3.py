@@ -18,7 +18,12 @@ import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .blender_export import BlenderExportError, find_blender_executable, sha256_file
+from .blender_export import (
+    BlenderExportError,
+    _blender_output_tail,
+    find_blender_executable,
+    sha256_file,
+)
 from .models import ModelAssetV3
 from .models_v3 import BuildingModelV3
 
@@ -56,6 +61,7 @@ def export_blender_web_model_v3(
         source_path.write_text(model.model_dump_json(), encoding='utf-8')
         command = [
             str(blender), '--background', '--factory-startup',
+            '--python-exit-code', '1',
             '--python', str(IMPORT_SCRIPT), '--',
             str(source_path), str(blend_path), str(render_dir),
             str(glb_path), str(manifest_path),
@@ -68,12 +74,14 @@ def export_blender_web_model_v3(
             raise BlenderExportError(
                 f'Blender timed out after {BLENDER_TIMEOUT_SECONDS}s') from error
         if result.returncode != 0:
-            tail = (result.stderr or result.stdout or '').strip().splitlines()[-8:]
-            raise BlenderExportError('Blender v3 export failed: ' + ' | '.join(tail))
+            raise BlenderExportError(
+                'Blender v3 export failed: ' + _blender_output_tail(result))
 
     for path in (glb_path, manifest_path):
         if not path.is_file():
-            raise BlenderExportError(f'Blender did not write {path.name}')
+            raise BlenderExportError(
+                f'Blender did not write {path.name}; '
+                f'Blender output: {_blender_output_tail(result)}')
 
     manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
     return ModelAssetV3(

@@ -41,6 +41,46 @@ YYYY-MM-DD — Evidence ID — artifact/path — what was demonstrated — verif
 
 ## Log
 
+- 2026-09-04 — V3.1/V3.3/V3.4/V4.3 —
+  `backend/scripts/publish_model_version.py`,
+  `artifacts/model_versions/latest.json`, and
+  `docs/decisions/0019-model-version-storage-and-promotion.md`, with the current visual
+  findings in `docs/experiments/latest_model_visual_recheck_2026-09-04.md` — one checked promotion
+  path now binds the portable model, Blender scene/GLB, renders, drawing previews, run
+  contract, and tool-authority status to an immutable version. The current 3.4.0 bundle's
+  26 assets match their archive hashes; public evidence uses stable `latest` URLs. Rhino is
+  correctly blocked because the only existing `.3dm` predates the current run acceptance
+  contract, while the matching Blender scene remains available for rendering. Superseded
+  models and mixed-source portfolio plates are preserved with explicit historical or
+  rejected statuses. Model and run identities now include the exact generation-source
+  fingerprint; a source change during a run aborts publication. Verification:
+  `publish_model_version --check` rehashed 199 assets across ten archives, and eight
+  publication tests cover archive/public parity,
+  stable URLs, empty blocked Rhino slots and exact Rhino run/model/hash acceptance, plus
+  pipeline tests for concurrent source-change rejection and content-stable reruns.
+
+- 2026-09-04 — V3.1/V3.4/V4.3 — `backend/app/drawings.py`,
+  `backend/app/drawing_sheet.py`, `docs/decisions/0018-the-issued-set.md`, and
+  `web/public/drawings/latest/A-*.svg` — the drawing set is now
+  issued as a numbered set on one paper size (A0 for the frozen theater run): a
+  cover with the drawing list, building facts, key plans and every drawing again at
+  1:400; five plan sheets, two elevation sheets carrying the four faces, and one
+  sheet carrying both sections, each drawing under its own caption, scale bar and
+  audit. Every string on a sheet is read off the model; there is no date. The cut
+  now applies as rules what was applied by eye: figures are never cut and stand as
+  glyphs in section, the lift shaft is cut hollow, elements thinner than a line are
+  drawn as their axis, the earth is hatched, the clip edge is never stroked, and a
+  section steps off any wall it would lie inside and says so in its caption. With
+  four elevations the frozen run's element account reads 3,545 drawn, 0 omitted by
+  scale, 0 on no cut, and the buckets sum. Verification: 50 tests in
+  `backend/tests/test_drawings.py` (paper uniformity, placement inside the drawing
+  area, no date on a sheet, every stroke width on a composed sheet in the ISO
+  series, elevations cutting nothing, the shaft hollow in both cuts, posts collapsing
+  while columns keep their outline, clip edges unstroked, the offset resolver leaving
+  no wall cut lengthwise), the regenerated demo payload, and a browser check of the
+  Drawings panel. This is a presentation surface over the same reading of the model:
+  no check is raised by it and no status in the table above changes.
+
 - 2026-09-02 — V2.2/V3.3/V3.4/V4.3 — `backend/app/bim_handoff.py`,
   `web/components/workspaces/BimHandoffWorkspace.tsx`,
   `web/public/reports/demo_run.json`, and
@@ -114,7 +154,7 @@ YYYY-MM-DD — Evidence ID — artifact/path — what was demonstrated — verif
   fixture exposed the whole-track tempo estimator's half-time/changing-tempo limitation;
   measured features, generated element count, pass rate, and next correction are reported.
 - 2026-08-26 — V2.1/V2.2 — `grasshopper/MusicToArchitecture_MVP.gh`,
-  `rhino/MusicToArchitecture_Gemini_SmokeTest.3dm`, and
+  `artifacts/model_versions/archive/20260827T062803Z-rhino-smoke-unversioned/rhino/model.3dm`, and
   `blender/examples/MusicToArchitecture_Gemini_SmokeTest.blend` — one accepted score/model
   contract produced browser, Grasshopper, Rhino, and Blender representations while
   massing and frame remained separate system adapters — verified by Rhino 8 GH solve,
@@ -257,3 +297,23 @@ YYYY-MM-DD — Evidence ID — artifact/path — what was demonstrated — verif
   passes 351/351. The frozen demo run is a real compile of the checked-in fixture, not
   a hand-written fixture. This is a reporting surface: it changes what is visible, not
   what has been checked, and no status in the table above is raised by it.
+
+- 2026-09-04 — V2.1/V2.2/V3.1/V3.4/V4.1/V4.3 —
+  `docs/experiments/visual_music_audit_20.md` and
+  `artifacts/visual_audit/2026-09-03/verified-frozen/` — twenty license-documented
+  recordings completed the real v3 pipeline and a seven-view visual inspection per
+  model (100 Blender stills plus 40 actual-GLB cuts). A frozen 19-model baseline and
+  one failed v2 export exposed uncut stair openings, shaft/flight and intercore
+  overlaps, invalid west-apse boundaries, and exported false hole faces. Shared
+  circulation layout, exact plate subtraction and simple-part decomposition resolve
+  those bounded defects; v2 export failure is isolated without upgrading missing
+  assets or Rhino acceptance. The public compact set retains 40 comparison cards,
+  per-track measurements and matching source/audio hashes; full JSON/GLB/still runs and
+  licensed audio remain in the ignored local audit store. Forty floor/ceiling
+  surface-parity checks pass. Independent
+  geometry measurement records zero findings in its defined classes but retains
+  5,430 unevaluated head-clearance records. Visual review still identifies beam/core
+  clashes and coplanar landing surfaces; lift design, eight unplaced program spaces,
+  egress and construction checks remain unresolved. This entry demonstrates defect
+  discovery, source-to-export verification and failure isolation, not construction
+  readiness. Rejected intermediate exports remain locally as negative controls.

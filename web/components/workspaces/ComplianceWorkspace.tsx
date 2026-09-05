@@ -490,6 +490,122 @@ export function ComplianceWorkspace({ run }: { run: GenerationResponse | null })
         ) : <Empty title="No facade gate report on this run" />}
       </Panel>
 
+      {analysis.spatial && (
+        <Panel
+          title="Spatial rules"
+          sub={Object.keys(analysis.spatial.counts).length + ' rules · '
+            + analysis.spatial.findings.length + ' findings'}
+          flush
+          note="Violations identify measured conflicts. Warnings mark unresolved or unevaluated conditions and do not count as passed checks."
+        >
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr><th>Rule</th><th>What it watches for</th><th className="right">Found</th><th>Worst</th></tr>
+              </thead>
+              <tbody>
+                {Object.entries(analysis.spatial.counts).map(([ruleId, count]) => {
+                  const worst = analysis.spatial!.findings
+                    .filter((finding) => finding.rule_id === ruleId)
+                    .sort((a, b) => b.measure - a.measure)[0];
+                  return (
+                    <tr key={ruleId}>
+                      <td><b>{titleCase(ruleId.replace(/^SP-/, ''))}</b><div className="id">{ruleId}</div></td>
+                      <td className="wrap">{analysis.spatial!.watches[ruleId]}</td>
+                      <td className="right" style={{ color: count ? 'var(--warn)' : undefined }}>{count}</td>
+                      <td className="wrap">
+                        {worst ? (
+                          <>
+                            <Pill tone={worst.severity === 'violation' ? 'bad' : 'warn'}>{worst.severity}</Pill>
+                            {' '}{worst.detail}
+                            <div className="id" style={{ marginTop: 4 }}>{worst.elements.join(' · ')}</div>
+                          </>
+                        ) : <Pill tone="ok">clear</Pill>}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
+      )}
+
+      {analysis.archetype && (
+        <Panel
+          title="Sightlines"
+          sub={analysis.archetype.archetype_id + ' · ' + analysis.archetype.typology}
+          note="What the spatial archetype promised, measured back from the built rows. C is the clearance over the head in front; a row that cannot see the stage is a finding, not a footnote."
+        >
+          {analysis.archetype.refused ? (
+            <p className="prose">{analysis.archetype.refused}</p>
+          ) : (
+            <div className="cols-2">
+              <div>
+                {analysis.archetype.sightlines.length > 0 && (() => {
+                  const rows = analysis.archetype!.sightlines;
+                  const maxD = Math.max(...rows.map((row) => row.distance_m), 1);
+                  const maxH = Math.max(...rows.map((row) => row.floor_m), 1);
+                  const w = 320; const h = 150; const pad = 16;
+                  const x = (d: number) => pad + (d / maxD) * (w - pad * 2);
+                  const y = (f: number) => h - pad - (f / maxH) * (h - pad * 2);
+                  return (
+                    <svg className="diagram" viewBox={'0 0 ' + w + ' ' + h} role="img"
+                      aria-label="Seating rake in section">
+                      <polyline
+                        points={rows.map((row) => x(row.distance_m) + ',' + y(row.floor_m)).join(' ')}
+                        fill="none" stroke="var(--accent)" strokeWidth="1.5"
+                      />
+                      {rows.map((row) => (
+                        <circle key={row.row} cx={x(row.distance_m)} cy={y(row.floor_m)} r="2.4"
+                          fill={row.c_measured_m === null ? 'var(--muted)' : 'var(--accent)'}>
+                          <title>{'Row ' + row.row + ' · ' + row.distance_m.toFixed(1) + ' m out, +'
+                            + row.floor_m.toFixed(2) + ' m'
+                            + (row.c_measured_m === null ? '' : ' · C ' + (row.c_measured_m * 1000).toFixed(0) + ' mm')}</title>
+                        </circle>
+                      ))}
+                      <text x={pad} y={h - 3} fontSize="8" fill="var(--muted)">stage this way</text>
+                    </svg>
+                  );
+                })()}
+                <div className="chip-row" style={{ marginTop: 10 }}>
+                  {analysis.archetype.clear_house_m !== null && (
+                    <span className="chip"><span className="chip-key">house clear</span>
+                      <b className="num">{analysis.archetype.clear_house_m.toFixed(2)} m</b></span>
+                  )}
+                  {analysis.archetype.clear_stage_m !== null && (
+                    <span className="chip"><span className="chip-key">stage clear</span>
+                      <b className="num">{analysis.archetype.clear_stage_m.toFixed(2)} m</b></span>
+                  )}
+                  <span className="chip"><span className="chip-key">rows</span>
+                    <b className="num">{analysis.archetype.sightlines.length}</b></span>
+                </div>
+              </div>
+              <div>
+                {analysis.archetype.findings.length === 0 ? (
+                  <p className="prose"><Pill tone="ok">clear</Pill> Every row measured sees the stage.</p>
+                ) : (
+                  <ul className="list-reasons">
+                    {analysis.archetype.findings.map((finding, index) => (
+                      <li key={index}>
+                        <Pill tone={finding.severity === 'violation' ? 'bad' : 'warn'}>{finding.severity}</Pill>
+                        {' '}{finding.detail}
+                        <div className="id">{finding.gate_id} · {finding.measure.toFixed(2)} {finding.unit}</div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {analysis.archetype.notes.length > 0 && (
+                  <ul className="list-reasons" style={{ marginTop: 10 }}>
+                    {analysis.archetype.notes.map((note) => <li key={note}>{note}</li>)}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+        </Panel>
+      )}
+
       {analysis.compliance.blockers.length > 0 && (
         <Panel title="Open items" sub={analysis.compliance.blockers.length + ' across every family'} flush>
           <ul style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>

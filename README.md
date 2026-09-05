@@ -8,7 +8,7 @@ interior elements, drawings, and review reports.
 > `professional_review_required`; placeholder code and site inputs never become claims of
 > compliance, safety, permit readiness, or construction readiness.
 
-![Generated building workbench view](web/public/renders/building-v3-c64269ebc1a8/01_three_quarter.png)
+![Latest published building workbench view](artifacts/model_versions/latest/renders/01_three_quarter.png)
 
 ## Why this project exists
 
@@ -140,9 +140,11 @@ and generated drawings and renders under `/api/models/{model_id}/...`.
 | [`blender/`](blender/) | Blender adapters, examples, prototypes, and ignored generated scenes |
 | [`grasshopper/`](grasshopper/) | Modular JSON-watcher and preview definition |
 | [`rhino/`](rhino/) | Rhino-owned native example geometry |
+| [`portfolio/`](portfolio/) | Journal-style figure set for portfolio and technical review: SVG sources, PNGs, captions, pinned hashes |
 
 More detailed navigation:
 
+- [Portfolio figures](portfolio/README.md)
 - [Documentation guide](docs/README.md)
 - [Artifact guide](artifacts/README.md)
 - [Native modeling workflow](docs/native_model_workflow.md)
@@ -177,10 +179,14 @@ demo from the repository root:
 
 ```powershell
 .\.venv\Scripts\python.exe -m backend.scripts.generate_web_demo
+.\.venv\Scripts\python.exe -m backend.scripts.publish_model_version --check
 ```
 
 `web/public/reports/demo_run.json` is generated from the same pipeline used by the API.
-Do not hand-edit the frozen run or copy unrelated research GLBs into `web/public/`.
+The generator writes a candidate; the publisher verifies and archives it before replacing
+the stable public aliases. Do not hand-edit the frozen run or copy unrelated research GLBs
+into `web/public/`. See [model version storage](artifacts/model_versions/README.md) and
+[Decision 0019](docs/decisions/0019-model-version-storage-and-promotion.md).
 
 ## Boundaries
 
@@ -193,7 +199,8 @@ Do not hand-edit the frozen run or copy unrelated research GLBs into `web/public
   utilization; other members state their conventional or unchecked basis.
 - Code tables and unresolved site values remain placeholders that require review.
 - Blender output is presentation/downstream geometry. Rhino owns accepted geometry and
-  drawings after review.
+  drawings after review. Rhino also owns the Revit handoff; a current `.3dm` is published
+  only with the matching per-run acceptance manifest.
 - Revit/Dynamo currently has a validated mapping and test contract, not a completed live
   integration. Native family/type selection and BIM acceptance remain human-reviewed.
 

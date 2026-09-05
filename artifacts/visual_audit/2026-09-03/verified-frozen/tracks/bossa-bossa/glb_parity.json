@@ -1,0 +1,273 @@
+{
+  "schema_version": "mta.glb_parity/1.0",
+  "track_id": "bossa-bossa",
+  "model_id": "building-v3-5a14c81cfea8",
+  "status": "passed",
+  "target_kinds": [
+    "floor_slab",
+    "ceiling"
+  ],
+  "targets": {
+    "floor_slab": {
+      "schema_version": "mta.glb_hole_parity/1.0",
+      "status": "passed",
+      "model_id": "building-v3-5a14c81cfea8",
+      "model_json": "artifacts\\visual_audit\\2026-09-03\\verified-frozen\\geometry\\building-v3-5a14c81cfea8\\building_model_v3.json",
+      "glb_path": "artifacts\\visual_audit\\2026-09-03\\verified-frozen\\models\\building-v3-5a14c81cfea8.glb",
+      "coordinate_contract": "blender_glTF: model (x,y,z) -> GLB (x,z,-y)",
+      "target_kind": "floor_slab",
+      "glb_target_node_count": 1,
+      "declared_hole_count": 0,
+      "evaluated_hole_count": 0,
+      "empty_hole_count": 0,
+      "partial_hole_count": 0,
+      "filled_hole_count": 0,
+      "unevaluated_hole_count": 0,
+      "surface_parity_level_count": 6,
+      "surface_parity_failed_level_count": 0,
+      "surface_parity_unevaluated_level_count": 0,
+      "declared_area_m2": 0,
+      "covered_area_m2": 0,
+      "coverage_ratio": null,
+      "holes": [],
+      "surface_parity": [
+        {
+          "target_kind": "floor_slab",
+          "level_id": "L01",
+          "element_ids": [
+            "STR-SLB-L01",
+            "STR-SLB-L01-P01",
+            "STR-SLB-L01-P02"
+          ],
+          "z_base": 5.0594,
+          "z_top": 5.3594,
+          "status": "passed",
+          "expected_area_m2": 1418.0205211907999,
+          "actual_area_m2": 1418.020467092541,
+          "missing_area_m2": 6.37091646578316e-05,
+          "extra_area_m2": 9.61090530456378e-06,
+          "symmetric_difference_area_m2": 7.332006996239537e-05,
+          "horizontal_triangle_count": 98,
+          "tolerance_m2": 0.0014180205211907998
+        },
+        {
+          "target_kind": "floor_slab",
+          "level_id": "L02",
+          "element_ids": [
+            "STR-SLB-L02",
+            "STR-SLB-L02-P01",
+            "STR-SLB-L02-P02",
+            "STR-SLB-L02-P03"
+          ],
+          "z_base": 9.2148,
+          "z_top": 9.5148,
+          "status": "passed",
+          "expected_area_m2": 538.3123426474998,
+          "actual_area_m2": 538.3123603392014,
+          "missing_area_m2": 3.785197787117711e-05,
+          "extra_area_m2": 5.554367917031449e-05,
+          "symmetric_difference_area_m2": 9.33956570414916e-05,
+          "horizontal_triangle_count": 110,
+          "tolerance_m2": 0.0005383123426474998
+        },
+        {
+          "target_kind": "floor_slab",
+          "level_id": "L03",
+          "element_ids": [
+            "STR-SLB-L03",
+            "STR-SLB-L03-P01",
+            "STR-SLB-L03-P02"
+          ],
+          "z_base": 13.3702,
+          "z_top": 13.6702,
+          "status": "passed",
+          "expected_area_m2": 859.9770181537499,
+          "actual_area_m2": 859.9770339870793,
+          "missing_area_m2": 4.135064853009676e-05,
+          "extra_area_m2": 5.718397767533444e-05,
+          "symmetric_difference_area_m2": 9.853462620543121e-05,
+          "horizontal_triangle_count": 108,
+          "tolerance_m2": 0.0008599770181537498
+        },
+        {
+          "target_kind": "floor_slab",
+          "level_id": "L04",
+          "element_ids": [
+            "STR-SLB-L04",
+            "STR-SLB-L04-P01",
+            "STR-SLB-L04-P02"
+          ],
+          "z_base": 17.5256,
+          "z_top": 17.8256,
+          "status": "passed",
+          "expected_area_m2": 1376.7392624188499,
+          "actual_area_m2": 1376.7392689131266,
+          "missing_area_m2": 2.1580006734919886e-05,
+          "extra_area_m2": 2.8074283284474745e-05,
+          "symmetric_difference_area_m2": 4.965429001939463e-05,
+          "horizontal_triangle_count": 98,
+          "tolerance_m2": 0.0013767392624188498
+        },
+        {
+          "target_kind": "floor_slab",
+          "level_id": "L05",
+          "element_ids": [
+            "STR-SLB-L05",
+            "STR-SLB-L05-P01",
+            "STR-SLB-L05-P02"
+          ],
+          "z_base": 21.681,
+          "z_top": 21.981,
+          "status": "passed",
+          "expected_area_m2": 1356.0986275283497,
+          "actual_area_m2": 1356.09860887869,
+          "missing_area_m2": 3.672949880149917e-05,
+          "extra_area_m2": 1.807983878036539e-05,
+          "symmetric_difference_area_m2": 5.480933758186456e-05,
+          "horizontal_triangle_count": 98,
+          "tolerance_m2": 0.0013560986275283496
+        },
+        {
+          "target_kind": "floor_slab",
+          "level_id": "L06",
+          "element_ids": [
+            "STR-SLB-L06",
+            "STR-SLB-L06-P01",
+            "STR-SLB-L06-P02"
+          ],
+          "z_base": 25.8364,
+          "z_top": 26.1364,
+          "status": "passed",
+          "expected_area_m2": 1335.4581796429497,
+          "actual_area_m2": 1335.4581422752394,
+          "missing_area_m2": 5.2236880279740735e-05,
+          "extra_area_m2": 1.4869169578507128e-05,
+          "symmetric_difference_area_m2": 6.710604985824787e-05,
+          "horizontal_triangle_count": 98,
+          "tolerance_m2": 0.0013354581796429497
+        }
+      ]
+    },
+    "ceiling": {
+      "schema_version": "mta.glb_hole_parity/1.0",
+      "status": "passed",
+      "model_id": "building-v3-5a14c81cfea8",
+      "model_json": "artifacts\\visual_audit\\2026-09-03\\verified-frozen\\geometry\\building-v3-5a14c81cfea8\\building_model_v3.json",
+      "glb_path": "artifacts\\visual_audit\\2026-09-03\\verified-frozen\\models\\building-v3-5a14c81cfea8.glb",
+      "coordinate_contract": "blender_glTF: model (x,y,z) -> GLB (x,z,-y)",
+      "target_kind": "ceiling",
+      "glb_target_node_count": 1,
+      "declared_hole_count": 0,
+      "evaluated_hole_count": 0,
+      "empty_hole_count": 0,
+      "partial_hole_count": 0,
+      "filled_hole_count": 0,
+      "unevaluated_hole_count": 0,
+      "surface_parity_level_count": 5,
+      "surface_parity_failed_level_count": 0,
+      "surface_parity_unevaluated_level_count": 0,
+      "declared_area_m2": 0,
+      "covered_area_m2": 0,
+      "coverage_ratio": null,
+      "holes": [],
+      "surface_parity": [
+        {
+          "target_kind": "ceiling",
+          "level_id": "L01",
+          "element_ids": [
+            "ARC-CLG-L01",
+            "ARC-CLG-L01-P01",
+            "ARC-CLG-L01-P02"
+          ],
+          "z_base": 9.0398,
+          "z_top": 9.0648,
+          "status": "passed",
+          "expected_area_m2": 386.12922114120005,
+          "actual_area_m2": 386.12919922417177,
+          "missing_area_m2": 2.9034872360168417e-05,
+          "extra_area_m2": 7.1178441169840145e-06,
+          "symmetric_difference_area_m2": 3.615271647715243e-05,
+          "horizontal_triangle_count": 98,
+          "tolerance_m2": 0.00038612922114120005
+        },
+        {
+          "target_kind": "ceiling",
+          "level_id": "L02",
+          "element_ids": [
+            "ARC-CLG-L02",
+            "ARC-CLG-L02-P01",
+            "ARC-CLG-L02-P02",
+            "ARC-CLG-L02-P03"
+          ],
+          "z_base": 13.1952,
+          "z_top": 13.2202,
+          "status": "passed",
+          "expected_area_m2": 524.3749761288998,
+          "actual_area_m2": 524.374956248835,
+          "missing_area_m2": 5.5287425473029693e-05,
+          "extra_area_m2": 3.540736053324367e-05,
+          "symmetric_difference_area_m2": 9.069478600627336e-05,
+          "horizontal_triangle_count": 110,
+          "tolerance_m2": 0.0005243749761288998
+        },
+        {
+          "target_kind": "ceiling",
+          "level_id": "L03",
+          "element_ids": [
+            "ARC-CLG-L03",
+            "ARC-CLG-L03-P01",
+            "ARC-CLG-L03-P02"
+          ],
+          "z_base": 17.3506,
+          "z_top": 17.3756,
+          "status": "passed",
+          "expected_area_m2": 843.0067925317999,
+          "actual_area_m2": 843.0068297335251,
+          "missing_area_m2": 2.88046211648135e-05,
+          "extra_area_m2": 6.600634629037403e-05,
+          "symmetric_difference_area_m2": 9.481096745518752e-05,
+          "horizontal_triangle_count": 108,
+          "tolerance_m2": 0.0008430067925317998
+        },
+        {
+          "target_kind": "ceiling",
+          "level_id": "L04",
+          "element_ids": [
+            "ARC-CLG-L04",
+            "ARC-CLG-L04-P01",
+            "ARC-CLG-L04-P02"
+          ],
+          "z_base": 21.506,
+          "z_top": 21.531,
+          "status": "passed",
+          "expected_area_m2": 1359.2764237104998,
+          "actual_area_m2": 1359.2764290717273,
+          "missing_area_m2": 2.7693407668520266e-05,
+          "extra_area_m2": 3.305463485358745e-05,
+          "symmetric_difference_area_m2": 6.074804252210772e-05,
+          "horizontal_triangle_count": 98,
+          "tolerance_m2": 0.0013592764237104998
+        },
+        {
+          "target_kind": "ceiling",
+          "level_id": "L05",
+          "element_ids": [
+            "ARC-CLG-L05",
+            "ARC-CLG-L05-P01",
+            "ARC-CLG-L05-P02"
+          ],
+          "z_base": 25.6614,
+          "z_top": 25.6864,
+          "status": "passed",
+          "expected_area_m2": 1338.76716559885,
+          "actual_area_m2": 1338.7671690365103,
+          "missing_area_m2": 2.470273853442686e-05,
+          "extra_area_m2": 2.814039864205348e-05,
+          "symmetric_difference_area_m2": 5.284313717648034e-05,
+          "horizontal_triangle_count": 98,
+          "tolerance_m2": 0.0013387671655988498
+        }
+      ]
+    }
+  }
+}

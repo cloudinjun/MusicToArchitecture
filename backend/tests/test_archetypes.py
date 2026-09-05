@@ -156,14 +156,93 @@ def test_the_carve_does_not_break_the_rest_of_the_building(theatre):
     assert not violations, [f.detail for f in violations]
 
 
-def test_a_library_has_no_archetype_report(features, template):
-    library = compile_building_model_v3(features, template, massing_id='MAS-SLAB',
-                                        typology='library')
-    assert library.archetype is None
-    assert not [e for e in library.elements if e.kind == 'auditorium_riser']
-
-
 def test_a_refusal_names_its_rooms_and_its_reason():
     refusal = CarveRefusal(
         archetype_id='ARCH-THEATRE-BOWL', precluded=[], reason='test')
     assert refusal.reason == 'test'
+
+
+# ---------------------------------------------------------------------------
+# Every typology carves, not only the theatre
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope='module')
+def museum(features, template):
+    return compile_building_model_v3(features, template,
+                                     massing_id='MAS-COURTYARD',
+                                     typology='museum')
+
+
+@pytest.fixture(scope='module')
+def library(features, template):
+    return compile_building_model_v3(features, template, massing_id='MAS-SLAB',
+                                     typology='library')
+
+
+@pytest.fixture(scope='module')
+def pavilion(features, template):
+    return compile_building_model_v3(features, template,
+                                     massing_id='MAS-PAVILION',
+                                     typology='pavilion')
+
+
+def test_every_typology_carves_on_its_own_biased_massing(theatre, museum, library,
+                                                         pavilion):
+    """The kit's bias names a massing its own archetype accepts, measured by
+    compiling the pair -- the lesson the theatre's bar-podium trap taught."""
+    for model in (theatre, museum, library, pavilion):
+        report = model.archetype
+        assert report is not None, model.typology
+        assert report.refused is None, (model.typology, report.refused)
+        assert report.rooms, model.typology
+
+
+def test_the_galleries_are_a_sequence_on_the_roof_lit_plate(museum):
+    report = museum.archetype
+    for gate in ('ARCH-ENFILADE', 'ARCH-TOPLIGHT', 'ARCH-CLAIM-UNCUT'):
+        assert not [f for f in report.findings if f.gate_id == gate], gate
+    # Under the roof means either the last occupied plate, or every plate above the
+    # galleries opened over them -- a top plate too small to hold the pair sends them
+    # one plate down with the roof-light claim carried through the void.
+    top = museum.lattice.occupied[-1].index
+    zones = {z.space_id: z for z in museum.program_allocation.zones}
+    for space_id in report.rooms:
+        zone = zones[space_id]
+        above = [level for level in museum.lattice.occupied if level.index > zone.level_index]
+        assert zone.level_index == top or all(level.voids for level in above), space_id
+        assert zone.area_satisfied, space_id
+    assert [e for e in museum.elements if e.id.startswith('PRG-ENF-')], \
+        'the party wall must be built, or the enfilade gate measured nothing'
+
+
+def test_the_reading_room_is_daylit_and_double_height(library):
+    report = library.archetype
+    assert not [f for f in report.findings
+                if f.gate_id in ('ARCH-DAYLIGHT', 'ARCH-CLAIM-UNCUT')]
+    zones = {z.space_id: z for z in library.program_allocation.zones}
+    (space_id, rect), = report.rooms.items()
+    assert zones[space_id].area_satisfied
+    # The plate above the room really is open: the claim gate passed, and the
+    # voided level must carry a hole overlapping the room.
+    host_index = zones[space_id].level_index
+    above = next(level for level in library.lattice.occupied
+                 if level.index > host_index)
+    assert above.voids, 'the double height claim left no void above the room'
+
+
+def test_the_pavilion_hall_is_the_full_height_volume(pavilion):
+    report = pavilion.archetype
+    assert not [f for f in report.findings
+                if f.gate_id in ('ARCH-DAYLIGHT', 'ARCH-CLAIM-UNCUT')]
+    assert report.clear_m is not None
+    storey = (pavilion.lattice.occupied[1].z - pavilion.lattice.occupied[0].z
+              if len(pavilion.lattice.occupied) > 1 else 0.0)
+    assert report.clear_m > storey, 'the hall must be taller than one storey'
+
+
+def test_the_other_carves_do_not_break_their_buildings(museum, library, pavilion):
+    for model in (museum, library, pavilion):
+        violations = [f for f in model.spatial.findings
+                      if f.severity == 'violation']
+        assert not violations, (model.typology,
+                                [f.detail for f in violations])

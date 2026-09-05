@@ -31,13 +31,43 @@ htmlcov/
 /artifacts/inspector/
 /artifacts/audio_saturation/*/tracks/
 /artifacts/style_evidence/solid/
+/.codex_tmp/
 
-# Keep only the two assets used by the checked-in frozen run.
+# Keep the visual-audit corpus locally. Publish only the compact review surface:
+# summaries, comparison cards, and per-track geometry/parity measurements.
+/artifacts/visual_audit/**
+!/artifacts/visual_audit/README.md
+!/artifacts/visual_audit/2026-09-03/
+!/artifacts/visual_audit/2026-09-03/architecture_findings.md
+!/artifacts/visual_audit/2026-09-03/case_results.csv
+!/artifacts/visual_audit/2026-09-03/corpus_table.md
+!/artifacts/visual_audit/2026-09-03/issue_catalog.json
+!/artifacts/visual_audit/2026-09-03/source_comparison.json
+!/artifacts/visual_audit/2026-09-03/stair_opening_comparison.jpg
+!/artifacts/visual_audit/2026-09-03/targeted_test_results.txt
+!/artifacts/visual_audit/2026-09-03/verification.json
+!/artifacts/visual_audit/2026-09-03/baseline-frozen/
+!/artifacts/visual_audit/2026-09-03/baseline-frozen/measurement_summary.json
+!/artifacts/visual_audit/2026-09-03/verified-frozen/
+!/artifacts/visual_audit/2026-09-03/verified-frozen/glb_parity_report.json
+!/artifacts/visual_audit/2026-09-03/verified-frozen/measurement_summary.json
+!/artifacts/visual_audit/2026-09-03/verified-frozen/visual_review.json
+!/artifacts/visual_audit/2026-09-03/verified-frozen/review_cards/
+!/artifacts/visual_audit/2026-09-03/verified-frozen/review_cards/*.jpg
+!/artifacts/visual_audit/2026-09-03/verified-frozen/detail_cards/
+!/artifacts/visual_audit/2026-09-03/verified-frozen/detail_cards/*.jpg
+!/artifacts/visual_audit/2026-09-03/verified-frozen/tracks/
+!/artifacts/visual_audit/2026-09-03/verified-frozen/tracks/*/
+!/artifacts/visual_audit/2026-09-03/verified-frozen/tracks/*/geometry_measurements.json
+!/artifacts/visual_audit/2026-09-03/verified-frozen/tracks/*/glb_parity.json
+
+# Keep only stable deployment aliases. Immutable versions live in
+# artifacts/model_versions/archive/ and retain their content hashes.
 /web/public/models/generated/*
-!/web/public/models/generated/building-b7ad95fa45a6-library-steel-international-v1.glb
-!/web/public/models/generated/building-b7ad95fa45a6-library-steel-international-v1.manifest.json
-!/web/public/models/generated/building-v3-c64269ebc1a8.glb
-!/web/public/models/generated/building-v3-c64269ebc1a8.manifest.json
+!/web/public/models/generated/latest-v2.glb
+!/web/public/models/generated/latest-v2.manifest.json
+!/web/public/models/generated/latest-v3.glb
+!/web/public/models/generated/latest-v3.manifest.json
 
 # Blender's automatic backup files are local recovery files.
 *.blend1

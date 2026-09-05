@@ -1,0 +1,247 @@
+{
+  "schema_version": "mta.model_version/1.0",
+  "version_id": "20260904T170325Z-v3.3.2-87ba4b85f8b0-4a053ce16dbc",
+  "status": "archived_release",
+  "generated_at": "2026-09-04T17:03:25+00:00",
+  "published_at": "2026-09-04T23:17:54+00:00",
+  "compiler_version": "3.3.2",
+  "run_id": "run-817bcf25ee3b",
+  "v3_model_id": "building-v3-7519e839871f",
+  "v2_model_id": "building-b7ad95fa45a6-library-steel-international-v1",
+  "source_audio_sha256": "b7ad95fa45a6d546149a4256eb6677ea3f147e0652151d6a0b783846a8695d39",
+  "authority": {
+    "rhino": {
+      "status": "blocked",
+      "authority": "accepted_geometry",
+      "owner": "rhino",
+      "purposes": [
+        "issued_drawings",
+        "revit_handoff"
+      ],
+      "model_id": "building-v3-7519e839871f",
+      "run_id": "run-817bcf25ee3b",
+      "files": [],
+      "blocked_by": [
+        "MATCHING_RHINO_3DM_AND_ACCEPTANCE_MANIFEST_REQUIRED"
+      ]
+    },
+    "blender": {
+      "status": "available",
+      "authority": "presentation_only",
+      "owner": "blender",
+      "purposes": [
+        "rendering",
+        "animation",
+        "web_preview"
+      ]
+    },
+    "drawings": {
+      "status": "candidate_preview",
+      "authority": "candidate",
+      "owner": "portable_drawing_compiler",
+      "note": "These SVG sheets are not Rhino-issued drawings."
+    }
+  },
+  "assets": [
+    {
+      "role": "blender_legacy_preview_model_v2",
+      "authority": "presentation_only",
+      "path": "blender/model_v2.glb",
+      "source_path": "web/public/models/generated/latest-v2.glb",
+      "bytes": 1132392,
+      "sha256": "abdc126a9a49d0b3b58f10d2a34c52dccd4058ed2b026ab17d275102626c3629"
+    },
+    {
+      "role": "blender_legacy_preview_manifest_v2",
+      "authority": "presentation_only",
+      "path": "blender/model_v2.manifest.json",
+      "source_path": "web/public/models/generated/latest-v2.manifest.json",
+      "bytes": 2487,
+      "sha256": "2d9335f0aa1c4ac1280b5dff4d0d40e2f1a9f976499b7beb48e721dc115312d3"
+    },
+    {
+      "role": "blender_legacy_preview_state_v2",
+      "authority": "presentation_only",
+      "path": "blender/model_v2.scene.json",
+      "source_path": "artifacts/native_models/generated/building-b7ad95fa45a6-library-steel-international-v1.scene.json",
+      "bytes": 612895,
+      "sha256": "b48a25a59b0c459304e655283dde59621d7fde6e1f20e0ff6d6f6225d076dabe"
+    },
+    {
+      "role": "blender_web_model_v3",
+      "authority": "presentation_only",
+      "path": "blender/model_v3.glb",
+      "source_path": "web/public/models/generated/latest-v3.glb",
+      "bytes": 2757376,
+      "sha256": "5f7d5e7d4abac4e76759329cb0337f00d24868bafac349af57364dc4d744add5"
+    },
+    {
+      "role": "blender_export_manifest_v3",
+      "authority": "presentation_only",
+      "path": "blender/model_v3.manifest.json",
+      "source_path": "web/public/models/generated/latest-v3.manifest.json",
+      "bytes": 7361,
+      "sha256": "29df130a50b0aa5073d3eb28d39bed15ba77154c727d38cda1fa0bd3bdae0dc6"
+    },
+    {
+      "role": "blender_legacy_preview_scene_v2",
+      "authority": "presentation_only",
+      "path": "blender/scene_v2.blend",
+      "source_path": "blender/generated/building-b7ad95fa45a6-library-steel-international-v1.blend",
+      "bytes": 474273,
+      "sha256": "e6f4ce884d2c0c18ffe8250d44e9338acd3d63bdb25815f81e66b67313b1c279"
+    },
+    {
+      "role": "blender_render_scene_v3",
+      "authority": "presentation_only",
+      "path": "blender/scene_v3.blend",
+      "source_path": "blender/generated/building-v3-7519e839871f.blend",
+      "bytes": 698200,
+      "sha256": "e76804039b94ea85c7533b19e40320ebdd251c06c27682b59ed6fd8485858fa9"
+    },
+    {
+      "role": "complete_run_contract",
+      "authority": "validation_report",
+      "path": "contracts/demo_run.json",
+      "source_path": "web/public/reports/demo_run.json",
+      "bytes": 2603008,
+      "sha256": "4a053ce16dbc9d430e8bb4eae3c91504a6de37292be086c60f62857cf354aee2"
+    },
+    {
+      "role": "revit_handoff_contract",
+      "authority": "candidate",
+      "path": "contracts/revit_handoff.json",
+      "source_path": "inline:analysis.bim_handoff",
+      "bytes": 35959,
+      "sha256": "3ceb7db27b7b06d7914063e65f65506706e0c33ce09063171c8535b3ed561761"
+    },
+    {
+      "role": "translation_report",
+      "authority": "validation_report",
+      "path": "contracts/translation_report.json",
+      "source_path": "web/public/reports/translation_report.json",
+      "bytes": 22725,
+      "sha256": "c91813cb27e6651001b25139dc9ab4d9e010eb38ac5359dee45d7ae70f93af73"
+    },
+    {
+      "role": "drawing_preview:A-000",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-000.svg",
+      "source_path": "web/public/drawings/latest/A-000.svg",
+      "bytes": 2792108,
+      "sha256": "77d7d9f335142f7a6c048b7d0b741b1c0c784dcb5fd82b1b8a8a366d1d3a80f3"
+    },
+    {
+      "role": "drawing_preview:A-101",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-101.svg",
+      "source_path": "web/public/drawings/latest/A-101.svg",
+      "bytes": 119474,
+      "sha256": "59b72f95175e520e5e29f62feab2075850e8d362e08f8661c4a953dedc3f20d0"
+    },
+    {
+      "role": "drawing_preview:A-102",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-102.svg",
+      "source_path": "web/public/drawings/latest/A-102.svg",
+      "bytes": 242928,
+      "sha256": "ba6c802e147f50308b0679a792d64ecf521b445445e91a07c774071c485d227f"
+    },
+    {
+      "role": "drawing_preview:A-103",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-103.svg",
+      "source_path": "web/public/drawings/latest/A-103.svg",
+      "bytes": 201661,
+      "sha256": "e927a24c1c8304528f8e95d91aba12d3ee78fad74071f1e5a94635d34217fd91"
+    },
+    {
+      "role": "drawing_preview:A-104",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-104.svg",
+      "source_path": "web/public/drawings/latest/A-104.svg",
+      "bytes": 219783,
+      "sha256": "e4f2dfaf4f457c38659d1acb4fcc66f093296183d7baab8b52f95320a8a8303b"
+    },
+    {
+      "role": "drawing_preview:A-105",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-105.svg",
+      "source_path": "web/public/drawings/latest/A-105.svg",
+      "bytes": 100034,
+      "sha256": "24a67767964b405118b9dfae38a1077da3b33a223555cd71590af88ae00b715a"
+    },
+    {
+      "role": "drawing_preview:A-201",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-201.svg",
+      "source_path": "web/public/drawings/latest/A-201.svg",
+      "bytes": 1312177,
+      "sha256": "6800fb6ad70becd14153ff0630841abd9608146ca09e944322be029ad0de33ca"
+    },
+    {
+      "role": "drawing_preview:A-202",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-202.svg",
+      "source_path": "web/public/drawings/latest/A-202.svg",
+      "bytes": 1311925,
+      "sha256": "facf47e019047ff7256569078b4fe13e6c307dd0282a895dbcd1b319665155ed"
+    },
+    {
+      "role": "drawing_preview:A-301",
+      "authority": "candidate",
+      "path": "drawings/portable_preview/A-301.svg",
+      "source_path": "web/public/drawings/latest/A-301.svg",
+      "bytes": 484935,
+      "sha256": "be84f3f38647d463a4ea627c862124726ff1e925f46d20dbf177856f48b5635a"
+    },
+    {
+      "role": "portable_building_model",
+      "authority": "candidate",
+      "path": "portable/building_model_v3.json",
+      "source_path": "artifacts/v3_runs/building-v3-7519e839871f/building_model_v3.json",
+      "bytes": 3409663,
+      "sha256": "87ba4b85f8b02dcf30d0735c7eef70c5673d332f7808f79ff3d54723bd7a19ba"
+    },
+    {
+      "role": "render:01_three_quarter",
+      "authority": "presentation_only",
+      "path": "renders/01_three_quarter.png",
+      "source_path": "web/public/renders/latest/01_three_quarter.png",
+      "bytes": 2043500,
+      "sha256": "bef3f0a5a6db5aeb60a59cf1ea615f2e434ef3398276d0f5066934ebe1f7381e"
+    },
+    {
+      "role": "render:02_section_open_side",
+      "authority": "presentation_only",
+      "path": "renders/02_section_open_side.png",
+      "source_path": "web/public/renders/latest/02_section_open_side.png",
+      "bytes": 1958193,
+      "sha256": "ef69175f4844d8ef37d5a3bc000c7000426d214be56854b81e5e775c459375d3"
+    },
+    {
+      "role": "render:03_structure_closeup",
+      "authority": "presentation_only",
+      "path": "renders/03_structure_closeup.png",
+      "source_path": "web/public/renders/latest/03_structure_closeup.png",
+      "bytes": 1942459,
+      "sha256": "693d48e905e3cc9b0292b04c517faa1296d52a6a3f903a237d8d254672f817fb"
+    },
+    {
+      "role": "render:04_south_elevation",
+      "authority": "presentation_only",
+      "path": "renders/04_south_elevation.png",
+      "source_path": "web/public/renders/latest/04_south_elevation.png",
+      "bytes": 1693377,
+      "sha256": "c7fb8c7fb63158ed51f2491cf4e0a4872d08168cfd8862d2f46b8df3f6d2c531"
+    },
+    {
+      "role": "render:05_massing_south_west",
+      "authority": "presentation_only",
+      "path": "renders/05_massing_south_west.png",
+      "source_path": "web/public/renders/latest/05_massing_south_west.png",
+      "bytes": 1974039,
+      "sha256": "8a4958111694f398fa1cfe3a7a2e979475c7c8405fc5711fa358ab8e37f29a37"
+    }
+  ]
+}

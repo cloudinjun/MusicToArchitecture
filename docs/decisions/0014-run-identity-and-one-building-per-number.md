@@ -14,16 +14,19 @@ day anything else began to shape the building.
 `model_id` — and through it the GLB, drawing, and render directories, which are all
 pathed by it — is now hashed from everything that decides what gets built:
 
-    score_id | COMPILER_VERSION | pins (massing/typology/grammar/cutaway) | four selections
+    score_id | COMPILER_VERSION | compiler-source hash | pins | four selections
 
 Same inputs, same id: an identical re-run replaces its own identical output. Anything
-different builds beside the old run instead of over it. Before this, a re-run after a
+different builds beside the old run instead of over it. The source hash covers the Python
+files used to generate and export the model, so a geometry edit receives a new identity
+even before the declared version changes. Generation compares the source hash again at the
+end and rejects the run if another task edited those files while it was running. Before
+this, a re-run after a
 compiler change silently replaced the GLB an older stored run still pointed at (the
 Glulam run's record pointing at a Steel GLB), and one MP3 could not keep two pinned
 variants side by side. The run id follows: `run-` + hash of audio, compiler version,
-and the model identity. `backend/app/version.py` holds `COMPILER_VERSION`; the four
-selection outcomes travel in the identity beside it, so most behavioural drift changes
-the identity even when nobody bumps the constant.
+source fingerprint, model identity, and the serialized portable model.
+`backend/app/version.py` holds both the declared version and the fingerprint function.
 
 `write_drawing_set` also deletes stale sheets its own issue did not produce — a stale
 section beside a fresh index made the script count ten drawings over a nine-sheet

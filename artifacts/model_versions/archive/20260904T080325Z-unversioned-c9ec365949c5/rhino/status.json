@@ -1,0 +1,13 @@
+{
+  "status": "blocked",
+  "authority": "accepted_geometry",
+  "owner": "rhino",
+  "purposes": [
+    "issued_drawings",
+    "revit_handoff"
+  ],
+  "files": [],
+  "blocked_by": [
+    "NO_MATCHING_RHINO_ACCEPTANCE_MANIFEST"
+  ]
+}

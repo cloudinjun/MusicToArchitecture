@@ -1,7 +1,7 @@
 {
   "schema_version": "mta.translation_report/1.0",
   "score_id": "score-b7ad95fa45a6",
-  "model_id": "building-v3-b7ad95fa45a6",
+  "model_id": "building-v3-7519e839871f",
   "source_filename": "gemini_music_to_architecture_44s.mp3",
   "duration_seconds": 43.9641,
   "dimensions_emitted": 10,
@@ -11,8 +11,22 @@
   "coverage": 0.8529,
   "variable_coverage": 1.0,
   "clamped_datum_count": 12,
-  "element_count": 3466,
-  "element_kind_count": 35,
+  "element_count": 3545,
+  "element_kind_count": 45,
+  "typology": "theater",
+  "massing_id": "MAS-BAR-PODIUM",
+  "massing_label": "Bar on a podium",
+  "facade_grammar_id": "FCD-05-HIGH-TECH",
+  "structural_system_id": "STR-SYS-STEEL-FRAME",
+  "selection_reasoning": [
+    "incident 0.73: one dominant voice over a steady ground, which in plan is a narrow bar standing on a broad base",
+    "incident 0.73: the piece is organised around one dominant event, which is what an auditorium is",
+    "plate sized by the brief: 2787 m2 asked for, 2842 m2 delivered at plan scale x1.50"
+  ],
+  "facade_gates_passed": 4,
+  "facade_gates_total": 4,
+  "facade_gates_unevaluated": 0,
+  "facade_gate_correction": null,
   "dimensions": [
     {
       "id": "tempo_of_change",
@@ -46,14 +60,14 @@
           "applied_position": 0.1367,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 9,
+          "element_count": 17,
           "element_kinds": [
             "program_zone"
           ],
           "reason": "A faster rate of change stacks more distinct occupied floor episodes."
         }
       ],
-      "element_count": 9,
+      "element_count": 17,
       "note": "Fully measured and fully free to move, but it reaches only a small part of the model."
     },
     {
@@ -88,11 +102,16 @@
           "applied_position": 0.2117,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 363,
+          "element_count": 660,
           "element_kinds": [
             "brace",
+            "ceiling",
             "column",
+            "door",
+            "partition",
+            "partition_head",
             "piloti_column",
+            "stair_half_landing",
             "stair_tread"
           ],
           "reason": "Released passages get more headroom; compressed ones less."
@@ -126,7 +145,7 @@
           "reason": "Release deepens the shading projection and the shadow it throws."
         }
       ],
-      "element_count": 363,
+      "element_count": 660,
       "note": "Directly measured, free to cross its declared range, and reaching a substantial part of the model."
     },
     {
@@ -161,7 +180,7 @@
           "applied_position": 0.2636,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 188,
+          "element_count": 280,
           "element_kinds": [
             "brace",
             "column",
@@ -182,7 +201,7 @@
           "applied_position": 0.2636,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 279,
+          "element_count": 378,
           "element_kinds": [
             "column",
             "footing",
@@ -203,7 +222,7 @@
           "applied_position": 0.2636,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 128,
+          "element_count": 130,
           "element_kinds": [
             "secondary_joist"
           ],
@@ -219,15 +238,14 @@
           "applied_position": 0.2636,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 847,
+          "element_count": 471,
           "element_kinds": [
-            "glazing_panel",
-            "transom"
+            "glazing_panel"
           ],
           "reason": "Density subdivides each storey of the curtain wall."
         }
       ],
-      "element_count": 1442,
+      "element_count": 1259,
       "note": "Directly measured, free to cross its declared range, and reaching a substantial part of the model."
     },
     {
@@ -262,13 +280,15 @@
           "applied_position": 0.517,
           "travel": 0.96,
           "clamped": true,
-          "element_count": 332,
+          "element_count": 381,
           "element_kinds": [
+            "ceiling",
+            "external_strut",
             "floor_slab",
-            "mullion",
+            "frame_expression",
+            "outrigger_strut",
             "program_zone",
-            "slab_fascia",
-            "solid_wall_panel"
+            "slab_fascia"
           ],
           "reason": "Continuous passages push the floor plate past its supports. The driving dimension is known at 0.72 confidence, so the datum travels only 96% of its declared range from the midpoint."
         },
@@ -282,17 +302,14 @@
           "applied_position": 0.517,
           "travel": 0.96,
           "clamped": true,
-          "element_count": 426,
+          "element_count": 380,
           "element_kinds": [
-            "column",
+            "ceiling",
+            "external_strut",
             "floor_slab",
-            "footing",
-            "mullion",
-            "piloti_column",
-            "primary_beam",
+            "frame_expression",
             "program_zone",
-            "slab_fascia",
-            "solid_wall_panel"
+            "slab_fascia"
           ],
           "reason": "Continuity rounds the end of the plate instead of cutting it. The driving dimension is known at 0.72 confidence, so the datum travels only 96% of its declared range from the midpoint."
         },
@@ -306,8 +323,11 @@
           "applied_position": 0.517,
           "travel": 0.96,
           "clamped": true,
-          "element_count": 9,
+          "element_count": 253,
           "element_kinds": [
+            "door",
+            "partition",
+            "partition_head",
             "program_zone"
           ],
           "reason": "Continuity keeps more of the plate for uninterrupted routes. The driving dimension is known at 0.72 confidence, so the datum travels only 96% of its declared range from the midpoint."
@@ -322,15 +342,18 @@
           "applied_position": 0.517,
           "travel": 0.96,
           "clamped": true,
-          "element_count": 209,
+          "element_count": 265,
           "element_kinds": [
+            "elevator_shaft",
+            "stair_half_landing",
+            "stair_landing",
             "stair_stringer",
             "stair_tread"
           ],
           "reason": "A continuous public route carries a wider stair. The driving dimension is known at 0.72 confidence, so the datum travels only 96% of its declared range from the midpoint."
         }
       ],
-      "element_count": 976,
+      "element_count": 1279,
       "note": "A defensible proxy, not a direct measurement of the thing named. Treat the result as a proposal."
     },
     {
@@ -365,13 +388,12 @@
           "applied_position": 0.5068,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 1171,
+          "element_count": 323,
           "element_kinds": [
-            "glazing_panel",
-            "mullion",
-            "solid_wall_panel",
-            "spandrel_panel",
-            "transom"
+            "entrance_door",
+            "entrance_head",
+            "external_strut",
+            "frame_expression"
           ],
           "reason": "Repetition fixes the envelope module."
         },
@@ -385,7 +407,7 @@
           "applied_position": 0.5068,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 121,
+          "element_count": 157,
           "element_kinds": [
             "spandrel_panel"
           ],
@@ -401,14 +423,14 @@
           "applied_position": 0.5068,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 652,
+          "element_count": 791,
           "element_kinds": [
             "railing"
           ],
           "reason": "The guard post rhythm is the finest repeated element in the model."
         }
       ],
-      "element_count": 1944,
+      "element_count": 1271,
       "note": "Directly measured, free to cross its declared range, and reaching a substantial part of the model."
     },
     {
@@ -443,13 +465,14 @@
           "applied_position": 0.9153,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 332,
+          "element_count": 380,
           "element_kinds": [
+            "ceiling",
+            "external_strut",
             "floor_slab",
-            "mullion",
+            "frame_expression",
             "program_zone",
-            "slab_fascia",
-            "solid_wall_panel"
+            "slab_fascia"
           ],
           "reason": "Variation steps the upper plates back from the lower ones."
         },
@@ -463,18 +486,19 @@
           "applied_position": 0.9153,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 332,
+          "element_count": 380,
           "element_kinds": [
+            "ceiling",
+            "external_strut",
             "floor_slab",
-            "mullion",
+            "frame_expression",
             "program_zone",
-            "slab_fascia",
-            "solid_wall_panel"
+            "slab_fascia"
           ],
           "reason": "Each level turns against the one below, so the stack is never a simple extrusion."
         }
       ],
-      "element_count": 664,
+      "element_count": 760,
       "note": "Directly measured, free to cross its declared range, and reaching a substantial part of the model."
     },
     {
@@ -509,7 +533,7 @@
           "applied_position": 0.7271,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 9,
+          "element_count": 5,
           "element_kinds": [
             "roof_deck",
             "truss_chord"
@@ -526,7 +550,7 @@
           "applied_position": 0.7271,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 95,
+          "element_count": 43,
           "element_kinds": [
             "purlin",
             "truss_web"
@@ -543,9 +567,10 @@
           "applied_position": 0.7271,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 15,
+          "element_count": 53,
           "element_kinds": [
-            "piloti_column"
+            "piloti_column",
+            "ramp"
           ],
           "reason": "Hierarchy decides how far the mass lifts off the ground."
         },
@@ -559,14 +584,16 @@
           "applied_position": 0.7271,
           "travel": 1.0,
           "clamped": false,
-          "element_count": 3,
+          "element_count": 12,
           "element_kinds": [
+            "entrance_door",
+            "entrance_head",
             "entry_canopy"
           ],
           "reason": "A dominant order announces its entrance; a level one does not."
         }
       ],
-      "element_count": 122,
+      "element_count": 113,
       "note": "Directly measured, free to cross its declared range, and reaching a substantial part of the model."
     },
     {
@@ -601,7 +628,7 @@
           "applied_position": 0.3839,
           "travel": 0.9866666666666667,
           "clamped": true,
-          "element_count": 5,
+          "element_count": 14,
           "element_kinds": [
             "floor_slab"
           ],
@@ -617,7 +644,7 @@
           "applied_position": 0.3839,
           "travel": 0.9866666666666667,
           "clamped": true,
-          "element_count": 5,
+          "element_count": 14,
           "element_kinds": [
             "floor_slab"
           ],
@@ -633,14 +660,14 @@
           "applied_position": 0.3839,
           "travel": 0.9866666666666667,
           "clamped": true,
-          "element_count": 5,
+          "element_count": 14,
           "element_kinds": [
             "floor_slab"
           ],
           "reason": "A break strips the envelope from a whole level and makes it a terrace. The driving dimension is known at 0.74 confidence, so the datum travels only 99% of its declared range from the midpoint."
         }
       ],
-      "element_count": 15,
+      "element_count": 42,
       "note": "Measured, but not confidently enough to cross its full range. It moves the design within a narrowed band."
     },
     {
@@ -683,12 +710,13 @@
           "applied_position": 0.4933,
           "travel": 0.7333333333333334,
           "clamped": true,
-          "element_count": 687,
+          "element_count": 1099,
           "element_kinds": [
+            "external_strut",
+            "frame_expression",
             "glazing_panel",
-            "mullion",
             "screen_fin",
-            "solid_wall_panel"
+            "spandrel_panel"
           ],
           "reason": "Independent voices need separation: the envelope stands off the frame so both read. The driving dimension is known at 0.55 confidence, so the datum travels only 73% of its declared range from the midpoint."
         },
@@ -702,7 +730,7 @@
           "applied_position": 0.4933,
           "travel": 0.7333333333333334,
           "clamped": true,
-          "element_count": 121,
+          "element_count": 157,
           "element_kinds": [
             "screen_fin"
           ],
@@ -723,7 +751,7 @@
           "reason": "More independent lines means the lateral system is expressed more often. The driving dimension is known at 0.55 confidence, so the datum travels only 73% of its declared range from the midpoint."
         }
       ],
-      "element_count": 808,
+      "element_count": 1256,
       "note": "A defensible proxy, not a direct measurement of the thing named. Treat the result as a proposal."
     },
     {
@@ -782,10 +810,8 @@
           "applied_position": 0.5439,
           "travel": 0.4666666666666666,
           "clamped": true,
-          "element_count": 41,
-          "element_kinds": [
-            "solid_wall_panel"
-          ],
+          "element_count": 0,
+          "element_kinds": [],
           "reason": "A timbral position between a heavy panelled envelope and a light glazed one. Proposed only; a human accepts the weighting. The driving dimension is known at 0.35 confidence, so the datum travels only 47% of its declared range from the midpoint."
         },
         {
@@ -798,14 +824,12 @@
           "applied_position": 0.5439,
           "travel": 0.4666666666666666,
           "clamped": true,
-          "element_count": 162,
-          "element_kinds": [
-            "mullion"
-          ],
+          "element_count": 0,
+          "element_kinds": [],
           "reason": "The same timbral position sets how far the mullion projects and how hard the elevation reads. The driving dimension is known at 0.35 confidence, so the datum travels only 47% of its declared range from the midpoint."
         }
       ],
-      "element_count": 203,
+      "element_count": 0,
       "note": "Inferred from a proxy and clamped hard. It nudges the design; it must not be presented as having shaped it."
     }
   ],
@@ -846,20 +870,21 @@
       "reason": "Scale figure. Not architecture, but the reason the rest reads as architecture."
     }
   ],
-  "program_fulfilment": 0.6679,
-  "program_fits": false,
-  "program_unplaced": [
-    "Adult reading room",
-    "Periodicals and media",
-    "Seminar rooms",
-    "Staff workroom"
-  ],
+  "program_fulfilment": 1.0197,
+  "program_fits": true,
+  "program_unplaced": [],
   "limitations": [
     "85% of datums are score-driven; the rest are declared design fixtures waiting on .",
-    "Program: 1850 m2 delivered against 2770 m2 briefed (67%); unplaced: Adult reading room, Periodicals and media, Seminar rooms, Staff workroom.",
-    "Frame sized for Library stack rooms at 7.18 kPa, the heaviest allocated room; the column stack sums the real per-level loads.",
+    "Program: 2842 m2 delivered against 2787 m2 briefed (102%); every space fits.",
+    "Frame sized for Stages at 7.18 kPa, the heaviest allocated room; the column stack sums the real per-level loads.",
+    "Lift shaft geometry does not provide lift doors or equipment. Occupied levels without a continuous shaft: .",
+    "Stair and lift openings remove slab and ceiling material. Opening-edge framing and structural member rerouting remain unresolved; existing beams are retained for collision review, not silently deleted.",
+    "Accessible approach: 8 ramp runs at 1:12 with 9 landings, checked against 405.2 running slope not steeper than 1:12; 405.5 clear width 915 mm minimum; 405.6 rise 760 mm maximum per run.",
     "Gravity only. No wind, seismic, snow, or notional lateral load.",
     "Roof truss, envelope, circulation, and furniture members are dimensioned by architectural convention; only column, girder, and joist carry a section a load calculation governed.",
-    "No connections, fire protection, camber, vibration, or lateral-torsional buckling. Every element remains professional_review_required."
+    "Connection topology is explicit and graph-checked; connection plates, bolts, welds, anchors, fasteners and capacities are not designed. Fire protection, camber, vibration and lateral-torsional buckling remain unchecked. Every element remains professional_review_required.",
+    "System and grammar: STR-SYS-STEEL-FRAME with FCD-05-HIGH-TECH. The grammar the music asked for was admissible; its preferred frame was not, so the nearest admissible frame carries it. Reasoning: mass 0.19 < 0.62: the elevation is a framed or layered skin; layering 0.49 < 0.60: one skin does the work; regularity 0.51 in between: neither a strict grid nor a composed one, so the frame itself is left to read as the elevation; expression 0.92 >= 0.58: material that transforms between sections asks for a frame that shows how it is joined.",
+    "The music preferred FCD-05-HIGH-TECH on STR-SYS-GLULAM-POST-BEAM; the screen overruled it. STR-SYS-GLULAM-POST-BEAM did not survive the screen",
+    "Six of the ten structural systems are not emitted by this compiler and were screened out rather than approximated: STR-SYS-CABLE-NET-HYBRID (The same form-finding problem as the membrane, plus a mast and anchor layout that no datum in this set describes); STR-SYS-LIGHT-WOOD-FRAME (Stud walls at 400 mm centres are a wall assembly, not a frame of discrete members; the emitter would have to model sheathing diaphragms for the result to mean anything); STR-SYS-RC-SHELL (Elements index into surface parameters (SHL-RIB-U012), not levels); STR-SYS-STEEL-SPACE-FRAME-SHELL (A space frame follows a curved surface subdivision; the level lattice cannot place its nodes); STR-SYS-TENSILE-MEMBRANE (Form is found by relaxation under prestress, not laid out on a grid); STR-SYS-TIMBER-GRIDSHELL (A doubly-curved lath grid set out by geodesic curves on a surface; there is no level lattice to index into)."
   ]
 }

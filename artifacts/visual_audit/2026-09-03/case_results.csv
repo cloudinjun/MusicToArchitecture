@@ -1,0 +1,21 @@
+﻿track_id,title,style,license,massing,initial_findings,final_visual_findings,program_unplaced_count,additional_open_issues,visual_review
+couperin-harpsichord,L'Art de toucher le clavecin (recorded excerpt),Baroque harpsichord,CC0 1.0 (source page declaration),MAS-BAR-PODIUM,"G1, G2, G3","G7, G9",0,,reviewed_with_open_issues
+carefree,Carefree,Contemporary ukulele / light pop,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G2, G4","G7, G9",0,,reviewed_with_open_issues
+drozerix-rndd,4 RNDD!,Tracker chiptune / computer music,CC0 1.0 (source page declaration),MAS-SLAB,P1,"G7, G9",0,,reviewed_with_open_issues
+tafi-maradi,Tafi Maradi,African percussion / call-and-response,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G4","G7, G9",0,,reviewed_with_open_issues
+cantina-blues,Cantina Blues,Blues / voice and saz,CC BY 4.0 (official catalog; attribution required),MAS-BAR-PODIUM,"G1, G2, G3","G7, G9",0,,reviewed_with_open_issues
+valse-gymnopedie,Valse Gymnopedie,Classical piano with a modern beat,CC BY 4.0 (official catalog; attribution required),MAS-BAR-PODIUM,"G1, G2","G7, G9",2,未落位：观众厅、舞台,reviewed_with_open_issues
+funky-boxstep,Funky Boxstep,Funk / off-kilter dance,CC BY 4.0 (official catalog; attribution required),MAS-BAR-PODIUM,"G1, G2, G3","G7, G9",0,,reviewed_with_open_issues
+cloud-dancer,Cloud Dancer,EDM / synthwave,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G2, G4","G7, G9",0,,reviewed_with_open_issues
+night-in-venice,Night in Venice,Jazz / saxophone lounge,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G2, G4","G7?, G9",2,未落位：两间展厅,reviewed_with_open_issues
+bossa-bossa,BossaBossa,Brazilian bossa nova,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G2, G4","G7, G9",0,,reviewed_with_open_issues
+dub-eastern,Dub Eastern,Reggae dub / electronic fusion,CC BY 4.0 (official catalog; attribution required),MAS-BAR-PODIUM,"G1, G2, G3","G7, G9",0,,reviewed_with_open_issues
+raw,Raw,Raw low-bass rock,CC BY 4.0 (official catalog; attribution required),MAS-BAR-PODIUM,"G1, G2","G7, G9",0,井体止于 L06 楼面，缺上方井段,reviewed_with_open_issues
+blue-ska,Blue Ska,Ska / brass dance,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G2, G4","G7, G9",0,,reviewed_with_open_issues
+the-britons,The Britons,Medieval / tavern soundtrack,CC BY 4.0 (official catalog; attribution required),MAS-PAVILION,"G1, G2, G4","G7, G9",0,,reviewed_with_open_issues
+still-pickin,Still Pickin,Bluegrass / folk picking,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G2, G4","G7, G9",0,,reviewed_with_open_issues
+exotic-battle,Exotic Battle,Cinematic orchestral / African-influenced,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G2, G4","G7, G9",0,,reviewed_with_open_issues
+dama-may,Dama-May,Asynchronous autoharp / experimental folk,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G2, G4","G7, G9",0,,reviewed_with_open_issues
+scp-outer-thoughts,SCP-x5x (Outer Thoughts),Horror piano / dark score,CC BY 4.0 (official catalog; attribution required),MAS-BAR-PODIUM,"G1, G2, G3","G7, G9",2,未落位：观众厅、舞台,reviewed_with_open_issues
+android-sock-hop,Android Sock Hop,Retro pop / synth rock,CC BY 4.0 (official catalog; attribution required),MAS-SLAB,"G1, G2, G4","G7, G9",0,,reviewed_with_open_issues
+ritual,Ritual,Slow world flute / synth atmosphere,CC BY 4.0 (official catalog; attribution required),MAS-BAR-PODIUM,"G1, G2","G7, G9",2,未落位：观众厅、舞台,reviewed_with_open_issues

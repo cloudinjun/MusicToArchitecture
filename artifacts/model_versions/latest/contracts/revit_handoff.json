@@ -1,0 +1,1141 @@
+{
+  "schema_version": "mta.revit_dynamo_handoff_report/0.1",
+  "report_id": "bim-handoff-building-v3-5b3193b619f5",
+  "source_model_id": "building-v3-5b3193b619f5",
+  "source_model_sha256": "7a6a19afdb9cd8917c8d59104113a4cc68703d1b346b200d527bdf1a44d85e09",
+  "source_schema_version": "3.0",
+  "source_units": "meters",
+  "source_coordinate_system": "right_handed_z_up",
+  "contract_version": "mta.revit_dynamo_mapping/0.1",
+  "contract_sha256": "a4364934bc529bedab99c74929bc88feb6714c37ebb101c676029a76a0e00b17",
+  "contract_status": "prototype_contract_live_validation_pending",
+  "target_host": "Autodesk Revit",
+  "orchestrator": "Dynamo for Revit",
+  "handoff_readiness": "ready_for_dry_run",
+  "live_validation_status": "pending",
+  "taxonomy_kind_count": 73,
+  "mapped_taxonomy_kind_count": 73,
+  "contract_coverage": 1.0,
+  "emitted_kind_count": 45,
+  "mapped_emitted_kind_count": 45,
+  "emitted_element_count": 3557,
+  "mapped_element_count": 3557,
+  "target_element_count": 3317,
+  "omitted_element_count": 240,
+  "emitted_coverage": 1.0,
+  "mapping_rule_count": 24,
+  "strategy_summaries": [
+    {
+      "strategy": "native_candidate",
+      "label": "Native candidates",
+      "mapping_rule_count": 15,
+      "taxonomy_kind_count": 43,
+      "emitted_kind_count": 26,
+      "element_count": 2578
+    },
+    {
+      "strategy": "room_candidate",
+      "label": "Room candidates",
+      "mapping_rule_count": 1,
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 17
+    },
+    {
+      "strategy": "direct_shape_preview",
+      "label": "DirectShape previews",
+      "mapping_rule_count": 7,
+      "taxonomy_kind_count": 28,
+      "emitted_kind_count": 17,
+      "element_count": 722
+    },
+    {
+      "strategy": "omit_presentation_only",
+      "label": "Presentation only",
+      "mapping_rule_count": 1,
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 240
+    }
+  ],
+  "category_summaries": [
+    {
+      "revit_category": "Railings",
+      "built_in_category": "OST_StairsRailing",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-RAILING"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 791,
+      "review_gate": "Host path, railing type, height, extensions, openings, and code inputs",
+      "material_profiles": [
+        "steel_white"
+      ]
+    },
+    {
+      "revit_category": "Curtain Panels",
+      "built_in_category": "OST_CurtainWallPanels",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-CURTAIN-PANEL"
+      ],
+      "taxonomy_kind_count": 7,
+      "emitted_kind_count": 2,
+      "element_count": 628,
+      "review_gate": "Curtain host, panel family/type, thickness, orientation, material, and panelization",
+      "material_profiles": [
+        "glass",
+        "steel_dark"
+      ]
+    },
+    {
+      "revit_category": "Structural Framing",
+      "built_in_category": "OST_StructuralFraming",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-STRUCTURAL-FRAMING"
+      ],
+      "taxonomy_kind_count": 10,
+      "emitted_kind_count": 8,
+      "element_count": 521,
+      "review_gate": "Catalogue section, curve/roll, joins, releases, material, and analytical intent",
+      "material_profiles": [
+        "steel_dark",
+        "steel_light",
+        "steel_white"
+      ]
+    },
+    {
+      "revit_category": "Generic Models",
+      "built_in_category": "OST_GenericModel",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-ENVELOPE-COMPONENT",
+        "REVIT-FLOOR-EDGE",
+        "REVIT-SITE-STEP"
+      ],
+      "taxonomy_kind_count": 18,
+      "emitted_kind_count": 7,
+      "element_count": 407,
+      "review_gate": "Resolve as slab edge family or coordinated preview after profile and host review; Resolve host, fabrication/assembly role, reusable family strategy, and native category before promotion; Resolve as site, stair, floor, or landscape assembly after site and accessibility review",
+      "material_profiles": [
+        "concrete",
+        "ground_light",
+        "steel_dark",
+        "steel_white",
+        "white",
+        "white_soft"
+      ]
+    },
+    {
+      "revit_category": "Stairs",
+      "built_in_category": "OST_Stairs",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-STAIR-COMPONENT"
+      ],
+      "taxonomy_kind_count": 4,
+      "emitted_kind_count": 4,
+      "element_count": 260,
+      "review_gate": "Rebuild as one native stair only after runs, landings, supports, levels, and code inputs resolve",
+      "material_profiles": [
+        "white",
+        "white_soft"
+      ]
+    },
+    {
+      "revit_category": "Furniture",
+      "built_in_category": "OST_Furniture",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-FURNITURE"
+      ],
+      "taxonomy_kind_count": 3,
+      "emitted_kind_count": 2,
+      "element_count": 252,
+      "review_gate": "Family/type, clearance, host level, quantity intent, and whether layout is schematic",
+      "material_profiles": [
+        "furn"
+      ]
+    },
+    {
+      "revit_category": "Omitted from BIM",
+      "built_in_category": null,
+      "strategy": "omit_presentation_only",
+      "mapping_rule_ids": [
+        "REVIT-FIGURE"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 240,
+      "review_gate": "Scale figure is presentation context and carries no BIM scope",
+      "material_profiles": [
+        "accent_red"
+      ]
+    },
+    {
+      "revit_category": "Walls",
+      "built_in_category": "OST_Walls",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-ENVELOPE-WALL",
+        "REVIT-PARTITION",
+        "REVIT-STRUCTURAL-WALL"
+      ],
+      "taxonomy_kind_count": 6,
+      "emitted_kind_count": 3,
+      "element_count": 126,
+      "review_gate": "Wall type, location line, base/top constraints, openings, joins, and analytical intent; Wall assembly, host/level constraints, joins, openings, and parapet treatment; Partition assembly, fire/acoustic source, base/top constraints, openings, and joins; the proscenium wall additionally carries its opening dimensions and the fire-curtain scope it does not yet model",
+      "material_profiles": [
+        "concrete",
+        "white",
+        "white_soft"
+      ]
+    },
+    {
+      "revit_category": "Structural Columns",
+      "built_in_category": "OST_StructuralColumns",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-COLUMN"
+      ],
+      "taxonomy_kind_count": 2,
+      "emitted_kind_count": 2,
+      "element_count": 109,
+      "review_gate": "Catalogue section, family/type, base/top levels, offsets, material, and analytical intent",
+      "material_profiles": [
+        "steel_white"
+      ]
+    },
+    {
+      "revit_category": "Doors",
+      "built_in_category": "OST_Doors",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-DOOR"
+      ],
+      "taxonomy_kind_count": 2,
+      "emitted_kind_count": 2,
+      "element_count": 72,
+      "review_gate": "Wall host, family/type, clear opening, swing, level, rating, and accessibility",
+      "material_profiles": [
+        "frame_dark",
+        "glass",
+        "white"
+      ]
+    },
+    {
+      "revit_category": "Structural Foundations",
+      "built_in_category": "OST_StructuralFoundation",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-FOUNDATION"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 45,
+      "review_gate": "Foundation family, dimensions, level, material, and soil/geotechnical basis",
+      "material_profiles": [
+        "concrete"
+      ]
+    },
+    {
+      "revit_category": "Ramps",
+      "built_in_category": "OST_Ramps",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-RAMP"
+      ],
+      "taxonomy_kind_count": 3,
+      "emitted_kind_count": 3,
+      "element_count": 33,
+      "review_gate": "Rebuild as a native ramp only after runs, landings, curbs, levels, slopes, and ADA checks agree",
+      "material_profiles": [
+        "white",
+        "white_soft"
+      ]
+    },
+    {
+      "revit_category": "Floors",
+      "built_in_category": "OST_Floors",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-ARCHETYPE-STADIA"
+      ],
+      "taxonomy_kind_count": 2,
+      "emitted_kind_count": 2,
+      "element_count": 21,
+      "review_gate": "Stepped stadia and stage build-up arrive as preview solids; resolve as floors, in-place stadia, or a precast package after the seating layout and the substructure are designed",
+      "material_profiles": [
+        "concrete_light",
+        "timber"
+      ]
+    },
+    {
+      "revit_category": "Rooms",
+      "built_in_category": "OST_Rooms",
+      "strategy": "room_candidate",
+      "mapping_rule_ids": [
+        "REVIT-PROGRAM-ZONE"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 17,
+      "review_gate": "Room-bounding elements, phase, level, enclosed point, name/number policy, and unplaced-space status",
+      "material_profiles": [
+        "prog_circulation",
+        "prog_private",
+        "prog_public",
+        "prog_service"
+      ]
+    },
+    {
+      "revit_category": "Floors",
+      "built_in_category": "OST_Floors",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-FLOOR"
+      ],
+      "taxonomy_kind_count": 4,
+      "emitted_kind_count": 2,
+      "element_count": 15,
+      "review_gate": "Closed sketch, openings, type buildup, level/offset, span direction, and structural use",
+      "material_profiles": [
+        "concrete",
+        "concrete_light"
+      ]
+    },
+    {
+      "revit_category": "Ceilings",
+      "built_in_category": "OST_Ceilings",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-CEILING"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 11,
+      "review_gate": "Closed sketch, level/offset, ceiling type, room context, and service coordination",
+      "material_profiles": [
+        "white"
+      ]
+    },
+    {
+      "revit_category": "Shaft Openings",
+      "built_in_category": "OST_ShaftOpening",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-SHAFT"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 7,
+      "review_gate": "Level range, floor/roof hosts, opening profile, shaft enclosure, and elevator system",
+      "material_profiles": [
+        "concrete"
+      ]
+    },
+    {
+      "revit_category": "Roofs",
+      "built_in_category": "OST_Roofs",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-ROOF"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 1,
+      "review_gate": "Closed sketch, openings, type buildup, level/offset, slope, and drainage intent",
+      "material_profiles": [
+        "white"
+      ]
+    },
+    {
+      "revit_category": "Toposolids",
+      "built_in_category": "OST_Toposolid",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-SITE-GROUND"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 1,
+      "review_gate": "Survey coordinates, topography source, boundary, subregions, and site authority",
+      "material_profiles": [
+        "ground"
+      ]
+    },
+    {
+      "revit_category": "Curtain Wall Mullions",
+      "built_in_category": "OST_CurtainWallMullions",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-CURTAIN-MULLION"
+      ],
+      "taxonomy_kind_count": 4,
+      "emitted_kind_count": 0,
+      "element_count": 0,
+      "review_gate": "Curtain host, grid topology, mullion family/type, joins, and orientation",
+      "material_profiles": []
+    }
+  ],
+  "parameter_count": 21,
+  "required_parameter_count": 15,
+  "identity_parameters": [
+    {
+      "name": "MTA_Authority",
+      "guid": "83a046d7-374e-4181-986d-9fa80e1855e0",
+      "purpose": "Candidate, accepted-design, or preview authority"
+    },
+    {
+      "name": "MTA_DeliveryStatus",
+      "guid": "321b6c9d-b5f8-4d40-a726-27658382756b",
+      "purpose": "Native, DirectShape fallback, review, or omitted"
+    },
+    {
+      "name": "MTA_ElementId",
+      "guid": "4bcdb016-7db5-4f07-af91-c23d44039815",
+      "purpose": "Stable cross-tool source identity"
+    },
+    {
+      "name": "MTA_LastSyncRunId",
+      "guid": "1f40cc04-eef4-4cb8-b707-a1cb1bbe212c",
+      "purpose": "Last successful synchronization run"
+    },
+    {
+      "name": "MTA_ModelId",
+      "guid": "67b09b5b-6259-4744-8754-c1131e24ce57",
+      "purpose": "Source model identity"
+    },
+    {
+      "name": "MTA_SourceHash",
+      "guid": "2b27059e-ea4f-4e9b-a4fc-2fb225e5c588",
+      "purpose": "Element-level change detection"
+    },
+    {
+      "name": "MTA_SourceSchema",
+      "guid": "c075fb33-b904-40e4-aa1e-98605e4456c0",
+      "purpose": "Source contract version"
+    },
+    {
+      "name": "MTA_ValidationStatus",
+      "guid": "8cafcb8f-3d81-404c-a397-a74eb3f11426",
+      "purpose": "Source validation status without upgrade"
+    }
+  ],
+  "material_bindings": [
+    {
+      "profile": "accent_red",
+      "family": "steel",
+      "finish": "signal paint",
+      "categories": [
+        "Omitted from BIM"
+      ],
+      "schedulable_element_count": 0,
+      "base_color": "#b31915",
+      "roughness": 0.55,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 240,
+      "revit_class": "Metal",
+      "reason": "The one saturated colour, for what a building marks out: handrails, doors."
+    },
+    {
+      "profile": "concrete",
+      "family": "concrete",
+      "finish": "fair-faced",
+      "categories": [
+        "Floors",
+        "Generic Models",
+        "Shaft Openings",
+        "Structural Foundations",
+        "Walls"
+      ],
+      "schedulable_element_count": 78,
+      "base_color": "#c2bfbe",
+      "roughness": 0.78,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 89,
+      "revit_class": "Concrete",
+      "reason": "Cast concrete as struck, without a finish over it."
+    },
+    {
+      "profile": "concrete_light",
+      "family": "concrete",
+      "finish": "fair-faced, pale aggregate",
+      "categories": [
+        "Floors"
+      ],
+      "schedulable_element_count": 14,
+      "base_color": "#dad9d7",
+      "roughness": 0.7,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 34,
+      "revit_class": "Concrete",
+      "reason": "The lighter cast surface: slabs and podium."
+    },
+    {
+      "profile": "frame_dark",
+      "family": "steel",
+      "finish": "anodised dark",
+      "categories": [
+        "Doors"
+      ],
+      "schedulable_element_count": 54,
+      "base_color": "#222325",
+      "roughness": 0.4,
+      "metallic": 0.4,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 54,
+      "revit_class": "Metal",
+      "reason": "Curtain-wall framing, which is dark on almost every building of this type."
+    },
+    {
+      "profile": "furn",
+      "family": "fabric",
+      "finish": "upholstery and worktop",
+      "categories": [
+        "Furniture"
+      ],
+      "schedulable_element_count": 252,
+      "base_color": "#b3afa8",
+      "roughness": 0.72,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 252,
+      "revit_class": "Generic",
+      "reason": "Loose furniture, deliberately quiet against the fabric."
+    },
+    {
+      "profile": "glass",
+      "family": "glass",
+      "finish": "sealed double unit",
+      "categories": [
+        "Curtain Panels",
+        "Doors"
+      ],
+      "schedulable_element_count": 477,
+      "base_color": "#b3c7d0",
+      "roughness": 0.08,
+      "metallic": 0.0,
+      "transmission": 0.84,
+      "ior": 1.5,
+      "element_count": 477,
+      "revit_class": "Glass",
+      "reason": "Vision glass. Transmission is what makes it glass rather than a pale panel."
+    },
+    {
+      "profile": "ground",
+      "family": "ground",
+      "finish": "earth",
+      "categories": [
+        "Toposolids"
+      ],
+      "schedulable_element_count": 0,
+      "base_color": "#838486",
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 1,
+      "revit_class": "Generic",
+      "reason": "Cut earth below grade."
+    },
+    {
+      "profile": "ground_light",
+      "family": "ground",
+      "finish": "paving",
+      "categories": [
+        "Generic Models"
+      ],
+      "schedulable_element_count": 0,
+      "base_color": "#bcbcba",
+      "roughness": 0.86,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 3,
+      "revit_class": "Generic",
+      "reason": "The made surface outside the building."
+    },
+    {
+      "profile": "prog_circulation",
+      "family": "diagram",
+      "finish": "program overlay",
+      "categories": [
+        "Rooms"
+      ],
+      "schedulable_element_count": 1,
+      "base_color": "#38b369",
+      "roughness": 0.72,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 1,
+      "revit_class": "Generic",
+      "reason": "Circulation overlay."
+    },
+    {
+      "profile": "prog_private",
+      "family": "diagram",
+      "finish": "program overlay",
+      "categories": [
+        "Rooms"
+      ],
+      "schedulable_element_count": 4,
+      "base_color": "#e68538",
+      "roughness": 0.72,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 4,
+      "revit_class": "Generic",
+      "reason": "Private program overlay."
+    },
+    {
+      "profile": "prog_public",
+      "family": "diagram",
+      "finish": "program overlay",
+      "categories": [
+        "Rooms"
+      ],
+      "schedulable_element_count": 3,
+      "base_color": "#3d82e0",
+      "roughness": 0.72,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 3,
+      "revit_class": "Generic",
+      "reason": "Public program, shown as a diagram rather than as a built surface."
+    },
+    {
+      "profile": "prog_service",
+      "family": "diagram",
+      "finish": "program overlay",
+      "categories": [
+        "Rooms"
+      ],
+      "schedulable_element_count": 9,
+      "base_color": "#9463c2",
+      "roughness": 0.72,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 9,
+      "revit_class": "Generic",
+      "reason": "Service overlay."
+    },
+    {
+      "profile": "steel_dark",
+      "family": "steel",
+      "finish": "dark paint on steel",
+      "categories": [
+        "Curtain Panels",
+        "Generic Models",
+        "Structural Framing"
+      ],
+      "schedulable_element_count": 314,
+      "base_color": "#616162",
+      "roughness": 0.35,
+      "metallic": 0.3,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 631,
+      "revit_class": "Metal",
+      "reason": "Dark steel: bracing and the members meant to read as structure."
+    },
+    {
+      "profile": "steel_light",
+      "family": "steel",
+      "finish": "galvanised",
+      "categories": [
+        "Structural Framing"
+      ],
+      "schedulable_element_count": 139,
+      "base_color": "#dedddd",
+      "roughness": 0.45,
+      "metallic": 0.2,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 139,
+      "revit_class": "Metal",
+      "reason": "Lighter steel for secondary and screen members."
+    },
+    {
+      "profile": "steel_white",
+      "family": "steel",
+      "finish": "off-white paint on steel",
+      "categories": [
+        "Generic Models",
+        "Railings",
+        "Structural Columns",
+        "Structural Framing"
+      ],
+      "schedulable_element_count": 1125,
+      "base_color": "#ececeb",
+      "roughness": 0.4,
+      "metallic": 0.1,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 1127,
+      "revit_class": "Metal",
+      "reason": "Painted structural steel, the frame default."
+    },
+    {
+      "profile": "timber",
+      "family": "timber",
+      "finish": "glulam, oiled",
+      "categories": [
+        "Floors"
+      ],
+      "schedulable_element_count": 0,
+      "base_color": "#caaf85",
+      "roughness": 0.62,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 1,
+      "revit_class": "Wood",
+      "reason": "Mass timber. A timber frame that renders as white steel loses the one cue that says which material was selected."
+    },
+    {
+      "profile": "white",
+      "family": "plaster",
+      "finish": "painted board",
+      "categories": [
+        "Ceilings",
+        "Doors",
+        "Generic Models",
+        "Ramps",
+        "Roofs",
+        "Stairs",
+        "Walls"
+      ],
+      "schedulable_element_count": 27,
+      "base_color": "#e6e5e3",
+      "roughness": 0.52,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 307,
+      "revit_class": "Generic",
+      "reason": "The general light surface: linings, treads, soffits."
+    },
+    {
+      "profile": "white_soft",
+      "family": "plaster",
+      "finish": "matt paint",
+      "categories": [
+        "Generic Models",
+        "Ramps",
+        "Stairs",
+        "Walls"
+      ],
+      "schedulable_element_count": 98,
+      "base_color": "#d6d5d3",
+      "roughness": 0.62,
+      "metallic": 0.0,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "element_count": 185,
+      "revit_class": "Generic",
+      "reason": "A half-tone below white, so two adjacent surfaces read apart."
+    }
+  ],
+  "receiving": {
+    "native_element_count": 2578,
+    "room_element_count": 17,
+    "direct_shape_element_count": 722,
+    "omitted_element_count": 240,
+    "mapped_element_count": 3557,
+    "schedulable_share": 0.7295,
+    "remodel_note": "722 instances arrive as DirectShape solids. They render and they do not schedule, tag or dimension; each category behind them names what has to be rebuilt natively and on whose review.",
+    "takeoff_note": "2595 of 3557 instances carry a material into a category Revit can schedule, so a material takeoff over them is a real one."
+  },
+  "review_queue": [
+    {
+      "revit_category": "Generic Models",
+      "built_in_category": "OST_GenericModel",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-ENVELOPE-COMPONENT",
+        "REVIT-FLOOR-EDGE",
+        "REVIT-SITE-STEP"
+      ],
+      "taxonomy_kind_count": 18,
+      "emitted_kind_count": 7,
+      "element_count": 407,
+      "review_gate": "Resolve as slab edge family or coordinated preview after profile and host review; Resolve host, fabrication/assembly role, reusable family strategy, and native category before promotion; Resolve as site, stair, floor, or landscape assembly after site and accessibility review",
+      "material_profiles": [
+        "concrete",
+        "ground_light",
+        "steel_dark",
+        "steel_white",
+        "white",
+        "white_soft"
+      ]
+    },
+    {
+      "revit_category": "Stairs",
+      "built_in_category": "OST_Stairs",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-STAIR-COMPONENT"
+      ],
+      "taxonomy_kind_count": 4,
+      "emitted_kind_count": 4,
+      "element_count": 260,
+      "review_gate": "Rebuild as one native stair only after runs, landings, supports, levels, and code inputs resolve",
+      "material_profiles": [
+        "white",
+        "white_soft"
+      ]
+    },
+    {
+      "revit_category": "Ramps",
+      "built_in_category": "OST_Ramps",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-RAMP"
+      ],
+      "taxonomy_kind_count": 3,
+      "emitted_kind_count": 3,
+      "element_count": 33,
+      "review_gate": "Rebuild as a native ramp only after runs, landings, curbs, levels, slopes, and ADA checks agree",
+      "material_profiles": [
+        "white",
+        "white_soft"
+      ]
+    },
+    {
+      "revit_category": "Floors",
+      "built_in_category": "OST_Floors",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-ARCHETYPE-STADIA"
+      ],
+      "taxonomy_kind_count": 2,
+      "emitted_kind_count": 2,
+      "element_count": 21,
+      "review_gate": "Stepped stadia and stage build-up arrive as preview solids; resolve as floors, in-place stadia, or a precast package after the seating layout and the substructure are designed",
+      "material_profiles": [
+        "concrete_light",
+        "timber"
+      ]
+    },
+    {
+      "revit_category": "Toposolids",
+      "built_in_category": "OST_Toposolid",
+      "strategy": "direct_shape_preview",
+      "mapping_rule_ids": [
+        "REVIT-SITE-GROUND"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 1,
+      "review_gate": "Survey coordinates, topography source, boundary, subregions, and site authority",
+      "material_profiles": [
+        "ground"
+      ]
+    },
+    {
+      "revit_category": "Railings",
+      "built_in_category": "OST_StairsRailing",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-RAILING"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 791,
+      "review_gate": "Host path, railing type, height, extensions, openings, and code inputs",
+      "material_profiles": [
+        "steel_white"
+      ]
+    },
+    {
+      "revit_category": "Curtain Panels",
+      "built_in_category": "OST_CurtainWallPanels",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-CURTAIN-PANEL"
+      ],
+      "taxonomy_kind_count": 7,
+      "emitted_kind_count": 2,
+      "element_count": 628,
+      "review_gate": "Curtain host, panel family/type, thickness, orientation, material, and panelization",
+      "material_profiles": [
+        "glass",
+        "steel_dark"
+      ]
+    },
+    {
+      "revit_category": "Structural Framing",
+      "built_in_category": "OST_StructuralFraming",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-STRUCTURAL-FRAMING"
+      ],
+      "taxonomy_kind_count": 10,
+      "emitted_kind_count": 8,
+      "element_count": 521,
+      "review_gate": "Catalogue section, curve/roll, joins, releases, material, and analytical intent",
+      "material_profiles": [
+        "steel_dark",
+        "steel_light",
+        "steel_white"
+      ]
+    },
+    {
+      "revit_category": "Furniture",
+      "built_in_category": "OST_Furniture",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-FURNITURE"
+      ],
+      "taxonomy_kind_count": 3,
+      "emitted_kind_count": 2,
+      "element_count": 252,
+      "review_gate": "Family/type, clearance, host level, quantity intent, and whether layout is schematic",
+      "material_profiles": [
+        "furn"
+      ]
+    },
+    {
+      "revit_category": "Walls",
+      "built_in_category": "OST_Walls",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-ENVELOPE-WALL",
+        "REVIT-PARTITION",
+        "REVIT-STRUCTURAL-WALL"
+      ],
+      "taxonomy_kind_count": 6,
+      "emitted_kind_count": 3,
+      "element_count": 126,
+      "review_gate": "Wall type, location line, base/top constraints, openings, joins, and analytical intent; Wall assembly, host/level constraints, joins, openings, and parapet treatment; Partition assembly, fire/acoustic source, base/top constraints, openings, and joins; the proscenium wall additionally carries its opening dimensions and the fire-curtain scope it does not yet model",
+      "material_profiles": [
+        "concrete",
+        "white",
+        "white_soft"
+      ]
+    },
+    {
+      "revit_category": "Structural Columns",
+      "built_in_category": "OST_StructuralColumns",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-COLUMN"
+      ],
+      "taxonomy_kind_count": 2,
+      "emitted_kind_count": 2,
+      "element_count": 109,
+      "review_gate": "Catalogue section, family/type, base/top levels, offsets, material, and analytical intent",
+      "material_profiles": [
+        "steel_white"
+      ]
+    },
+    {
+      "revit_category": "Doors",
+      "built_in_category": "OST_Doors",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-DOOR"
+      ],
+      "taxonomy_kind_count": 2,
+      "emitted_kind_count": 2,
+      "element_count": 72,
+      "review_gate": "Wall host, family/type, clear opening, swing, level, rating, and accessibility",
+      "material_profiles": [
+        "frame_dark",
+        "glass",
+        "white"
+      ]
+    },
+    {
+      "revit_category": "Structural Foundations",
+      "built_in_category": "OST_StructuralFoundation",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-FOUNDATION"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 45,
+      "review_gate": "Foundation family, dimensions, level, material, and soil/geotechnical basis",
+      "material_profiles": [
+        "concrete"
+      ]
+    },
+    {
+      "revit_category": "Rooms",
+      "built_in_category": "OST_Rooms",
+      "strategy": "room_candidate",
+      "mapping_rule_ids": [
+        "REVIT-PROGRAM-ZONE"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 17,
+      "review_gate": "Room-bounding elements, phase, level, enclosed point, name/number policy, and unplaced-space status",
+      "material_profiles": [
+        "prog_circulation",
+        "prog_private",
+        "prog_public",
+        "prog_service"
+      ]
+    },
+    {
+      "revit_category": "Floors",
+      "built_in_category": "OST_Floors",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-FLOOR"
+      ],
+      "taxonomy_kind_count": 4,
+      "emitted_kind_count": 2,
+      "element_count": 15,
+      "review_gate": "Closed sketch, openings, type buildup, level/offset, span direction, and structural use",
+      "material_profiles": [
+        "concrete",
+        "concrete_light"
+      ]
+    },
+    {
+      "revit_category": "Ceilings",
+      "built_in_category": "OST_Ceilings",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-CEILING"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 11,
+      "review_gate": "Closed sketch, level/offset, ceiling type, room context, and service coordination",
+      "material_profiles": [
+        "white"
+      ]
+    },
+    {
+      "revit_category": "Shaft Openings",
+      "built_in_category": "OST_ShaftOpening",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-SHAFT"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 7,
+      "review_gate": "Level range, floor/roof hosts, opening profile, shaft enclosure, and elevator system",
+      "material_profiles": [
+        "concrete"
+      ]
+    },
+    {
+      "revit_category": "Roofs",
+      "built_in_category": "OST_Roofs",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-ROOF"
+      ],
+      "taxonomy_kind_count": 1,
+      "emitted_kind_count": 1,
+      "element_count": 1,
+      "review_gate": "Closed sketch, openings, type buildup, level/offset, slope, and drainage intent",
+      "material_profiles": [
+        "white"
+      ]
+    },
+    {
+      "revit_category": "Curtain Wall Mullions",
+      "built_in_category": "OST_CurtainWallMullions",
+      "strategy": "native_candidate",
+      "mapping_rule_ids": [
+        "REVIT-CURTAIN-MULLION"
+      ],
+      "taxonomy_kind_count": 4,
+      "emitted_kind_count": 0,
+      "element_count": 0,
+      "review_gate": "Curtain host, grid topology, mullion family/type, joins, and orientation",
+      "material_profiles": []
+    }
+  ],
+  "sync_operations": [
+    "create",
+    "update",
+    "keep",
+    "preserve_host_edit",
+    "review_conflict",
+    "retire",
+    "review"
+  ],
+  "safeguards": [
+    "Stable MTA source ID; Revit UniqueId is the host binding.",
+    "Dry-run operation plan before any Revit write transaction.",
+    "Explicit metre conversion, origin transform, and level mapping.",
+    "Host-only edits are preserved and reported.",
+    "Concurrent source and host edits become review conflicts.",
+    "Missing source IDs retire for review; hard delete stays off.",
+    "Blocking failures roll back the transaction group."
+  ],
+  "evidence_checks": [
+    {
+      "id": "BIM-CONTRACT-TAXONOMY",
+      "label": "Taxonomy coverage",
+      "status": "passed",
+      "detail": "73/73 schema 3.0 kinds mapped exactly once."
+    },
+    {
+      "id": "BIM-RUN-MAPPING",
+      "label": "Run mapping",
+      "status": "passed",
+      "detail": "45/45 emitted kinds have a delivery strategy."
+    },
+    {
+      "id": "BIM-PARAMETER-IDENTITY",
+      "label": "Parameter identity",
+      "status": "passed",
+      "detail": "21 parameter definitions have unique names and GUIDs."
+    },
+    {
+      "id": "BIM-MATERIAL-BINDING",
+      "label": "Material binding",
+      "status": "passed",
+      "detail": "18 materials cover all 3557 emitted elements, each with a family, a Revit class and its appearance values."
+    },
+    {
+      "id": "BIM-SOURCE-CONTRACT",
+      "label": "Source contract",
+      "status": "passed",
+      "detail": "3.0 · meters · right_handed_z_up."
+    },
+    {
+      "id": "BIM-LIVE-REVIT-DYNAMO",
+      "label": "Live Revit/Dynamo proof",
+      "status": "pending",
+      "detail": "A tested .dyn/.rvt, version matrix, rerun, conflict, retirement, and rollback record are still required."
+    }
+  ],
+  "live_validation_blockers": [
+    "Installed Revit, Dynamo, package, and project-template versions are unverified.",
+    "Reviewed family/type mappings do not exist yet.",
+    "No .dyn/.rvt unchanged-rerun, conflict, retirement, or rollback evidence exists yet."
+  ],
+  "limitations": [
+    "No live Revit or Dynamo execution has been verified yet.",
+    "Category mappings are candidate strategies; family and type selection remains human-owned.",
+    "DirectShape output is coordination preview geometry and does not count as native BIM completion.",
+    "No construction, permit, code-compliance, fabrication, or professional engineering claim is made.",
+    "Revit and Dynamo versions must be recorded and tested before the contract status can advance."
+  ]
+}

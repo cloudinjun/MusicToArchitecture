@@ -1,0 +1,7 @@
+2026-09-04 00:53:20 -07:00 | task_file_newly_created=true | command=.venv\Scripts\python.exe -m pytest backend/tests/test_differentiation.py::test_every_floor_landing_is_flush_with_its_plate_and_sits_on_it -q --no-header -p no:cacheprovider | result=1 passed | pytest_elapsed=353.90s | wall_elapsed=354.34s | scope=7 massing families, real features/score fixtures
+2026-09-04 | compiler=3.3.2 | command=.venv/Scripts/python.exe -m pytest backend/tests/test_circulation_clearance.py backend/tests/test_plate_ring_validity.py -q | result=19 passed | elapsed=115.16s
+2026-09-04 | command=.venv/Scripts/python.exe -m pytest backend/tests/test_geometry_review.py backend/tests/test_preview_failure_isolation.py backend/tests/test_integration.py -q | result=16 passed | elapsed=0.52s
+[2026-09-04 01:27:49 -07:00]
+Invocation: .venv\Scripts\python.exe -m pytest -q backend/tests/test_glb_extrusion_parity.py backend/tests/test_geometry_review.py
+Result: 21 passed in 0.64s
+2026-09-04 | command=.venv\Scripts\python.exe -m pytest backend/tests/test_geometry_review.py backend/tests/test_visual_geometry_measurement.py -q | result=12 passed in 0.16s; command=.venv\Scripts\python.exe -m py_compile backend/scripts/measure_visual_geometry.py backend/scripts/summarize_visual_music_audit.py | result=passed | scope=landing_slab_contact union/unknown/vertical-mismatch regression plus existing geometry review

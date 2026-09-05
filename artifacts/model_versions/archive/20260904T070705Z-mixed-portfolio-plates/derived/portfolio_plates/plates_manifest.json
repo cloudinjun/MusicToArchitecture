@@ -1,0 +1,69 @@
+{
+  "run": "building-v3-c64269ebc1a8",
+  "plates": [
+    {
+      "plate": "P-01_pipeline_diagram",
+      "size": [
+        1920,
+        1586
+      ],
+      "bytes": 448204
+    },
+    {
+      "plate": "P-02_fourteen_buildings",
+      "size": [
+        1920,
+        1891
+      ],
+      "bytes": 2031067
+    },
+    {
+      "plate": "P-03_structure_follows",
+      "size": [
+        1920,
+        1897
+      ],
+      "bytes": 1465152
+    },
+    {
+      "plate": "P-04_member_level",
+      "size": [
+        1920,
+        1736
+      ],
+      "bytes": 1523085
+    },
+    {
+      "plate": "P-05_emitted_drawing",
+      "size": [
+        1920,
+        1914
+      ],
+      "bytes": 268472
+    },
+    {
+      "plate": "P-06_verification_schedule",
+      "size": [
+        1920,
+        1354
+      ],
+      "bytes": 346306
+    },
+    {
+      "plate": "P-07_presentation_range",
+      "size": [
+        1920,
+        756
+      ],
+      "bytes": 457114
+    },
+    {
+      "plate": "P-08_revit_handoff",
+      "size": [
+        1920,
+        1631
+      ],
+      "bytes": 478009
+    }
+  ]
+}

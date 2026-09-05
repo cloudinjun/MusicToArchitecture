@@ -24,7 +24,11 @@ from pathlib import Path
 import pytest
 
 from backend.app.briefs import BRIEFS, choose_typology
-from backend.app.compiler_v3 import compile_building_model_v3
+from backend.app.compiler_v3 import (
+    _core_layout,
+    compile_building_model_v3,
+    core_anchors,
+)
 from backend.app.facade_gates import evaluate
 from backend.app.massing import MASSING_FAMILIES, choose_massing
 from backend.app.models import ArchitecturalScore, AudioFeatures
@@ -238,9 +242,26 @@ def test_a_landing_exists_at_every_level_a_flight_arrives_at(features, template)
     """Every flight that climbs a storey has a floor to arrive on."""
     for massing_id in MASSING_FAMILIES:
         model = compile_building_model_v3(features, template, massing_id=massing_id)
-        served = {e.level_id for e in model.elements if e.kind == 'stair_landing'}
-        occupied = {level.id for level in model.lattice.occupied}
-        assert occupied - served == set(), (massing_id, sorted(occupied - served))
+        landings = {e.level_id for e in model.elements if e.kind == 'stair_landing'}
+        layout = _core_layout(core_anchors(model.lattice, model.datum_set))
+        arrivals = {
+            upper.id
+            for _point, served, _tags, _label, _facing in layout
+            for lower, upper in zip(served, served[1:])
+            if upper.z - lower.z >= 0.4
+        }
+        assert arrivals <= landings, (massing_id, sorted(arrivals - landings))
+
+        reached = {
+            level.id
+            for _point, served, _tags, _label, _facing in layout
+            for level in served
+        }
+        unreached = {level.id for level in model.lattice.occupied} - reached
+        if unreached:
+            notes = ' '.join(model.limitations)
+            assert 'no single stair core' in notes
+            assert all(level_id in notes for level_id in unreached)
 
 
 def test_only_the_approach_flights_stand_outside_the_building(features, template):

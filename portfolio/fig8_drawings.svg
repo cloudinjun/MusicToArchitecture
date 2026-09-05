@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1600 2204" width="1600" height="2204">
+<rect x="0" y="0" width="1600" height="2204" fill="#ffffff"/>
+<rect x="60.0" y="30.0" width="1480.0" height="1046.8" fill="none" stroke="#8c8c8c" stroke-width="0.8"/>
+<image href="assets/sheet_A-102.png" x="60.0" y="30.0" width="1480.0" height="1046.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="76.0" y="60.0" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="20" font-weight="bold" text-anchor="start" fill="#000">(a)</text>
+<rect x="60.0" y="1116.8" width="1480.0" height="1046.8" fill="none" stroke="#8c8c8c" stroke-width="0.8"/>
+<image href="assets/sheet_A-301.png" x="60.0" y="1116.8" width="1480.0" height="1046.8" preserveAspectRatio="xMidYMid meet"/>
+<text x="76.0" y="1146.8" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif" font-size="20" font-weight="bold" text-anchor="start" fill="#000">(b)</text>
+</svg>

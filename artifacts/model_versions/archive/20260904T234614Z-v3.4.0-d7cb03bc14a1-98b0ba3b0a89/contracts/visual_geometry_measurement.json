@@ -1,0 +1,415 @@
+{
+  "schema_version": "visual-geometry-measurement-1",
+  "model_id": "building-v3-5b3193b619f5",
+  "measurement_basis": "Exact 2-D polygon intersections plus constant-z primitive intervals; no AABB collision verdicts.",
+  "review_conventions": {
+    "head_clearance_m": 2.0,
+    "head_clearance_note": "2.0 m is a project design-review convention, not a code-compliance claim.",
+    "landing_vertical_tolerance_m": 0.005,
+    "positive_area_epsilon_m2": 1e-07
+  },
+  "element_counts": {
+    "stair_tread": 215,
+    "floor_slab": 14,
+    "ceiling": 11,
+    "elevator_shaft": 7,
+    "program_zone": 17,
+    "stair_landing": 8
+  },
+  "checks": [
+    {
+      "class": "primitive_invalid_plan_ring",
+      "count": 0,
+      "evaluated_count": 1109,
+      "unevaluated_count": 0,
+      "sample_element_ids": [],
+      "samples": [],
+      "numeric": {
+        "checked_ring_count": 1109,
+        "affected_element_count": 0,
+        "non_adjacent_edge_intersection_count": 0,
+        "triangulation_unavailable_count": 0
+      }
+    },
+    {
+      "class": "stair_head_clearance",
+      "count": 0,
+      "evaluated_count": 184,
+      "unevaluated_count": 31,
+      "sample_element_ids": [],
+      "samples": [],
+      "numeric": {
+        "review_threshold_m": 2.0,
+        "minimum_clearance_m": 3.7425,
+        "maximum_clearance_m": 25.94915,
+        "below_review_threshold_count": 0,
+        "measured_tread_count": 184
+      }
+    },
+    {
+      "class": "stair_tread_floor_slab_intersection",
+      "count": 0,
+      "evaluated_count": 3010,
+      "unevaluated_count": 0,
+      "sample_element_ids": [],
+      "samples": [],
+      "numeric": {
+        "tested_pair_count": 3010,
+        "evaluated_pair_count": 3010,
+        "unevaluated_pair_count": 0,
+        "minimum_overlap_area_m2": null,
+        "maximum_overlap_area_m2": null,
+        "maximum_vertical_overlap_m": null,
+        "total_intersection_volume_m3": 0.0
+      }
+    },
+    {
+      "class": "stair_tread_elevator_shaft_intersection",
+      "count": 0,
+      "evaluated_count": 1505,
+      "unevaluated_count": 0,
+      "sample_element_ids": [],
+      "samples": [],
+      "numeric": {
+        "tested_pair_count": 1505,
+        "evaluated_pair_count": 1505,
+        "unevaluated_pair_count": 0,
+        "minimum_overlap_area_m2": null,
+        "maximum_overlap_area_m2": null,
+        "maximum_vertical_overlap_m": null,
+        "total_intersection_volume_m3": 0.0
+      }
+    },
+    {
+      "class": "stair_intercore_tread_volume_intersection",
+      "count": 0,
+      "evaluated_count": 56,
+      "unevaluated_count": 0,
+      "sample_element_ids": [],
+      "samples": [],
+      "numeric": {
+        "tested_positive_z_pair_count": 56,
+        "flight_pair_count": 2,
+        "flight_pair_members": {
+          "primary": 128,
+          "second": 56
+        },
+        "collisions_by_pair": {},
+        "minimum_overlap_area_m2": null,
+        "maximum_overlap_area_m2": null,
+        "maximum_vertical_overlap_m": null,
+        "total_intersection_volume_m3": 0.0,
+        "unassigned_tread_count": 31
+      }
+    },
+    {
+      "class": "program_zone_positive_overlap",
+      "count": 0,
+      "evaluated_count": 57,
+      "unevaluated_count": 0,
+      "sample_element_ids": [],
+      "samples": [],
+      "numeric": {
+        "tested_pair_count": 57,
+        "evaluated_pair_count": 57,
+        "unevaluated_pair_count": 0,
+        "level_count": 3,
+        "minimum_positive_overlap_area_m2": null,
+        "maximum_positive_overlap_area_m2": null,
+        "total_positive_overlap_area_m2": 0.0
+      }
+    },
+    {
+      "class": "landing_slab_contact",
+      "count": 0,
+      "evaluated_count": 8,
+      "unevaluated_count": 0,
+      "sample_element_ids": [],
+      "samples": [],
+      "numeric": {
+        "tested_landing_count": 8,
+        "evaluated_landing_count": 8,
+        "unevaluated_landing_count": 0,
+        "minimum_contact_area_m2": 0.0,
+        "minimum_vertical_offset_m": 0.0,
+        "maximum_vertical_offset_m": 0.0,
+        "vertical_tolerance_m": 0.005,
+        "reported_ok_count": 8,
+        "reported_vertical_mismatch_count": 0
+      },
+      "all_measurements": [
+        {
+          "element_ids": [
+            "CIR-LND-L01",
+            "STR-SLB-L01",
+            "STR-SLB-L01-P01",
+            "STR-SLB-L01-P02"
+          ],
+          "landing_id": "CIR-LND-L01",
+          "slab_id": "STR-SLB-L01",
+          "slab_ids": [
+            "STR-SLB-L01",
+            "STR-SLB-L01-P01",
+            "STR-SLB-L01-P02"
+          ],
+          "matching_slab_ids": [
+            "STR-SLB-L01",
+            "STR-SLB-L01-P01"
+          ],
+          "mismatched_slab_ids": [],
+          "level_id": "L01",
+          "status": "ok",
+          "landing_area_m2": 10.404108,
+          "contact_area_m2": 0.0,
+          "contact_ratio": 0.0,
+          "edge_contact_area_m2": 0.491117,
+          "plan_overlap_area_m2": 0.0,
+          "mismatched_contact_area_m2": 0.0,
+          "contact_depth_m": 0.18,
+          "landing_top_z": 5.5088,
+          "slab_top_z": 5.5088,
+          "vertical_offset_m": 0.0,
+          "matching_vertical_offsets_m": [],
+          "mismatched_vertical_offsets_m": []
+        },
+        {
+          "element_ids": [
+            "CIR-LND-L02",
+            "STR-SLB-L02",
+            "STR-SLB-L02-P01",
+            "STR-SLB-L02-P02",
+            "STR-SLB-L02-P03"
+          ],
+          "landing_id": "CIR-LND-L02",
+          "slab_id": "STR-SLB-L02-P02",
+          "slab_ids": [
+            "STR-SLB-L02",
+            "STR-SLB-L02-P01",
+            "STR-SLB-L02-P02",
+            "STR-SLB-L02-P03"
+          ],
+          "matching_slab_ids": [
+            "STR-SLB-L02",
+            "STR-SLB-L02-P02"
+          ],
+          "mismatched_slab_ids": [],
+          "level_id": "L02",
+          "status": "ok",
+          "landing_area_m2": 10.404108,
+          "contact_area_m2": 0.0,
+          "contact_ratio": 0.0,
+          "edge_contact_area_m2": 0.491117,
+          "plan_overlap_area_m2": 0.0,
+          "mismatched_contact_area_m2": 0.0,
+          "contact_depth_m": 0.18,
+          "landing_top_z": 9.7263,
+          "slab_top_z": 9.7263,
+          "vertical_offset_m": 0.0,
+          "matching_vertical_offsets_m": [],
+          "mismatched_vertical_offsets_m": []
+        },
+        {
+          "element_ids": [
+            "CIR-LND-L03",
+            "STR-SLB-L03",
+            "STR-SLB-L03-P01"
+          ],
+          "landing_id": "CIR-LND-L03",
+          "slab_id": "STR-SLB-L03-P01",
+          "slab_ids": [
+            "STR-SLB-L03",
+            "STR-SLB-L03-P01"
+          ],
+          "matching_slab_ids": [
+            "STR-SLB-L03",
+            "STR-SLB-L03-P01"
+          ],
+          "mismatched_slab_ids": [],
+          "level_id": "L03",
+          "status": "ok",
+          "landing_area_m2": 10.404108,
+          "contact_area_m2": 0.0,
+          "contact_ratio": 0.0,
+          "edge_contact_area_m2": 0.491117,
+          "plan_overlap_area_m2": 0.0,
+          "mismatched_contact_area_m2": 0.0,
+          "contact_depth_m": 0.18,
+          "landing_top_z": 13.9438,
+          "slab_top_z": 13.9438,
+          "vertical_offset_m": 0.0,
+          "matching_vertical_offsets_m": [],
+          "mismatched_vertical_offsets_m": []
+        },
+        {
+          "element_ids": [
+            "CIR-LND-L04",
+            "STR-SLB-L04",
+            "STR-SLB-L04-P01"
+          ],
+          "landing_id": "CIR-LND-L04",
+          "slab_id": "STR-SLB-L04",
+          "slab_ids": [
+            "STR-SLB-L04",
+            "STR-SLB-L04-P01"
+          ],
+          "matching_slab_ids": [
+            "STR-SLB-L04",
+            "STR-SLB-L04-P01"
+          ],
+          "mismatched_slab_ids": [],
+          "level_id": "L04",
+          "status": "ok",
+          "landing_area_m2": 10.404108,
+          "contact_area_m2": 0.0,
+          "contact_ratio": 0.0,
+          "edge_contact_area_m2": 0.491117,
+          "plan_overlap_area_m2": 0.0,
+          "mismatched_contact_area_m2": 0.0,
+          "contact_depth_m": 0.18,
+          "landing_top_z": 18.1613,
+          "slab_top_z": 18.1613,
+          "vertical_offset_m": 0.0,
+          "matching_vertical_offsets_m": [],
+          "mismatched_vertical_offsets_m": []
+        },
+        {
+          "element_ids": [
+            "CIR-LND-L05",
+            "STR-SLB-L05",
+            "STR-SLB-L05-P01"
+          ],
+          "landing_id": "CIR-LND-L05",
+          "slab_id": "STR-SLB-L05",
+          "slab_ids": [
+            "STR-SLB-L05",
+            "STR-SLB-L05-P01"
+          ],
+          "matching_slab_ids": [
+            "STR-SLB-L05",
+            "STR-SLB-L05-P01"
+          ],
+          "mismatched_slab_ids": [],
+          "level_id": "L05",
+          "status": "ok",
+          "landing_area_m2": 10.404108,
+          "contact_area_m2": 0.0,
+          "contact_ratio": 0.0,
+          "edge_contact_area_m2": 0.491117,
+          "plan_overlap_area_m2": 0.0,
+          "mismatched_contact_area_m2": 0.0,
+          "contact_depth_m": 0.18,
+          "landing_top_z": 22.3788,
+          "slab_top_z": 22.3788,
+          "vertical_offset_m": 0.0,
+          "matching_vertical_offsets_m": [],
+          "mismatched_vertical_offsets_m": []
+        },
+        {
+          "element_ids": [
+            "CIR-LND2-L01",
+            "STR-SLB-L01",
+            "STR-SLB-L01-P01",
+            "STR-SLB-L01-P02"
+          ],
+          "landing_id": "CIR-LND2-L01",
+          "slab_id": "STR-SLB-L01-P02",
+          "slab_ids": [
+            "STR-SLB-L01",
+            "STR-SLB-L01-P01",
+            "STR-SLB-L01-P02"
+          ],
+          "matching_slab_ids": [
+            "STR-SLB-L01-P01",
+            "STR-SLB-L01-P02"
+          ],
+          "mismatched_slab_ids": [],
+          "level_id": "L01",
+          "status": "ok",
+          "landing_area_m2": 10.404108,
+          "contact_area_m2": 0.0,
+          "contact_ratio": 0.0,
+          "edge_contact_area_m2": 0.491117,
+          "plan_overlap_area_m2": 0.0,
+          "mismatched_contact_area_m2": 0.0,
+          "contact_depth_m": 0.18,
+          "landing_top_z": 5.5088,
+          "slab_top_z": 5.5088,
+          "vertical_offset_m": 0.0,
+          "matching_vertical_offsets_m": [],
+          "mismatched_vertical_offsets_m": []
+        },
+        {
+          "element_ids": [
+            "CIR-LND2-L02",
+            "STR-SLB-L02",
+            "STR-SLB-L02-P01",
+            "STR-SLB-L02-P02",
+            "STR-SLB-L02-P03"
+          ],
+          "landing_id": "CIR-LND2-L02",
+          "slab_id": "STR-SLB-L02-P01",
+          "slab_ids": [
+            "STR-SLB-L02",
+            "STR-SLB-L02-P01",
+            "STR-SLB-L02-P02",
+            "STR-SLB-L02-P03"
+          ],
+          "matching_slab_ids": [
+            "STR-SLB-L02",
+            "STR-SLB-L02-P01"
+          ],
+          "mismatched_slab_ids": [],
+          "level_id": "L02",
+          "status": "ok",
+          "landing_area_m2": 10.404108,
+          "contact_area_m2": 0.0,
+          "contact_ratio": 0.0,
+          "edge_contact_area_m2": 0.491117,
+          "plan_overlap_area_m2": 0.0,
+          "mismatched_contact_area_m2": 0.0,
+          "contact_depth_m": 0.18,
+          "landing_top_z": 9.7263,
+          "slab_top_z": 9.7263,
+          "vertical_offset_m": 0.0,
+          "matching_vertical_offsets_m": [],
+          "mismatched_vertical_offsets_m": []
+        },
+        {
+          "element_ids": [
+            "CIR-LND-ENTRY",
+            "STR-SLB-L01",
+            "STR-SLB-L01-P01",
+            "STR-SLB-L01-P02"
+          ],
+          "landing_id": "CIR-LND-ENTRY",
+          "slab_id": "STR-SLB-L01",
+          "slab_ids": [
+            "STR-SLB-L01",
+            "STR-SLB-L01-P01",
+            "STR-SLB-L01-P02"
+          ],
+          "matching_slab_ids": [
+            "STR-SLB-L01"
+          ],
+          "mismatched_slab_ids": [],
+          "level_id": "L01",
+          "status": "ok",
+          "landing_area_m2": 10.782439,
+          "contact_area_m2": 7.637561,
+          "contact_ratio": 0.708333,
+          "edge_contact_area_m2": 0,
+          "plan_overlap_area_m2": 7.637561,
+          "mismatched_contact_area_m2": 0.0,
+          "contact_depth_m": 0.18,
+          "landing_top_z": 5.5088,
+          "slab_top_z": 5.5088,
+          "vertical_offset_m": 0.0,
+          "matching_vertical_offsets_m": [
+            0.0
+          ],
+          "mismatched_vertical_offsets_m": []
+        }
+      ]
+    }
+  ]
+}
