@@ -44,6 +44,8 @@ from .models_v3 import (
     BuildingModelV3, ElementGroup, ElementInstance, MemberSizingRecord, RankedOption,
 )
 from .axis import AxisSkeleton
+from .furniture import furniture_parts, emit_furniture, usable_floor
+
 from .envelope import emit_envelope
 from .dependencies import (
     EXTRA_FLIGHT_PAIRS, SECOND_FLIGHT_PAIR, compile_dependency_graph,
@@ -134,6 +136,7 @@ class _Builder:
         # sentence that says so, written by the emitter that knows.
         self.lift_served_levels: list[str] = []
         self.lift_note = ''
+        self.furniture_omissions: list[str] = []
 
     def add_plate(self, element_id, kind, layer, subsystem, boundary, holes,
                   z_base, z_top, material, **metadata):
@@ -155,6 +158,7 @@ class _Builder:
         utilisation: float | None = None, governing_check: str | None = None,
         rule_refs: Iterable[str] = (), reason: str = '',
         axis_ref: str | None = None, thickness_m: float | None = None,
+        assembly_id: str | None = None, part_role: str | None = None,
     ) -> str:
         if element_id in self.element_ids:
             raise ValueError(f'duplicate element id: {element_id}')
@@ -178,7 +182,7 @@ class _Builder:
         group.instances.append(ElementInstance(
             id=element_id, level_id=level_id, lattice_index=lattice_index or {},
             geometry=geometry, position=centre, dimensions=size,
-            supports=list(supports)))
+            supports=list(supports), assembly_id=assembly_id, part_role=part_role))
         if isinstance(geometry, MemberGeometry):
             self.axis.segment(element_id, list(geometry.path), subsystem)
             for support_id in supports:
@@ -2941,6 +2945,30 @@ def _emit_program(b: _Builder, allocation: ProgramAllocation,
     lattice = b.lattice
     for level in lattice.occupied:
         zones = allocation.zones_on(level.index)
+        from shapely.geometry import MultiPoint
+        from .mesh_primitives import box_mesh, member_mesh
+        # Use complete footprints, not only centres. A legal centre can leave
+        # half a bookcase over a void or a chair outside its allocated room.
+        forbidden = []
+        for group in b.groups.values():
+            if group.kind not in {'column', 'piloti_column', 'elevator_shaft'}:
+                continue
+            for item in group.instances:
+                g = item.geometry
+                if isinstance(g, BoxGeometry):
+                    vertices, _ = box_mesh(g.model_dump())
+                elif isinstance(g, MemberGeometry):
+                    vertices, _ = member_mesh(g.model_dump(),
+                        {key: value.model_dump() for key, value in b.profiles.items()})
+                elif isinstance(g, ExtrusionGeometry):
+                    vertices = [(p.x,p.y,z) for p in g.boundary
+                                for z in (g.z_base,g.z_top)]
+                else:
+                    continue
+                if (max(p[2] for p in vertices) <= level.z + 1e-5
+                        or min(p[2] for p in vertices) >= level.z + 2.1):
+                    continue
+                forbidden.append(MultiPoint([(p[0],p[1]) for p in vertices]).convex_hull)
         for zi, zone in enumerate(zones):
             x0, y0, x1, y1 = zone.x0, zone.y0, zone.x1, zone.y1
             material = _CATEGORY_MATERIAL[zone.category]
@@ -2967,55 +2995,37 @@ def _emit_program(b: _Builder, allocation: ProgramAllocation,
             if zone.space_type in ('auditorium', 'stage'):
                 continue
 
-            blocked = lambda px, py: (not point_inside(level.plate, px, py)
-                                      or any(point_inside(v, px, py)
-                                             for v in level.voids))
+            region = usable_floor(level, zone, forbidden)
+
+            def place(root_id, kind, x, y, width, depth, facing=1):
+                parts = furniture_parts(kind, x, y, level.z, width, depth, facing=facing)
+                placed = emit_furniture(b, root_id, kind, parts, level, zone, region)
+                if not placed:
+                    if not hasattr(b, 'furniture_omissions'):
+                        b.furniture_omissions = []
+                    b.furniture_omissions.append(root_id)
+                return placed
+
             name = zone.space_type
             if 'stacks' in name or 'collections' in name or 'processing' in name:
-                for r in range(max(1, int((y1 - y0) / 1.9))):
-                    yy = y0 + 1.0 + r * 1.9
-                    for cx in range(max(1, int((x1 - x0) / 4.6))):
-                        xx = x0 + 2.4 + cx * 4.6
-                        if blocked(xx, yy):
-                            continue
-                        b.add(f'PRG-SHF-{level.id}-{zone.space_id}-R{r:02d}-C{cx:02d}',
-                              'shelving_run', 'program', 'furniture',
-                              BoxGeometry(center=v3(xx, yy, level.z + 1.15),
-                                          size=v3(4.2, 0.55, 2.10)),
-                              'furn', category=zone.category, program=name,
-                              level_id=level.id, reason='Shelving run.')
+                for r in range(max(1, int((y1-y0)/1.9))):
+                    for c in range(max(1, int((x1-x0)/4.6))):
+                        place(f'PRG-SHF-{level.id}-{zone.space_id}-R{r:02d}-C{c:02d}',
+                              'shelving_run', x0+2.4+c*4.6, y0+1.0+r*1.9, 4.2, .55)
             elif any(word in name for word in
-                     ('reading', 'seminar', 'cafe', 'foyer', 'lobby', 'periodicals')):
-                for r in range(max(1, int((y1 - y0) / 2.6))):
-                    for cx in range(max(1, int((x1 - x0) / 2.9))):
-                        xx, yy = x0 + 1.7 + cx * 2.9, y0 + 1.5 + r * 2.6
-                        if blocked(xx, yy):
-                            continue
-                        tag = f'{level.id}-{zone.space_id}-R{r:02d}-C{cx:02d}'
-                        b.add(f'PRG-DSK-{tag}', 'desk', 'program', 'furniture',
-                              BoxGeometry(center=v3(xx, yy, level.z + 0.40),
-                                          size=v3(1.60, 0.80, 0.08)),
-                              'furn', category=zone.category, program=name,
-                              level_id=level.id, reason='Table.')
-                        for side in (-1, 1):
-                            b.add(f'PRG-SEA-{tag}-{"N" if side > 0 else "S"}', 'seat',
-                                  'program', 'furniture',
-                                  BoxGeometry(center=v3(xx, yy + side * 0.72,
-                                                        level.z + 0.24),
-                                              size=v3(0.48, 0.48, 0.06)),
-                                  'furn', category=zone.category, program=name,
-                                  level_id=level.id, reason='Seat.')
+                     ('reading','seminar','cafe','foyer','lobby','periodicals')):
+                for r in range(max(1, int((y1-y0)/2.6))):
+                    for c in range(max(1, int((x1-x0)/2.9))):
+                        x,y = x0+1.7+c*2.9, y0+1.5+r*2.6
+                        tag = f'{level.id}-{zone.space_id}-R{r:02d}-C{c:02d}'
+                        if place(f'PRG-DSK-{tag}', 'desk', x, y, 1.6, .8):
+                            for side in (-1,1):
+                                place(f'PRG-SEA-{tag}-{"N" if side > 0 else "S"}',
+                                      'seat', x, y+side*.72, .48, .48, side)
             else:
-                for cx in range(max(1, int((x1 - x0) / 3.2))):
-                    xx = x0 + 1.8 + cx * 3.2
-                    if blocked(xx, (y0 + y1) / 2.0):
-                        continue
-                    b.add(f'PRG-DSK-{level.id}-{zone.space_id}-C{cx:02d}', 'desk',
-                          'program', 'furniture',
-                          BoxGeometry(center=v3(xx, (y0 + y1) / 2.0, level.z + 0.45),
-                                      size=v3(1.4, 2.0, 0.10)),
-                          'furn', category=zone.category, program=name,
-                          level_id=level.id, reason='Equipment or workbench.')
+                for c in range(max(1, int((x1-x0)/3.2))):
+                    place(f'PRG-DSK-{level.id}-{zone.space_id}-C{c:02d}',
+                          'desk', x0+1.8+c*3.2, (y0+y1)/2, 1.4, 2.0)
 
 
 def _emit_figures(b: _Builder) -> int:
@@ -3387,6 +3397,11 @@ def _assemble(*, model_id, score, datums, lattice, allocation, selection, frame,
         element_counts=dict(sorted(counts.items(), key=lambda kv: -kv[1])),
         layer_counts=layers,
         limitations=[
+            *([f'Furniture: {len(builder.furniture_omissions)} candidate assemblies '
+               'were not placed because their complete footprint or floor bearing did '
+               'not fit. No partial furniture was emitted. First IDs: '
+               + ', '.join(builder.furniture_omissions[:8]) + '.']
+              if builder.furniture_omissions else []),
             f'{datums.coverage:.0%} of datums are score-driven; the rest are declared '
             f'design fixtures waiting on ' + ', '.join(datums.waiting_on) + '.',
             (f'Program: {allocation.delivered_area_m2:.0f} m2 delivered against '

@@ -188,6 +188,15 @@ the stable public aliases. Do not hand-edit the frozen run or copy unrelated res
 into `web/public/`. See [model version storage](artifacts/model_versions/README.md) and
 [Decision 0019](docs/decisions/0019-model-version-storage-and-promotion.md).
 
+## Thesis-model quality and fabrication
+
+The member-level compiler includes named furniture subassemblies and measured part
+contact checks. An optional diagnostic STL route preserves source IDs, architectural
+openings, scale and assembly transforms while reporting disconnected parts and missing
+printer inputs. It does **not** yet claim slicer or physical-print verification. See
+[the fabrication workflow](docs/fabrication_workflow.md) for commands, negative tests,
+implemented scope and production blockers.
+
 ## Boundaries
 
 - MP3 input is limited to 30 MB by the API.

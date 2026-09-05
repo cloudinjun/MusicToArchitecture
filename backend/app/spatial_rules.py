@@ -38,6 +38,8 @@ from typing import Callable, Literal
 from pydantic import BaseModel, Field
 
 from .geometry import BoxGeometry, ExtrusionGeometry, MemberGeometry, QuadGeometry
+from .mesh_primitives import box_mesh, member_mesh
+from .geometry_review import _polygon
 
 
 Severity = Literal['violation', 'warning']
@@ -93,36 +95,36 @@ class Solid:
     y1: float
     z0: float
     z1: float
+    footprint: object | None = None
 
     @property
     def plan_area(self) -> float:
+        if self.footprint is not None:
+            return self.footprint.area
         return max(0.0, self.x1 - self.x0) * max(0.0, self.y1 - self.y0)
 
 
-def _bounds(instance, geometry) -> tuple[float, ...] | None:
+def _bounds(instance, geometry, profiles=None) -> tuple[float, ...] | None:
+    """Broad phase only. Boxes rotate; members include their resolved section."""
     if isinstance(geometry, BoxGeometry):
-        centre, size = geometry.center, geometry.size
-        # Rotation is ignored: an axis-aligned bound of a rotated box is larger than
-        # the box, so an overlap it reports may not be one. Rules that fire on these
-        # say so rather than pretending to a precision the bound does not have.
-        return (centre.x - size.x / 2, centre.y - size.y / 2,
-                centre.x + size.x / 2, centre.y + size.y / 2,
-                centre.z - size.z / 2, centre.z + size.z / 2)
-    if isinstance(geometry, ExtrusionGeometry):
-        xs = [point.x for point in geometry.boundary]
-        ys = [point.y for point in geometry.boundary]
-        return (min(xs), min(ys), max(xs), max(ys), geometry.z_base, geometry.z_top)
-    if isinstance(geometry, MemberGeometry):
-        xs = [point.x for point in geometry.path]
-        ys = [point.y for point in geometry.path]
-        zs = [point.z for point in geometry.path]
-        return (min(xs), min(ys), max(xs), max(ys), min(zs), max(zs))
-    if isinstance(geometry, QuadGeometry):
-        xs = [corner.x for corner in geometry.corners]
-        ys = [corner.y for corner in geometry.corners]
-        zs = [corner.z for corner in geometry.corners]
-        return (min(xs), min(ys), max(xs), max(ys), min(zs), max(zs))
-    return None
+        points, _ = box_mesh(geometry.model_dump())
+    elif isinstance(geometry, MemberGeometry):
+        if profiles is None or geometry.profile not in profiles:
+            # Unknown profiles are not silently assigned an invented section.
+            raise ValueError(f'Unresolved member profile: {geometry.profile}')
+        points, _ = member_mesh(geometry.model_dump(), {
+            key: value.model_dump() if hasattr(value, 'model_dump') else value
+            for key, value in profiles.items()})
+    elif isinstance(geometry, ExtrusionGeometry):
+        points = [(p.x,p.y,z) for p in geometry.boundary
+                  for z in (geometry.z_base,geometry.z_top)]
+    elif isinstance(geometry, QuadGeometry):
+        points = [p.as_tuple() for p in geometry.corners]
+    else:
+        return None
+    low = [min(p[i] for p in points) for i in range(3)]
+    high = [max(p[i] for p in points) for i in range(3)]
+    return (low[0],low[1],high[0],high[1],low[2],high[2])
 
 
 class SpatialIndex:
@@ -140,11 +142,11 @@ class SpatialIndex:
         self.by_kind: dict[str, list[Solid]] = defaultdict(list)
         for group in model.element_groups:
             for instance in group.instances:
-                bounds = _bounds(instance, instance.geometry)
+                bounds = _bounds(instance, instance.geometry, getattr(model, 'profiles', {}))
                 if bounds is None:
                     continue
                 solid = Solid(instance.id, group.kind, group.subsystem,
-                              group.semantic_layer, instance.level_id, *bounds)
+                              group.semantic_layer, instance.level_id, *bounds, footprint=_polygon(instance.geometry))
                 self.solids.append(solid)
                 self.by_kind[group.kind].append(solid)
 
@@ -160,7 +162,7 @@ class SpatialIndex:
                            int(math.floor(solid.y1 / CELL_M)) + 1):
                 yield (i, j)
 
-    def near(self, solid: Solid) -> set[Solid]:
+    def near(self, solid: Solid) -> list[Solid]:
         found: set[int] = set()
         out: list[Solid] = []
         for cell in self._cells_for(solid):
@@ -173,6 +175,9 @@ class SpatialIndex:
 
 
 def plan_overlap(a: Solid, b: Solid) -> float:
+    # Exact prism footprints preserve rotation and holes after the AABB broad phase.
+    if a.footprint is not None and b.footprint is not None:
+        return a.footprint.intersection(b.footprint).area
     width = min(a.x1, b.x1) - max(a.x0, b.x0)
     height = min(a.y1, b.y1) - max(a.y0, b.y0)
     return width * height if width > 0 and height > 0 else 0.0
@@ -406,6 +411,8 @@ class SpatialReport(BaseModel):
 
 def check_spatial_rules(model, *, limit: int = 40) -> SpatialReport:
     """Run every rule. Findings are capped for reporting; counts are not."""
+    if limit < 0:
+        raise ValueError('Report limit cannot be negative')
     index = SpatialIndex(model)
     findings: list[Finding] = []
     counts: dict[str, int] = {}
@@ -507,4 +514,23 @@ RULES = RULES + (
         'SP-INVALID-PLAN-RING',
         'Closed plan solids have evaluable rings before intersections are measured.',
         'violation', rule_invalid_plan_rings),
+)
+
+
+from .assembly_review import review_furniture  # noqa: E402
+
+
+def _furniture_findings(index, rule_id):
+    if not hasattr(index, '_furniture_review_cache'):
+        index._furniture_review_cache = review_furniture(index.model)
+    return _as_spatial_findings([f for f in index._furniture_review_cache if f.rule_id == rule_id])
+
+
+RULES = RULES + (
+    SpatialRule('SP-FURNITURE-COMPLETE',
+                'Furniture contains the required named parts of its selected recipe.',
+                'violation', lambda index: _furniture_findings(index, 'SP-FURNITURE-COMPLETE')),
+    SpatialRule('SP-FURNITURE-CONTACT',
+                'Furniture parts physically meet their declared parts or floor supports.',
+                'violation', lambda index: _furniture_findings(index, 'SP-FURNITURE-CONTACT')),
 )

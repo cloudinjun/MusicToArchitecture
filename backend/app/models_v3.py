@@ -229,6 +229,8 @@ class ElementV3(BaseModel):
     dimensions: Vector3
     datum_refs: list[str] = Field(default_factory=list)
     supports: list[str] = Field(default_factory=list)
+    assembly_id: str | None = None
+    part_role: str | None = None
     section_id: str | None = None
     # Construction depth of a sheet element, in metres. Members carry their section in
     # `section_id` and solids carry their own size; a quad has neither, so without this
@@ -256,6 +258,8 @@ class ElementInstance(BaseModel):
     position: Vector3
     dimensions: Vector3
     supports: list[str] = Field(default_factory=list)
+    assembly_id: str | None = None
+    part_role: str | None = None
 
 
 class DerivationStep(BaseModel):
@@ -331,6 +335,7 @@ class ElementGroup(BaseModel):
                 geometry=instance.geometry, material_profile=self.material_profile,
                 position=instance.position, dimensions=instance.dimensions,
                 datum_refs=self.datum_refs, supports=instance.supports,
+                assembly_id=instance.assembly_id, part_role=instance.part_role,
                 section_id=self.section_id, thickness_m=self.thickness_m,
                 sizing_status=self.sizing_status,
                 utilisation=self.utilisation, governing_check=self.governing_check,

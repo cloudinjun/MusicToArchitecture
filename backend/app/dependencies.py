@@ -548,6 +548,16 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
                     'Suspended ceiling hung from the floor structure above it.',
                     topology='geometry_checked')
             continue
+        if (record.kind in {'desk', 'seat', 'shelving_run'}
+                and record.instance.assembly_id is not None):
+            # The emitter declares real subassembly edges. Replacing these with
+            # floor_host made a floating tabletop look supported by the slab.
+            for host_id in declared[record.id]:
+                add(record, host_id, 'bears_on', 'assembly',
+                    'Declared furniture part-to-part or part-to-floor contact; '
+                    'strict assembly checks also measure each interface.',
+                    topology='geometry_checked')
+            continue
         if record.kind in {'partition', 'shelving_run', 'desk', 'seat',
                            'auditorium_riser', 'stage_platform', 'proscenium_wall'}:
             host = floor_host(record)

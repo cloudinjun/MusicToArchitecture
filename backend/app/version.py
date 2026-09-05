@@ -14,7 +14,7 @@ import hashlib
 from pathlib import Path
 
 
-COMPILER_VERSION = '3.4.0'
+COMPILER_VERSION = '3.5.0'
 
 ROOT = Path(__file__).resolve().parents[2]
 

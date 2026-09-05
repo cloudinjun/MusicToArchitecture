@@ -578,3 +578,14 @@ anywhere else, read `portfolio/README.md`.
   run each figure reads. Regenerate and commit the manifest with any change.
 - `artifacts/portfolio_plates/` is a superseded plate-style set kept only for
   reference. Do not extend it.
+
+## Thesis model fabrication boundary
+
+- Read `docs/fabrication_workflow.md` before modifying printable derivatives.
+- Preserve v2/Rhino acceptance and the immutable latest-model publication route.
+- Furniture parts retain root IDs and semantic kinds; `assembly_id` / `part_role`
+  are instance metadata, and declared hosting does not substitute for measured contact.
+- Print-only scale, orientation, joints, supports and thickening never rewrite design
+  geometry or calculated member sizes. Source metres convert to print millimetres once.
+- The current STL exporter is diagnostic only. Never upgrade unrun slicing, physical
+  sample or assembly checks; `--release` must remain blocked until those are implemented.

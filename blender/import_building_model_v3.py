@@ -29,6 +29,13 @@ from pathlib import Path
 
 import bpy
 
+# Pure vertex builders shared with the backend: no Shapely is imported by these
+# functions, so Blender's bundled Python does not acquire a backend dependency.
+_REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPOSITORY_ROOT))
+from backend.app.mesh_primitives import box_mesh, member_mesh
+
 
 MATERIALS = {
     'white':            ((0.900, 0.898, 0.890, 1.0), 0.52, 1.0),
@@ -110,17 +117,7 @@ def _cross(a, b):
 
 
 def add_box(bucket: MeshBucket, geometry) -> None:
-    cx, cy, cz = (geometry['center'][k] for k in 'xyz')
-    sx, sy, sz = (geometry['size'][k] for k in 'xyz')
-    hx, hy, hz = sx / 2.0, sy / 2.0, sz / 2.0
-    angle = geometry.get('rotation_z', 0.0)
-    c, s = math.cos(angle), math.sin(angle)
-    local = [(-hx, -hy, -hz), (hx, -hy, -hz), (hx, hy, -hz), (-hx, hy, -hz),
-             (-hx, -hy, hz), (hx, -hy, hz), (hx, hy, hz), (-hx, hy, hz)]
-    bucket.push(
-        [(cx + x * c - y * s, cy + x * s + y * c, cz + z) for x, y, z in local],
-        [(0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4),
-         (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)])
+    bucket.push(*box_mesh(geometry))
 
 
 def profile_outline(profile: dict) -> list[tuple[float, float]]:
@@ -141,36 +138,7 @@ def profile_outline(profile: dict) -> list[tuple[float, float]]:
 
 
 def add_member(bucket: MeshBucket, geometry, profiles: dict) -> None:
-    path = [(p['x'], p['y'], p['z']) for p in geometry['path']]
-    outline = profile_outline(profiles[geometry['profile']])
-    roll = geometry.get('roll') or {'x': 0.0, 'y': 0.0, 'z': 1.0}
-    up = (roll['x'], roll['y'], roll['z'])
-    n = len(outline)
-
-    rings: list[list[tuple[float, float, float]]] = []
-    for index, point in enumerate(path):
-        nxt = path[min(index + 1, len(path) - 1)]
-        prev = path[max(index - 1, 0)]
-        axis = _normalise((nxt[0] - prev[0], nxt[1] - prev[1], nxt[2] - prev[2]))
-        dot = sum(axis[i] * up[i] for i in range(3))
-        v = (up[0] - axis[0] * dot, up[1] - axis[1] * dot, up[2] - axis[2] * dot)
-        if abs(v[0]) + abs(v[1]) + abs(v[2]) < 1e-6:
-            v = (1.0, 0.0, 0.0)
-        v = _normalise(v)
-        u = _normalise(_cross(v, axis))
-        rings.append([(point[0] + u[0] * pu + v[0] * pv,
-                       point[1] + u[1] * pu + v[1] * pv,
-                       point[2] + u[2] * pu + v[2] * pv) for pu, pv in outline])
-
-    verts = [vertex for ring in rings for vertex in ring]
-    faces = [tuple(range(n - 1, -1, -1)),
-             tuple(range((len(rings) - 1) * n, len(rings) * n))]
-    for segment in range(len(rings) - 1):
-        base_a, base_b = segment * n, (segment + 1) * n
-        for k in range(n):
-            m = (k + 1) % n
-            faces.append((base_a + k, base_a + m, base_b + m, base_b + k))
-    bucket.push(verts, faces)
+    bucket.push(*member_mesh(geometry, profiles))
 
 
 def _keyhole(boundary, holes):
