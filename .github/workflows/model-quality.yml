@@ -1,26 +1,58 @@
-name: Model quality
+name: Apply tested model-quality implementation
 
 on:
   push:
     branches: [codex/march-print-readiness]
+    paths: ['.github/patches/march-existing.patch']
 
 permissions:
   contents: read
 
 jobs:
-  fabrication-test-dependency:
+  apply-tested-patch:
+    if: github.ref == 'refs/heads/codex/march-print-readiness' && github.actor != 'github-actions[bot]'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/march-print-readiness
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Download optional geometry wheel for offline review tests
+      - name: Verify and apply exact locally-tested changes
         run: |
-          python -m pip download --only-binary=:all: --no-deps 'manifold3d>=3,<4' -d wheels
-      - uses: actions/upload-artifact@v4
-        with:
-          name: fabrication-test-wheels
-          path: wheels/*
-          retention-days: 1
-          if-no-files-found: error
+          echo '8439de0c656329891bc1eac87b6fc35db18133c390b01f9836fb7b9333d5a125  .github/patches/march-existing.patch' | sha256sum -c -
+          git apply --check --unidiff-zero .github/patches/march-existing.patch
+          git apply --unidiff-zero .github/patches/march-existing.patch
+          git diff --check
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          expected = {
+              'backend/app/compiler_v3.py': '3af0a9607519d83b7ee956b9545f27202748ae1ea4b1c4252a2c9a62f5f63a15',
+              'backend/app/dependencies.py': '62f79d6648e3e23ceabe1fd134818ef919a1aa6293bcf1350920acf8b75bcad7',
+              'backend/app/models_v3.py': '51b62f1cb9a4ee05710776db111b3e5798327c74e5e62b3f0d420aaf9cac7142',
+              'backend/app/spatial_rules.py': '8ac9deeca39ff63ce5f1441b3ee999906cdb08d55bef3d549a2c391864c6c69c',
+              'backend/app/version.py': 'd404f7616b582f1c6ea2c6c75ae95dffacc9dec931e6b1c2ca579b61d0407cb2',
+              'blender/import_building_model_v3.py': '811ad18f3489272e0d43d88bb6610991ebe14fd2dd46cb921da2e78554d2dc7b',
+          }
+          for name, digest in expected.items():
+              assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == digest, name
+          print('Applied file hashes match local tested sources')
+          PY
+      - name: Install test dependencies
+        run: python -m pip install -r backend/requirements.txt -r backend/requirements-fabrication.txt
+      - name: Regression tests
+        run: |
+          python -m pytest -q backend/tests/test_fabrication.py backend/tests/test_furniture_assemblies.py backend/tests/test_geometry_review.py
+          python -m pytest -q backend/tests/test_dependencies.py -k 'not offset_roofs'
+      - name: Commit only this branch's tested implementation
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add AGENTS.md README.md backend/app/compiler_v3.py backend/app/dependencies.py backend/app/models_v3.py backend/app/spatial_rules.py backend/app/version.py blender/import_building_model_v3.py
+          git commit -m 'fix: integrate complete furniture assemblies and geometry-aware checks'
+          git push origin HEAD:refs/heads/codex/march-print-readiness

@@ -1,0 +1,335 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index eee167d..1f96413 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -580,0 +581,11 @@ anywhere else, read `portfolio/README.md`.
++
++## Thesis model fabrication boundary
++
++- Read `docs/fabrication_workflow.md` before modifying printable derivatives.
++- Preserve v2/Rhino acceptance and the immutable latest-model publication route.
++- Furniture parts retain root IDs and semantic kinds; `assembly_id` / `part_role`
++  are instance metadata, and declared hosting does not substitute for measured contact.
++- Print-only scale, orientation, joints, supports and thickening never rewrite design
++  geometry or calculated member sizes. Source metres convert to print millimetres once.
++- The current STL exporter is diagnostic only. Never upgrade unrun slicing, physical
++  sample or assembly checks; `--release` must remain blocked until those are implemented.
+diff --git a/README.md b/README.md
+index 91674c2..1aa3097 100644
+--- a/README.md
++++ b/README.md
+@@ -190,0 +191,9 @@ into `web/public/`. See [model version storage](artifacts/model_versions/README.
++## Thesis-model quality and fabrication
++
++The member-level compiler includes named furniture subassemblies and measured part
++contact checks. An optional diagnostic STL route preserves source IDs, architectural
++openings, scale and assembly transforms while reporting disconnected parts and missing
++printer inputs. It does **not** yet claim slicer or physical-print verification. See
++[the fabrication workflow](docs/fabrication_workflow.md) for commands, negative tests,
++implemented scope and production blockers.
++
+diff --git a/backend/app/compiler_v3.py b/backend/app/compiler_v3.py
+index afb1a24..f3a5420 100644
+--- a/backend/app/compiler_v3.py
++++ b/backend/app/compiler_v3.py
+@@ -46,0 +47,2 @@ from .axis import AxisSkeleton
++from .furniture import furniture_parts, emit_furniture, usable_floor
++
+@@ -136,0 +139 @@ class _Builder:
++        self.furniture_omissions: list[str] = []
+@@ -157,0 +161 @@ class _Builder:
++        assembly_id: str | None = None, part_role: str | None = None,
+@@ -181 +185 @@ class _Builder:
+-            supports=list(supports)))
++            supports=list(supports), assembly_id=assembly_id, part_role=part_role))
+@@ -2943,0 +2948,24 @@ def _emit_program(b: _Builder, allocation: ProgramAllocation,
++        from shapely.geometry import MultiPoint
++        from .mesh_primitives import box_mesh, member_mesh
++        # Use complete footprints, not only centres. A legal centre can leave
++        # half a bookcase over a void or a chair outside its allocated room.
++        forbidden = []
++        for group in b.groups.values():
++            if group.kind not in {'column', 'piloti_column', 'elevator_shaft'}:
++                continue
++            for item in group.instances:
++                g = item.geometry
++                if isinstance(g, BoxGeometry):
++                    vertices, _ = box_mesh(g.model_dump())
++                elif isinstance(g, MemberGeometry):
++                    vertices, _ = member_mesh(g.model_dump(),
++                        {key: value.model_dump() for key, value in b.profiles.items()})
++                elif isinstance(g, ExtrusionGeometry):
++                    vertices = [(p.x,p.y,z) for p in g.boundary
++                                for z in (g.z_base,g.z_top)]
++                else:
++                    continue
++                if (max(p[2] for p in vertices) <= level.z + 1e-5
++                        or min(p[2] for p in vertices) >= level.z + 2.1):
++                    continue
++                forbidden.append(MultiPoint([(p[0],p[1]) for p in vertices]).convex_hull)
+@@ -2970,3 +2998,11 @@ def _emit_program(b: _Builder, allocation: ProgramAllocation,
+-            blocked = lambda px, py: (not point_inside(level.plate, px, py)
+-                                      or any(point_inside(v, px, py)
+-                                             for v in level.voids))
++            region = usable_floor(level, zone, forbidden)
++
++            def place(root_id, kind, x, y, width, depth, facing=1):
++                parts = furniture_parts(kind, x, y, level.z, width, depth, facing=facing)
++                placed = emit_furniture(b, root_id, kind, parts, level, zone, region)
++                if not placed:
++                    if not hasattr(b, 'furniture_omissions'):
++                        b.furniture_omissions = []
++                    b.furniture_omissions.append(root_id)
++                return placed
++
+@@ -2975,12 +3011,4 @@ def _emit_program(b: _Builder, allocation: ProgramAllocation,
+-                for r in range(max(1, int((y1 - y0) / 1.9))):
+-                    yy = y0 + 1.0 + r * 1.9
+-                    for cx in range(max(1, int((x1 - x0) / 4.6))):
+-                        xx = x0 + 2.4 + cx * 4.6
+-                        if blocked(xx, yy):
+-                            continue
+-                        b.add(f'PRG-SHF-{level.id}-{zone.space_id}-R{r:02d}-C{cx:02d}',
+-                              'shelving_run', 'program', 'furniture',
+-                              BoxGeometry(center=v3(xx, yy, level.z + 1.15),
+-                                          size=v3(4.2, 0.55, 2.10)),
+-                              'furn', category=zone.category, program=name,
+-                              level_id=level.id, reason='Shelving run.')
++                for r in range(max(1, int((y1-y0)/1.9))):
++                    for c in range(max(1, int((x1-x0)/4.6))):
++                        place(f'PRG-SHF-{level.id}-{zone.space_id}-R{r:02d}-C{c:02d}',
++                              'shelving_run', x0+2.4+c*4.6, y0+1.0+r*1.9, 4.2, .55)
+@@ -2988,20 +3016,9 @@ def _emit_program(b: _Builder, allocation: ProgramAllocation,
+-                     ('reading', 'seminar', 'cafe', 'foyer', 'lobby', 'periodicals')):
+-                for r in range(max(1, int((y1 - y0) / 2.6))):
+-                    for cx in range(max(1, int((x1 - x0) / 2.9))):
+-                        xx, yy = x0 + 1.7 + cx * 2.9, y0 + 1.5 + r * 2.6
+-                        if blocked(xx, yy):
+-                            continue
+-                        tag = f'{level.id}-{zone.space_id}-R{r:02d}-C{cx:02d}'
+-                        b.add(f'PRG-DSK-{tag}', 'desk', 'program', 'furniture',
+-                              BoxGeometry(center=v3(xx, yy, level.z + 0.40),
+-                                          size=v3(1.60, 0.80, 0.08)),
+-                              'furn', category=zone.category, program=name,
+-                              level_id=level.id, reason='Table.')
+-                        for side in (-1, 1):
+-                            b.add(f'PRG-SEA-{tag}-{"N" if side > 0 else "S"}', 'seat',
+-                                  'program', 'furniture',
+-                                  BoxGeometry(center=v3(xx, yy + side * 0.72,
+-                                                        level.z + 0.24),
+-                                              size=v3(0.48, 0.48, 0.06)),
+-                                  'furn', category=zone.category, program=name,
+-                                  level_id=level.id, reason='Seat.')
++                     ('reading','seminar','cafe','foyer','lobby','periodicals')):
++                for r in range(max(1, int((y1-y0)/2.6))):
++                    for c in range(max(1, int((x1-x0)/2.9))):
++                        x,y = x0+1.7+c*2.9, y0+1.5+r*2.6
++                        tag = f'{level.id}-{zone.space_id}-R{r:02d}-C{c:02d}'
++                        if place(f'PRG-DSK-{tag}', 'desk', x, y, 1.6, .8):
++                            for side in (-1,1):
++                                place(f'PRG-SEA-{tag}-{"N" if side > 0 else "S"}',
++                                      'seat', x, y+side*.72, .48, .48, side)
+@@ -3009,10 +3026,3 @@ def _emit_program(b: _Builder, allocation: ProgramAllocation,
+-                for cx in range(max(1, int((x1 - x0) / 3.2))):
+-                    xx = x0 + 1.8 + cx * 3.2
+-                    if blocked(xx, (y0 + y1) / 2.0):
+-                        continue
+-                    b.add(f'PRG-DSK-{level.id}-{zone.space_id}-C{cx:02d}', 'desk',
+-                          'program', 'furniture',
+-                          BoxGeometry(center=v3(xx, (y0 + y1) / 2.0, level.z + 0.45),
+-                                      size=v3(1.4, 2.0, 0.10)),
+-                          'furn', category=zone.category, program=name,
+-                          level_id=level.id, reason='Equipment or workbench.')
++                for c in range(max(1, int((x1-x0)/3.2))):
++                    place(f'PRG-DSK-{level.id}-{zone.space_id}-C{c:02d}',
++                          'desk', x0+1.8+c*3.2, (y0+y1)/2, 1.4, 2.0)
+@@ -3389,0 +3400,5 @@ def _assemble(*, model_id, score, datums, lattice, allocation, selection, frame,
++            *([f'Furniture: {len(builder.furniture_omissions)} candidate assemblies '
++               'were not placed because their complete footprint or floor bearing did '
++               'not fit. No partial furniture was emitted. First IDs: '
++               + ', '.join(builder.furniture_omissions[:8]) + '.']
++              if builder.furniture_omissions else []),
+diff --git a/backend/app/dependencies.py b/backend/app/dependencies.py
+index fc7ea00..4633fa1 100644
+--- a/backend/app/dependencies.py
++++ b/backend/app/dependencies.py
+@@ -550,0 +551,10 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
++        if (record.kind in {'desk', 'seat', 'shelving_run'}
++                and record.instance.assembly_id is not None):
++            # The emitter declares real subassembly edges. Replacing these with
++            # floor_host made a floating tabletop look supported by the slab.
++            for host_id in declared[record.id]:
++                add(record, host_id, 'bears_on', 'assembly',
++                    'Declared furniture part-to-part or part-to-floor contact; '
++                    'strict assembly checks also measure each interface.',
++                    topology='geometry_checked')
++            continue
+diff --git a/backend/app/models_v3.py b/backend/app/models_v3.py
+index 399e19b..e0be6de 100644
+--- a/backend/app/models_v3.py
++++ b/backend/app/models_v3.py
+@@ -231,0 +232,2 @@ class ElementV3(BaseModel):
++    assembly_id: str | None = None
++    part_role: str | None = None
+@@ -258,0 +261,2 @@ class ElementInstance(BaseModel):
++    assembly_id: str | None = None
++    part_role: str | None = None
+@@ -333,0 +338 @@ class ElementGroup(BaseModel):
++                assembly_id=instance.assembly_id, part_role=instance.part_role,
+diff --git a/backend/app/spatial_rules.py b/backend/app/spatial_rules.py
+index 631782c..3b45074 100644
+--- a/backend/app/spatial_rules.py
++++ b/backend/app/spatial_rules.py
+@@ -40,0 +41,2 @@ from .geometry import BoxGeometry, ExtrusionGeometry, MemberGeometry, QuadGeomet
++from .mesh_primitives import box_mesh, member_mesh
++from .geometry_review import _polygon
+@@ -95,0 +98 @@ class Solid:
++    footprint: object | None = None
+@@ -98,0 +102,2 @@ class Solid:
++        if self.footprint is not None:
++            return self.footprint.area
+@@ -102 +107,2 @@ class Solid:
+-def _bounds(instance, geometry) -> tuple[float, ...] | None:
++def _bounds(instance, geometry, profiles=None) -> tuple[float, ...] | None:
++    """Broad phase only. Boxes rotate; members include their resolved section."""
+@@ -104,22 +110,18 @@ def _bounds(instance, geometry) -> tuple[float, ...] | None:
+-        centre, size = geometry.center, geometry.size
+-        # Rotation is ignored: an axis-aligned bound of a rotated box is larger than
+-        # the box, so an overlap it reports may not be one. Rules that fire on these
+-        # say so rather than pretending to a precision the bound does not have.
+-        return (centre.x - size.x / 2, centre.y - size.y / 2,
+-                centre.x + size.x / 2, centre.y + size.y / 2,
+-                centre.z - size.z / 2, centre.z + size.z / 2)
+-    if isinstance(geometry, ExtrusionGeometry):
+-        xs = [point.x for point in geometry.boundary]
+-        ys = [point.y for point in geometry.boundary]
+-        return (min(xs), min(ys), max(xs), max(ys), geometry.z_base, geometry.z_top)
+-    if isinstance(geometry, MemberGeometry):
+-        xs = [point.x for point in geometry.path]
+-        ys = [point.y for point in geometry.path]
+-        zs = [point.z for point in geometry.path]
+-        return (min(xs), min(ys), max(xs), max(ys), min(zs), max(zs))
+-    if isinstance(geometry, QuadGeometry):
+-        xs = [corner.x for corner in geometry.corners]
+-        ys = [corner.y for corner in geometry.corners]
+-        zs = [corner.z for corner in geometry.corners]
+-        return (min(xs), min(ys), max(xs), max(ys), min(zs), max(zs))
+-    return None
++        points, _ = box_mesh(geometry.model_dump())
++    elif isinstance(geometry, MemberGeometry):
++        if profiles is None or geometry.profile not in profiles:
++            # Unknown profiles are not silently assigned an invented section.
++            raise ValueError(f'Unresolved member profile: {geometry.profile}')
++        points, _ = member_mesh(geometry.model_dump(), {
++            key: value.model_dump() if hasattr(value, 'model_dump') else value
++            for key, value in profiles.items()})
++    elif isinstance(geometry, ExtrusionGeometry):
++        points = [(p.x,p.y,z) for p in geometry.boundary
++                  for z in (geometry.z_base,geometry.z_top)]
++    elif isinstance(geometry, QuadGeometry):
++        points = [p.as_tuple() for p in geometry.corners]
++    else:
++        return None
++    low = [min(p[i] for p in points) for i in range(3)]
++    high = [max(p[i] for p in points) for i in range(3)]
++    return (low[0],low[1],high[0],high[1],low[2],high[2])
+@@ -143 +145 @@ class SpatialIndex:
+-                bounds = _bounds(instance, instance.geometry)
++                bounds = _bounds(instance, instance.geometry, getattr(model, 'profiles', {}))
+@@ -147 +149 @@ class SpatialIndex:
+-                              group.semantic_layer, instance.level_id, *bounds)
++                              group.semantic_layer, instance.level_id, *bounds, footprint=_polygon(instance.geometry))
+@@ -163 +165 @@ class SpatialIndex:
+-    def near(self, solid: Solid) -> set[Solid]:
++    def near(self, solid: Solid) -> list[Solid]:
+@@ -175,0 +178,3 @@ def plan_overlap(a: Solid, b: Solid) -> float:
++    # Exact prism footprints preserve rotation and holes after the AABB broad phase.
++    if a.footprint is not None and b.footprint is not None:
++        return a.footprint.intersection(b.footprint).area
+@@ -408,0 +414,2 @@ def check_spatial_rules(model, *, limit: int = 40) -> SpatialReport:
++    if limit < 0:
++        raise ValueError('Report limit cannot be negative')
+@@ -510,0 +518,19 @@ RULES = RULES + (
++
++
++from .assembly_review import review_furniture  # noqa: E402
++
++
++def _furniture_findings(index, rule_id):
++    if not hasattr(index, '_furniture_review_cache'):
++        index._furniture_review_cache = review_furniture(index.model)
++    return _as_spatial_findings([f for f in index._furniture_review_cache if f.rule_id == rule_id])
++
++
++RULES = RULES + (
++    SpatialRule('SP-FURNITURE-COMPLETE',
++                'Furniture contains the required named parts of its selected recipe.',
++                'violation', lambda index: _furniture_findings(index, 'SP-FURNITURE-COMPLETE')),
++    SpatialRule('SP-FURNITURE-CONTACT',
++                'Furniture parts physically meet their declared parts or floor supports.',
++                'violation', lambda index: _furniture_findings(index, 'SP-FURNITURE-CONTACT')),
++)
+diff --git a/backend/app/version.py b/backend/app/version.py
+index b9173d6..aaeba5f 100644
+--- a/backend/app/version.py
++++ b/backend/app/version.py
+@@ -17 +17 @@ from pathlib import Path
+-COMPILER_VERSION = '3.4.0'
++COMPILER_VERSION = '3.5.0'
+diff --git a/blender/import_building_model_v3.py b/blender/import_building_model_v3.py
+index cef5e72..b012727 100644
+--- a/blender/import_building_model_v3.py
++++ b/blender/import_building_model_v3.py
+@@ -31,0 +32,7 @@ import bpy
++# Pure vertex builders shared with the backend: no Shapely is imported by these
++# functions, so Blender's bundled Python does not acquire a backend dependency.
++_REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
++if str(_REPOSITORY_ROOT) not in sys.path:
++    sys.path.insert(0, str(_REPOSITORY_ROOT))
++from backend.app.mesh_primitives import box_mesh, member_mesh
++
+@@ -113,11 +120 @@ def add_box(bucket: MeshBucket, geometry) -> None:
+-    cx, cy, cz = (geometry['center'][k] for k in 'xyz')
+-    sx, sy, sz = (geometry['size'][k] for k in 'xyz')
+-    hx, hy, hz = sx / 2.0, sy / 2.0, sz / 2.0
+-    angle = geometry.get('rotation_z', 0.0)
+-    c, s = math.cos(angle), math.sin(angle)
+-    local = [(-hx, -hy, -hz), (hx, -hy, -hz), (hx, hy, -hz), (-hx, hy, -hz),
+-             (-hx, -hy, hz), (hx, -hy, hz), (hx, hy, hz), (-hx, hy, hz)]
+-    bucket.push(
+-        [(cx + x * c - y * s, cy + x * s + y * c, cz + z) for x, y, z in local],
+-        [(0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4),
+-         (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)])
++    bucket.push(*box_mesh(geometry))
+@@ -144,30 +141 @@ def add_member(bucket: MeshBucket, geometry, profiles: dict) -> None:
+-    path = [(p['x'], p['y'], p['z']) for p in geometry['path']]
+-    outline = profile_outline(profiles[geometry['profile']])
+-    roll = geometry.get('roll') or {'x': 0.0, 'y': 0.0, 'z': 1.0}
+-    up = (roll['x'], roll['y'], roll['z'])
+-    n = len(outline)
+-
+-    rings: list[list[tuple[float, float, float]]] = []
+-    for index, point in enumerate(path):
+-        nxt = path[min(index + 1, len(path) - 1)]
+-        prev = path[max(index - 1, 0)]
+-        axis = _normalise((nxt[0] - prev[0], nxt[1] - prev[1], nxt[2] - prev[2]))
+-        dot = sum(axis[i] * up[i] for i in range(3))
+-        v = (up[0] - axis[0] * dot, up[1] - axis[1] * dot, up[2] - axis[2] * dot)
+-        if abs(v[0]) + abs(v[1]) + abs(v[2]) < 1e-6:
+-            v = (1.0, 0.0, 0.0)
+-        v = _normalise(v)
+-        u = _normalise(_cross(v, axis))
+-        rings.append([(point[0] + u[0] * pu + v[0] * pv,
+-                       point[1] + u[1] * pu + v[1] * pv,
+-                       point[2] + u[2] * pu + v[2] * pv) for pu, pv in outline])
+-
+-    verts = [vertex for ring in rings for vertex in ring]
+-    faces = [tuple(range(n - 1, -1, -1)),
+-             tuple(range((len(rings) - 1) * n, len(rings) * n))]
+-    for segment in range(len(rings) - 1):
+-        base_a, base_b = segment * n, (segment + 1) * n
+-        for k in range(n):
+-            m = (k + 1) % n
+-            faces.append((base_a + k, base_a + m, base_b + m, base_b + k))
+-    bucket.push(verts, faces)
++    bucket.push(*member_mesh(geometry, profiles))

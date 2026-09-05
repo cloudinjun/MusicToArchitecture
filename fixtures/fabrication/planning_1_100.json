@@ -1,0 +1,14 @@
+{
+  "id": "planning-1-100",
+  "scale_denominator": 100,
+  "source_unit": "m",
+  "output_unit": "mm",
+  "process": "unresolved",
+  "printer": null,
+  "material": null,
+  "build_volume_mm": null,
+  "minimum_feature_mm": null,
+  "edge_margin_mm": 0,
+  "parameter_basis": "Planning only. Printer, material, supported/unsupported features and fit tolerances require user selection and calibration.",
+  "status": "planning"
+}
