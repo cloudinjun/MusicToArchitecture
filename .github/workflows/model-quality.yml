@@ -16,7 +16,8 @@ jobs:
         with:
           python-version: '3.13'
       - name: Download optional geometry wheel for offline review tests
-        run: python -m pip download --only-binary=:all: --no-deps 'manifold3d>=3,<4' -d wheels
+        run: |
+          python -m pip download --only-binary=:all: --no-deps 'manifold3d>=3,<4' -d wheels
       - uses: actions/upload-artifact@v4
         with:
           name: fabrication-test-wheels
