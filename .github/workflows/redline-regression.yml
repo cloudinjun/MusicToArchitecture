@@ -1,27 +1,32 @@
-name: Apply and verify redline R1
+name: Redline targeted regression
 on:
-  push:
-    branches: [fix/redline-generator-r1]
+  pull_request:
     paths:
-      - .github/workflows/redline-implementation.yml
+      - backend/**
+      - .github/workflows/redline-regression.yml
+  push:
+    branches: [main]
+    paths:
+      - backend/**
+      - .github/workflows/redline-regression.yml
 permissions:
-  contents: write
+  contents: read
 jobs:
-  apply:
-    if: github.ref == 'refs/heads/fix/redline-generator-r1'
+  regression:
+    name: Targeted geometry, drawing and pipeline tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: backend/requirements.txt
-      - name: Check source identity and apply the reviewed patch
-        run: python .redline/apply.py
       - run: python -m pip install -r backend/requirements.txt
-      - name: Run redline and existing drawing/geometry/pipeline regressions
+      - name: Run targeted regressions (not the full repository suite)
         run: |
           python -m pytest -q \
             backend/tests/test_redline_r1.py \
@@ -30,16 +35,9 @@ jobs:
             backend/tests/test_plate_ring_validity.py \
             backend/tests/test_preview_failure_isolation.py \
             --junitxml=redline-junit.xml
-      - name: Commit actual source changes to the isolated branch
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git diff --cached --check
-          git commit -m 'fix: enforce room containment and harden model-to-drawing contracts (R1)'
-          git push origin HEAD:fix/redline-generator-r1
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: redline-verified-tests
+          name: redline-test-results
           path: redline-junit.xml
           retention-days: 14
