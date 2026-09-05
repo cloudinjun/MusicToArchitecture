@@ -3,32 +3,23 @@ name: Model quality
 on:
   push:
     branches: [codex/march-print-readiness]
-  pull_request:
-    paths:
-      - 'backend/**'
-      - 'blender/**'
-      - '.github/workflows/model-quality.yml'
 
 permissions:
   contents: read
 
 jobs:
-  source-snapshot:
+  fabrication-test-dependency:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          persist-credentials: false
-      - name: Archive exact source for reproducible review
-        run: |
-          git rev-parse HEAD > revision.txt
-          git archive --format=tar.gz -o source.tar.gz HEAD
+          python-version: '3.13'
+      - name: Download optional geometry wheel for offline review tests
+        run: python -m pip download --only-binary=:all: --no-deps 'manifold3d>=3,<4' -d wheels
       - uses: actions/upload-artifact@v4
         with:
-          name: model-quality-source
-          path: |
-            source.tar.gz
-            revision.txt
+          name: fabrication-test-wheels
+          path: wheels/*
           retention-days: 1
           if-no-files-found: error
