@@ -1,58 +1,67 @@
-name: Apply tested model-quality implementation
+name: Model quality
 
 on:
   push:
     branches: [codex/march-print-readiness]
-    paths: ['.github/patches/march-existing.patch']
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'blender/**'
+      - 'fixtures/fabrication/**'
+      - '.github/workflows/model-quality.yml'
 
 permissions:
   contents: read
 
 jobs:
-  apply-tested-patch:
-    if: github.ref == 'refs/heads/codex/march-print-readiness' && github.actor != 'github-actions[bot]'
-    permissions:
-      contents: write
+  model-quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: codex/march-print-readiness
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Verify and apply exact locally-tested changes
-        run: |
-          echo '8439de0c656329891bc1eac87b6fc35db18133c390b01f9836fb7b9333d5a125  .github/patches/march-existing.patch' | sha256sum -c -
-          git apply --check --unidiff-zero .github/patches/march-existing.patch
-          git apply --unidiff-zero .github/patches/march-existing.patch
-          git diff --check
-          python - <<'PY'
-          import hashlib
-          from pathlib import Path
-          expected = {
-              'backend/app/compiler_v3.py': '3af0a9607519d83b7ee956b9545f27202748ae1ea4b1c4252a2c9a62f5f63a15',
-              'backend/app/dependencies.py': '62f79d6648e3e23ceabe1fd134818ef919a1aa6293bcf1350920acf8b75bcad7',
-              'backend/app/models_v3.py': '51b62f1cb9a4ee05710776db111b3e5798327c74e5e62b3f0d420aaf9cac7142',
-              'backend/app/spatial_rules.py': '8ac9deeca39ff63ce5f1441b3ee999906cdb08d55bef3d549a2c391864c6c69c',
-              'backend/app/version.py': 'd404f7616b582f1c6ea2c6c75ae95dffacc9dec931e6b1c2ca579b61d0407cb2',
-              'blender/import_building_model_v3.py': '811ad18f3489272e0d43d88bb6610991ebe14fd2dd46cb921da2e78554d2dc7b',
-          }
-          for name, digest in expected.items():
-              assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == digest, name
-          print('Applied file hashes match local tested sources')
-          PY
-      - name: Install test dependencies
+      - name: Install portable and optional fabrication dependencies
         run: python -m pip install -r backend/requirements.txt -r backend/requirements-fabrication.txt
-      - name: Regression tests
+      - name: Geometry, furniture and actual STL round-trip tests
         run: |
-          python -m pytest -q backend/tests/test_fabrication.py backend/tests/test_furniture_assemblies.py backend/tests/test_geometry_review.py
-          python -m pytest -q backend/tests/test_dependencies.py -k 'not offset_roofs'
-      - name: Commit only this branch's tested implementation
+          mkdir -p test-results
+          python -m pytest -q backend/tests/test_fabrication.py backend/tests/test_furniture_assemblies.py backend/tests/test_geometry_review.py --junitxml=test-results/geometry.xml
+      - name: Existing dependency regression (offset-roof scenarios excluded)
+        run: python -m pytest -q backend/tests/test_dependencies.py -k 'not offset_roofs' --junitxml=test-results/dependencies.xml
+      - name: Existing single-fixture compiler regressions
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add AGENTS.md README.md backend/app/compiler_v3.py backend/app/dependencies.py backend/app/models_v3.py backend/app/spatial_rules.py backend/app/version.py blender/import_building_model_v3.py
-          git commit -m 'fix: integrate complete furniture assemblies and geometry-aware checks'
-          git push origin HEAD:refs/heads/codex/march-print-readiness
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          import pytest
+          path = Path('backend/tests/test_compiler_v3.py')
+          selected = [f'{path}::{node.name}' for node in ast.parse(path.read_text()).body
+                      if isinstance(node, ast.FunctionDef) and node.name.startswith('test_')
+                      and {arg.arg for arg in node.args.args} <= {'model'}]
+          if not selected:
+              raise SystemExit('No compiler regressions selected')
+          print(f'Running {len(selected)} single-fixture compiler checks; not the full suite')
+          raise SystemExit(pytest.main(['-q', '--junitxml=test-results/compiler.xml', *selected]))
+          PY
+      - name: Verify committed diagnostic coupon identity
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          folder = Path('artifacts/evidence/march_print_readiness')
+          evidence = json.loads((folder / 'verification.json').read_text())
+          assert hashlib.sha256((folder / 'desk-coupon.stl').read_bytes()).hexdigest() == evidence['coupon']['sha256']
+          assert evidence['verification']['furniture_coupon']['slicer_verified'] == 'not_checked'
+          print('Diagnostic coupon identity verified; no slicing/physical claim')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: model-quality-tests
+          path: test-results/*.xml
+          retention-days: 14
+          if-no-files-found: warn

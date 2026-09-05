@@ -1,0 +1,111 @@
+{
+  "version": "3.5.0",
+  "source_fingerprint": "f46fbe564460debe29dcf150ac916cfc40050d66dff211e79178a5a45f53f093",
+  "model_id": "building-v3-17e41af9f12f",
+  "cutaway": false,
+  "source_fixture": "artifacts/integrated_demo/building-b7ad95fa45a6-library-steel-international-v1",
+  "element_count": 9801,
+  "furniture_assemblies": 717,
+  "furniture_findings": [],
+  "spatial_status": "failed",
+  "spatial_counts": {
+    "SP-SUBSYSTEM-OVERLAP": 0,
+    "SP-SURFACE-NOT-FLUSH": 2,
+    "SP-FALL-GAP": 6,
+    "SP-STANDS-IN-VOID": 0,
+    "SP-STAIR-HEAD-CLEARANCE": 53,
+    "SP-STAIR-TREAD-SLAB-OVERLAP": 0,
+    "SP-STAIR-TREAD-LIFT-OVERLAP": 0,
+    "SP-STAIR-INTERCORE-OVERLAP": 0,
+    "SP-INVALID-PLAN-RING": 0,
+    "SP-FURNITURE-COMPLETE": 0,
+    "SP-FURNITURE-CONTACT": 0
+  },
+  "dependency_status": "passed",
+  "axis_status": "passed",
+  "source_json_sha256": "4578355962c45364f3466836d9ae4837c112f90c5ad42ffafe058706f603bbfb",
+  "limitations": [
+    "Furniture: 14 candidate assemblies were not placed because their complete footprint or floor bearing did not fit. No partial furniture was emitted. First IDs: PRG-SEA-L01-SP-LOBBY-R02-C00-N, PRG-SEA-L01-SP-EXHIBITION-R02-C00-N, PRG-DSK-L01-SP-FIRE-C00, PRG-DSK-L01-SP-PERIODICALS-R02-C00, PRG-SEA-L01-SP-PERIODICALS-R02-C02-N, PRG-SEA-L01-SP-PERIODICALS-R02-C07-N, PRG-SHF-L02-SP-STACKS-R08-C00, PRG-SHF-L02-SP-STACKS-R08-C01.",
+    "35% of datums are score-driven; the rest are declared design fixtures waiting on genre_style, hierarchy, interruption, polyphony, repetition, variation.",
+    "Program: 3112 m2 delivered against 3066 m2 briefed (101%); every space fits.",
+    "Frame sized for Library stack rooms at 7.18 kPa, the heaviest allocated room; the column stack sums the real per-level loads.",
+    "Lift: shaft from a 1.4 m pit below L00 to a 3.8 m overrun above L04, landing doors at L00, L01, L02, L03, L04. Every occupied level has a landing door. Pit and overrun depths are practice for a machine-room-less passenger lift, not a manufacturer's figures; the car, drive, controller and door hardware are not modelled and the lift's capacity and accessible operation are unverified.",
+    "Stair and lift openings: the slab and ceiling are cut, the joists that met an opening are trimmed to it, and 0 header beams and 0 trimmer joists were sized for the load they collect. No girder crosses an opening. Flat-slab levels L01, L02, L03, L04, L05 have openings with no edge reinforcement designed. Connections at the headers are not designed.",
+    "Accessible approach: 7 ramp runs at 1:12 with 8 landings, checked against 405.2 running slope not steeper than 1:12; 405.5 clear width 915 mm minimum; 405.6 rise 760 mm maximum per run.",
+    "Gravity only. No wind, seismic, snow, or notional lateral load.",
+    "Roof truss, envelope, circulation, and furniture members are dimensioned by architectural convention; only column, girder, and joist carry a section a load calculation governed.",
+    "Connection topology is explicit and graph-checked; connection plates, bolts, welds, anchors, fasteners and capacities are not designed. Fire protection, camber, vibration and lateral-torsional buckling remain unchecked. Every element remains professional_review_required.",
+    "System and grammar: STR-SYS-RC-FRAME-WALL with FCD-03-BRUTALISM. The screen admitted exactly what the music asked for. Reasoning: mass 0.82 >= 0.62: the elevation is a wall, not a frame; a wall with a regular row of openings cut through it; mass 0.82 >= 0.46 with expression 0.50 low: weight carried by broad panels rather than by slender members.",
+    "The preferred frame could not be sized: STR-SYS-MASS-TIMBER-CLT-GLULAM (column: no section carries 3030 kN over 4.57 m). Built on STR-SYS-RC-FRAME-WALL instead.",
+    "Six of the ten structural systems are not emitted by this compiler and were screened out rather than approximated: STR-SYS-CABLE-NET-HYBRID (The same form-finding problem as the membrane, plus a mast and anchor layout that no datum in this set describes); STR-SYS-LIGHT-WOOD-FRAME (Stud walls at 400 mm centres are a wall assembly, not a frame of discrete members; the emitter would have to model sheathing diaphragms for the result to mean anything); STR-SYS-RC-SHELL (Elements index into surface parameters (SHL-RIB-U012), not levels); STR-SYS-STEEL-SPACE-FRAME-SHELL (A space frame follows a curved surface subdivision; the level lattice cannot place its nodes); STR-SYS-TENSILE-MEMBRANE (Form is found by relaxation under prestress, not laid out on a grid); STR-SYS-TIMBER-GRIDSHELL (A doubly-curved lath grid set out by geodesic curves on a surface; there is no level lattice to index into)."
+  ],
+  "elapsed_seconds": 18.698,
+  "verification": {
+    "focused_tests": {
+      "passed": 49
+    },
+    "existing_compiler_tests": {
+      "passed": 28,
+      "scope": "single model fixture or no fixture; score-changing tests not run"
+    },
+    "existing_dependency_tests": {
+      "passed": 10,
+      "deselected": 2,
+      "scope": "not offset_roofs"
+    },
+    "full_suite": "not_completed",
+    "blender_render": "not_run",
+    "furniture_coupon": {
+      "geometry_verified": "passed",
+      "profile_screened": "not_checked",
+      "slicer_verified": "not_checked",
+      "physical_sample_verified": "not_checked",
+      "assembly_verified": "not_checked"
+    }
+  },
+  "coupon": {
+    "sha256": "8b694a03ed20539bf6466a977ff9fd6c8d06310afae68a19e4f59c4dc0bc2ade",
+    "extent_mm": [
+      16.0,
+      8.0,
+      7.5
+    ],
+    "volume_mm3": 86.7358195181461,
+    "source_ids": [
+      "PRG-DSK-L01-SP-LOBBY-R00-C00-PART-leg_0",
+      "PRG-DSK-L01-SP-LOBBY-R00-C00-PART-leg_1",
+      "PRG-DSK-L01-SP-LOBBY-R00-C00-PART-leg_2",
+      "PRG-DSK-L01-SP-LOBBY-R00-C00-PART-leg_3",
+      "PRG-DSK-L01-SP-LOBBY-R00-C00"
+    ],
+    "scale_denominator": 100,
+    "print_to_assembly_mm": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -131.25
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -146.9600067138672
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        50.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "profile_status": "planning"
+  },
+  "status": "diagnostic_only; not promoted to latest or accepted geometry"
+}
