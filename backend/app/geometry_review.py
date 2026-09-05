@@ -24,6 +24,7 @@ from typing import Any, Iterable, Sequence
 
 from shapely.geometry import LineString, Polygon
 from shapely.validation import explain_validity
+from shapely.ops import unary_union
 
 from .geometry import BoxGeometry, ExtrusionGeometry, MemberGeometry
 
@@ -538,6 +539,53 @@ def check_intercore_stair_overlap(
     return findings
 
 
+def check_room_support(model: Any, *, context: _ReviewContext | None = None
+                       ) -> list[GeometryFinding]:
+    """Measure each room footprint outside the actual same-level slab union.
+
+    Preserve all split slab pieces and holes. Missing/invalid support is unknown,
+    never an empty intersection interpreted as a pass. This checks geometric support,
+    not legal floor area, structural capacity or a complete walking route.
+    """
+    rule_id = 'SP-ROOM-OUTSIDE-SUPPORT'
+    context = context or _context(model)
+    findings: list[GeometryFinding] = []
+    by_level: dict[str, list[_Element]] = {}
+    for slab in _solid_rows(context.elements, {'floor_slab', 'podium_slab'}):
+        by_level.setdefault(slab.level_id, []).append(slab)
+    for room in context.by_kind.get('program_zone', []):
+        footprint = context.polygons.get(room.id)
+        interval = context.z_intervals.get(room.id)
+        if footprint is None or interval is None:
+            findings.append(_unknown(rule_id, [room.id], 'room geometry is invalid'))
+            continue
+        slabs = by_level.get(room.level_id, [])
+        support = []
+        invalid = False
+        for slab in slabs:
+            solid = context.polygons.get(slab.id)
+            z = context.z_intervals.get(slab.id)
+            if solid is None or z is None:
+                invalid = True
+            elif abs(z[1] - interval[0]) <= 0.005:
+                support.append(solid)
+        if invalid or not support:
+            findings.append(_unknown(rule_id, [room.id],
+                'same-level floor support is missing, invalid or at another height'))
+            continue
+        supported = unary_union(support)
+        # Numeric tolerance only; 49.6 m2 outside a rotated slab is not rounding.
+        outside = footprint.difference(supported.buffer(1.0e-7)).area
+        if outside > AREA_EPS_M2:
+            findings.append(GeometryFinding(
+                rule_id=rule_id, severity='violation', elements=(room.id,),
+                measure=outside, unit='m²',
+                detail=(f'{room.id} has {outside:.4f} m² ({outside / footprint.area:.1%}) '
+                        f'outside the emitted floor support on {room.level_id}. '
+                        'Reallocate the room or redesign its support; do not crop the drawing.')))
+    return findings
+
+
 def review_geometry(model: Any) -> list[GeometryFinding]:
     """Return all geometry-review findings without mutating ``model``."""
 
@@ -548,6 +596,7 @@ def review_geometry(model: Any) -> list[GeometryFinding]:
     findings.extend(check_tread_floor_slab_overlap(model, context=context))
     findings.extend(check_tread_elevator_shaft_overlap(model, context=context))
     findings.extend(check_intercore_stair_overlap(model, context=context))
+    findings.extend(check_room_support(model, context=context))
     return findings
 
 

@@ -330,14 +330,14 @@ def test_the_grid_matches_the_lattice_the_elements_were_registered_to(model, iss
 
 
 def test_rooms_are_named_and_measured_from_the_program_zones(model, issued):
-    programs = {group.program for group in model.element_groups
-                if group.kind == 'program_zone'}
-    labelled = {note.text.upper() for drawing in issued.plans
+    labelled = {note.text for drawing in issued.plans
                 for note in _notes(drawing, 'text')}
-    pretty = {program.replace('_', ' ').upper() for program in programs}
-    assert pretty & labelled, 'no room on any plan carries its name'
-    assert any(note.text.endswith('m²') for drawing in issued.plans
-               for note in _notes(drawing, 'text')), 'no room carries its area'
+    zones = model.program_allocation.zones
+    assert zones
+    names = {zone.label.upper() for zone in zones}
+    areas = {f'{zone.area_delivered_m2:.0f} m² allocated' for zone in zones}
+    assert names <= labelled, 'a room lost its actual brief label'
+    assert areas <= labelled, 'a room lost its declared allocation area/basis'
 
 
 def test_a_door_swings_into_the_space_it_serves(model, issued):

@@ -211,8 +211,8 @@ def rule_no_two_subsystems_in_one_place(index: SpatialIndex) -> list[Finding]:
     """
     # Levels whose plate was too small to carry its own cores. The program was laid
     # out over them because cutting them out left nothing to lay out on, and that is a
-    # consequence of the plate rather than an oversight -- so it is reported as a
-    # warning that says which, instead of a violation that says neither.
+    # recorded cause, not permission for an overlap. Legacy payloads retain that
+    # explanation, but measured physical conflicts still report a violation.
     unreserved = set(index.model.program_allocation.cores_unreserved)
 
     findings: list[Finding] = []
@@ -234,7 +234,7 @@ def rule_no_two_subsystems_in_one_place(index: SpatialIndex) -> list[Finding]:
                     excused = solid.level_id in unreserved
                     findings.append(Finding(
                         rule_id='SP-SUBSYSTEM-OVERLAP',
-                        severity='warning' if excused else 'violation',
+                        severity='violation',
                         elements=key, measure=share, unit='of the host',
                         detail=f'{description}: {solid.kind} takes {share:.0%} of '
                                f'{other.id}.'
@@ -534,3 +534,13 @@ RULES = RULES + (
                 'Furniture parts physically meet their declared parts or floor supports.',
                 'violation', lambda index: _furniture_findings(index, 'SP-FURNITURE-CONTACT')),
 )
+
+
+def rule_room_support(index: SpatialIndex) -> list[Finding]:
+    return _geometry_review_for_rule(index, 'SP-ROOM-OUTSIDE-SUPPORT')
+
+
+RULES = RULES + (SpatialRule(
+    'SP-ROOM-OUTSIDE-SUPPORT',
+    'Room footprints are contained in the actual same-level floor support, including holes.',
+    'violation', rule_room_support),)

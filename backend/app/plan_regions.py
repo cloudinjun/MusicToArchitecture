@@ -1,5 +1,5 @@
 """Exact planar subtraction, preserving every connected piece and interior ring."""
-from shapely.geometry import LineString, Polygon
+from shapely.geometry import LineString, Polygon, box
 from shapely.ops import split, unary_union
 
 from .geometry import ExtrusionGeometry, v2
@@ -59,3 +59,54 @@ def extrusions(boundary, holes, z_base, z_top):
         boundary=_ring(part.exterior.coords),
         holes=[_ring(ring.coords) for ring in part.interiors],
         z_base=z_base, z_top=z_top) for part in parts]
+
+
+# Numeric tolerance, in model metres; not an architectural/code allowance.
+PLAN_EPS_M = 1.0e-7
+
+
+def usable_region(level, reserved=()):
+    """The declared plate minus voids and non-waivable reservations.
+
+    Invalid boundaries are refused, never repaired or replaced by their bounds.
+    The caller owns which reservations belong on this level.
+    """
+    outer = polygon(level.plate)
+    holes = [polygon(ring) for ring in level.voids]
+    if (outer.is_empty or not outer.is_valid
+            or any(hole.is_empty or not hole.is_valid for hole in holes)):
+        raise ValueError(f'{level.id}: invalid plate or void ring')
+    cuts = list(holes)
+    for x0, y0, x1, y1 in reserved:
+        if x1 <= x0 or y1 <= y0:
+            raise ValueError(f'{level.id}: invalid reservation rectangle')
+        cuts.append(box(x0, y0, x1, y1))
+    return outer.difference(unary_union(cuts)) if cuts else outer
+
+
+def rectangular_runs(region, y0, y1):
+    """All x intervals whose *entire* y strip is contained in a polygon.
+
+    Project each connected piece of missing floor onto x and remove that interval.
+    A connected polygon has a continuous x projection, so this works for rotated
+    edges, concave plates, holes and split cores without centre-line sampling.
+    Boundary contact is permitted; a strip with positive missing area is not.
+    """
+    if region.is_empty or y1 <= y0:
+        return []
+    if not region.is_valid:
+        raise ValueError('Invalid region in rectangular_runs')
+    x0, _, x1, _ = region.bounds
+    missing = box(x0, y0, x1, y1).difference(region)
+    pieces = [missing] if missing.geom_type == 'Polygon' else list(missing.geoms)
+    blocked = sorted((part.bounds[0], part.bounds[2]) for part in pieces
+                     if not part.is_empty and part.area > 0.0)
+    runs = []
+    cursor = x0
+    for lo, hi in blocked:
+        if lo > cursor + PLAN_EPS_M:
+            runs.append((cursor, lo))
+        cursor = max(cursor, hi)
+    if cursor < x1 - PLAN_EPS_M:
+        runs.append((cursor, x1))
+    return runs

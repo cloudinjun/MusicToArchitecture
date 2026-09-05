@@ -478,6 +478,11 @@ def compile_drawing(
         role = standard.role_of(group.kind)
         for instance in group.instances:
             considered += 1
+            # Semantic room regions are labels, not opaque building solids. Keeping
+            # them in the painter can conceal real floors, stairs and voids.
+            if group.kind == 'program_zone':
+                outside += 1
+                continue
             if not standard.draws(role):
                 omitted[group.kind] = omitted.get(group.kind, 0) + 1
                 continue
@@ -762,7 +767,8 @@ def floor_plans(model, standard: DrawingStandard = PLAN_STANDARD, *,
         # ring, the purlins and the deck appear on no drawing at all -- which the
         # coverage count made visible.
         roof = level.kind == 'roof'
-        cut_z = level.z + (0.15 if roof else PLAN_CUT_HEIGHT_M)
+        cut_height = 0.15 if roof else PLAN_CUT_HEIGHT_M
+        cut_z = level.z + cut_height
         plane, frame = plan_frame(cut_z)
         # Looking down: depth grows downward from the cut, and stops at this level's
         # own floor. Overhead work is kept for a limited reach above.
@@ -772,7 +778,7 @@ def floor_plans(model, standard: DrawingStandard = PLAN_STANDARD, *,
             drawing_id=f'DWG-PLAN-{level.id}',
             title=(f'Roof plan — {level.id}' if roof
                    else f'Floor plan — {level.id}'),
-            subtitle=(f'{level.kind} level, cut {PLAN_CUT_HEIGHT_M:.2f} m above '
+            subtitle=(f'{level.kind} level, cut {cut_height:.2f} m above '
                       f'FFL {level.z:+.3f} m · overhead shown dashed · '
                       f'loose furniture at the lightest weight'),
             kind='plan', keep=keep,
@@ -1069,6 +1075,9 @@ def annotate_rooms(drawing: Drawing, model, level) -> None:
     """
     name = Stroke(Weight.FINE, Tone.CUT)
     area_tone = Stroke(Weight.FINE, Tone.MIDDLE)
+    allocation = getattr(model, 'program_allocation', None)
+    rooms = {f'PRG-ZON-{zone.level_id}-{zone.space_id}': zone
+             for zone in (allocation.zones if allocation is not None else [])}
     u0, v0, u1, v1 = drawing.extents
     for group in model.element_groups:
         if group.kind != 'program_zone':
@@ -1082,12 +1091,15 @@ def annotate_rooms(drawing: Drawing, model, level) -> None:
                 continue
             if any(_inside_ring(anchor, ring) for ring in level.voids):
                 continue    # a label floating over an atrium names nothing
-            area = box.size.x * box.size.y
+            room = rooms.get(instance.id)
+            label = room.label if room is not None else _pretty(group.program)
+            area_text = (f'{room.area_delivered_m2:.0f} m² allocated'
+                         if room is not None else 'AREA UNVERIFIED')
             drawing.annotations.append(Annotation(
-                'text', name, text=_pretty(group.program).upper(),
+                'text', name, text=label.upper(),
                 anchor=(anchor[0], anchor[1] + 0.55), size_mm=2.8, weight=600))
             drawing.annotations.append(Annotation(
-                'text', area_tone, text=f'{area:.0f} m²',
+                'text', area_tone, text=area_text,
                 anchor=(anchor[0], anchor[1] - 0.9), size_mm=2.3))
 
 
@@ -1180,7 +1192,7 @@ def annotate_doors(drawing: Drawing, model, level) -> None:
              for group in model.element_groups if group.kind == 'program_zone'
              for instance in group.instances}
     for group in model.element_groups:
-        if group.kind != 'door':
+        if group.kind != 'door' or group.subsystem != 'partitions':
             continue
         for instance in group.instances:
             if instance.level_id != level.id:
@@ -1209,15 +1221,11 @@ def annotate_doors(drawing: Drawing, model, level) -> None:
                    hinge[1] + across[1] * leaf * sense)
             drawing.annotations.append(Annotation('line', swing, [hinge, tip]))
             # A quarter arc from the open leaf back to the closed jamb.
-            far = (centre[0] + along[0] * leaf / 2.0,
-                   centre[1] + along[1] * leaf / 2.0)
             steps = 8
             start = math.atan2(tip[1] - hinge[1], tip[0] - hinge[0])
-            end = math.atan2(far[1] - hinge[1], far[0] - hinge[0])
-            if sense > 0:
-                sweep = (end - start) % (2 * math.pi)
-            else:
-                sweep = -((start - end) % (2 * math.pi))
+            # The open vector is sense * 90 degrees from the closed vector.
+            # Return by the quarter turn, not by the other three quadrants.
+            sweep = -sense * math.pi / 2.0
             drawing.annotations.append(Annotation('line', arc, [
                 (hinge[0] + leaf * math.cos(start + sweep * i / steps),
                  hinge[1] + leaf * math.sin(start + sweep * i / steps))
@@ -2100,7 +2108,8 @@ class DrawingSet:
 
 def issue_drawings(model, *, sections: tuple[tuple[str, float, float], ...] = (
         ('A', 90.0, 0.0), ('B', 0.0, 0.0)),
-        elevations: tuple[tuple[str, float], ...] = ELEVATION_FACES) -> DrawingSet:
+        elevations: tuple[tuple[str, float], ...] = ELEVATION_FACES,
+        allow_cutaway: bool = False) -> DrawingSet:
     """The standard issue: every floor plan, four elevations, and a section per entry
     in `sections`, laid out on one paper size with a cover.
 
@@ -2109,6 +2118,10 @@ def issue_drawings(model, *, sections: tuple[tuple[str, float, float], ...] = (
     three dimensions; any other bearing works the same way. Each elevation is
     `(face, bearing)`.
     """
+    if model.lattice.cutaway and not allow_cutaway:
+        raise ValueError('A diagnostic cutaway is not a complete building model. '
+                         'Compile with cutaway=False before issuing architectural drawings; '
+                         'allow_cutaway=True is for explicitly labelled diagnostics only.')
     # Where each section is actually taken: the requested offset, stepped off any
     # wall it would lie inside. Resolved before the plans are drawn so the section
     # marks on the plans and the sections themselves agree.
@@ -2124,6 +2137,9 @@ def issue_drawings(model, *, sections: tuple[tuple[str, float, float], ...] = (
                   for (name, bearing, offset), (_, _, requested)
                   in zip(resolved, sections)],
         section_cuts=resolved, elevation_faces=tuple(elevations))
+    if model.lattice.cutaway:
+        for drawing in issued.all:
+            drawing.subtitle = 'DIAGNOSTIC CUTAWAY — NOT A COMPLETE BUILDING · ' + drawing.subtitle
     issued.lay_out(model)
     return issued
 

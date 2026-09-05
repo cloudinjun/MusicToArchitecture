@@ -133,7 +133,7 @@ def compile_generation(audio_path: Path, filename: str, *,
         v2_preview_error = str(error)
 
     # --- v3: the member-level model the viewport draws --------------------------
-    model_v3 = compile_building_model_v3(features, score)
+    model_v3 = compile_building_model_v3(features, score, cutaway=False)
     translation_report = compile_translation_report(features, score, model_v3)
     bim_handoff = compile_bim_handoff_report(model_v3)
     try:
