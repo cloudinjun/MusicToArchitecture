@@ -198,9 +198,36 @@ def box_solid(geometry: BoxGeometry) -> Solid:
     return _box_solid(centre, half, axes)
 
 
-def quad_solid(geometry: QuadGeometry) -> Solid:
-    vertices = [(corner.x, corner.y, corner.z) for corner in geometry.corners]
-    return Solid(vertices=vertices, edges=[(0, 1), (1, 2), (2, 3), (3, 0)])
+def quad_solid(geometry: QuadGeometry, thickness_m: float | None = None) -> Solid:
+    """Turn a panel quad into the solid a drawing plane should cut.
+
+    A quad is intentionally allowed to remain a surface when its owning element has
+    no construction depth.  That is the legacy behaviour used for diagrammatic
+    panels: a section through it returns the two-point line of the surface.  Envelope
+    groups now carry ``thickness_m``; when it is positive, offset both sides of the
+    panel along its normal and close the two rings so a section sees the real band.
+    """
+    corners = [(corner.x, corner.y, corner.z) for corner in geometry.corners]
+    if thickness_m is None or not math.isfinite(thickness_m) or thickness_m <= 0.0:
+        return Solid(vertices=corners,
+                     edges=[(0, 1), (1, 2), (2, 3), (3, 0)])
+
+    # The compiler emits planar quads.  Use the first two edges for the face normal;
+    # retaining the supplied corner order keeps the physical panel aligned with the
+    # exported mesh and avoids inventing a drawing-only orientation.
+    edge_a = tuple(corners[1][i] - corners[0][i] for i in range(3))
+    edge_b = tuple(corners[3][i] - corners[0][i] for i in range(3))
+    normal = _normalise(_cross(edge_a, edge_b))
+    half = thickness_m / 2.0
+    low = [tuple(corner[i] - normal[i] * half for i in range(3))
+           for corner in corners]
+    high = [tuple(corner[i] + normal[i] * half for i in range(3))
+            for corner in corners]
+    vertices = low + high
+    edges = ([(i, (i + 1) % 4) for i in range(4)]
+             + [(4 + i, 4 + (i + 1) % 4) for i in range(4)]
+             + [(i, 4 + i) for i in range(4)])
+    return Solid(vertices=vertices, edges=edges)
 
 
 # --- cutting -----------------------------------------------------------------------

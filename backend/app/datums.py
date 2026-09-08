@@ -26,16 +26,21 @@ from __future__ import annotations
 
 import math
 from typing import TYPE_CHECKING, Literal
+from .world_xy_grid import WorldXYColumnPlan, WorldXYGrid
 
 from .massing import (
     MASSING_FAMILIES, MassingFamily, level_count_for,
 )
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from .geometry import (
     Vector2, point_inside, resample_by_arclength, superellipse, v2,
 )
+from .facade_control import FacadeControl
+from .program_volume_contracts import ProgramCirculationIntent, ProgramVolumeRegion
+from .hall_stations import HallSupportGrid
+from .roof import RoofControl, assert_roof_control_matches_level
 # Type-only. `models` imports `translation_report`, which imports this module, so a
 # runtime import here closes a cycle that resolves only when `models` happens to be
 # the module that enters it first. Every entry point used to satisfy that by luck;
@@ -334,6 +339,25 @@ MAX_ACCUMULATED_ROTATION_DEG = 12.0
 # has to clear that plus a way past it.
 MIN_PLATE_SPAN_M = 9.0
 
+# The stair core's own dimensions, defined once here because the grid is sized to
+# hold them (decision 0022) and the compiler cuts, frames and searches by them.
+WELL_EDGE_M = 0.12        # the well is cut this far outside the flights each side
+FLIGHT_TURN_M = 1.4       # the turn beyond the flight, inside the well
+HEADER_SETBACK_M = 0.20   # a header's centre-line stands this far outside the well
+CORE_WALL_M = 0.20        # the reinforced-concrete core wall, inside the core face
+# Narrower than this, a bay between fixed lines is a sliver: a pair of columns a stride
+# apart framing a strip no member needs. A core face therefore stands flush with the
+# plate edge or a neighbouring volume, or at least this far from it. Rooms are laid out
+# on the module rows (`Lattice.band_lines`), so the strip costs the program nothing.
+MIN_BAY_M = 1.8
+
+
+def flight_run(width: float) -> float:
+    """The run of one flight for a flight this wide: the one formula, read by the
+    core search, the given-core reader, the massing export and the grid alike."""
+    return max(2.2, width * 2.4)
+
+
 APSE_SEGMENTS = 20
 
 
@@ -345,6 +369,38 @@ class LevelDatum(BaseModel):
     plate: list[Vector2]
     voids: list[list[Vector2]]
     is_terrace: bool = False
+    # Floor a prior spatial authority claims on this level, as plan rectangles.
+    # This includes a core placed by a program massing (decision 0022) and the
+    # circulation-spine/connector regions of a Program Volume contract. It is not a
+    # void -- stairs and public routes may occupy the circulation claim -- but no
+    # archetype or ordinary room may take the same floor.
+    reserved: list[tuple[float, float, float, float]] = Field(default_factory=list)
+
+
+class CoreDatum(BaseModel):
+    """A vertical core the massing places, rather than one the compiler searches for.
+
+    The program massing owns the building's volumes (decision 0022); a core given
+    here is read by `core_anchors` as the answer, validated against the plates it
+    serves, and never re-derived. `serves` lists level ids from the ground up; empty
+    means every level whose plate holds the core.
+    """
+
+    id: str
+    kind: Literal['stair', 'lift']
+    x: float
+    y: float
+    serves: list[str] = Field(default_factory=list)
+    # X is the canonical Y-running stair turned clockwise about its own centre.
+    run_axis: Literal['x', 'y'] = Field(default='y', exclude_if=lambda value: value == 'y')
+    access_face: Literal['south', 'north', 'east', 'west'] | None = Field(
+        default=None, exclude_if=lambda value: value is None)
+
+    @model_validator(mode='after')
+    def _access_face_only_for_lift(self):
+        if self.kind == 'stair' and self.access_face is not None:
+            raise ValueError('access_face is only valid for lift cores')
+        return self
 
 
 class Lattice(BaseModel):
@@ -380,6 +436,52 @@ class Lattice(BaseModel):
     # the emitted stair briefly disagreed about where the core was.
     carved: dict[int, list[tuple[float, float, float, float]]] = Field(
         default_factory=dict)
+    # Cores the program massing placed (decision 0022). Empty on a music run, where
+    # the compiler places them on the grid; on a massing run `core_anchors` reads
+    # these and searches for nothing.
+    given_cores: list[CoreDatum] = Field(default_factory=list)
+    # Whether the grid lines were handed in by the massing. The grid is redrawn to
+    # the cores either way; a given grid keeps every line it came with.
+    grid_given: bool = False
+    # Explicit independent structural registration; PV authoring lines remain in
+    # program_volume_*_lines. Core placement must not re-phase this world grid.
+    world_xy_grid: WorldXYGrid | None = Field(
+        default=None, exclude_if=lambda value: value is None)
+    # Exact parcel from the normalized brief, distinct from floor and weather
+    # boundaries. Empty preserves the unbounded legacy presentation context.
+    site_boundary: list[Vector2] = Field(default_factory=list,
+        exclude_if=lambda value: not value)
+    # Resolved world-XY support registry.  The regular grid remains the registration
+    # authority; this optional plan records the actual boundary/inset candidates and
+    # their footprint without changing the lattice's x/y lines.
+    world_xy_column_plan: WorldXYColumnPlan | None = Field(
+        default=None, exclude_if=lambda value: value is None)
+    hall_support_grid: HallSupportGrid | None = Field(
+        default=None, exclude_if=lambda value: value is None)
+    # Optional three-dimensional roof authority propagated from a Program Volume
+    # massing. Legacy massings leave it empty and retain the old emitter path.
+    roof_control: RoofControl | None = None
+    # Resolved only after facade grammar and tectonic selection. ``exclude_if`` keeps
+    # the legacy lattice payload byte-compatible at this field boundary: old models
+    # do not gain a decorative ``facade_control: null`` key.
+    facade_control: FacadeControl | None = Field(
+        default=None, exclude_if=lambda value: value is None)
+    # Optional Program Volume semantics. They are compact references into this same
+    # registration grid; no downstream system needs to import the authoring model.
+    program_volume_grammar_id: str | None = None
+    program_volume_source_digest: str | None = None
+    # The Program Volume rectangles index the authoring grid.  `x_lines` and
+    # `y_lines` are later reframed to core faces, so these immutable copies prevent
+    # a repeated `core_anchors()` call or facade pass from silently moving a volume.
+    program_volume_x_lines: list[float] = Field(default_factory=list)
+    program_volume_y_lines: list[float] = Field(default_factory=list)
+    program_volume_regions: list[ProgramVolumeRegion] = Field(default_factory=list)
+    circulation_intent: ProgramCirculationIntent | None = None
+    # The program's rows: the module lines the plate was laid out on. The structural
+    # lines follow the volumes (decision 0022) and gain the core faces; rooms keep
+    # laying out on the module, so a core face never splits a row into a strip too
+    # shallow for any room. Empty means rows follow `y_lines`.
+    band_lines: list[float] = Field(default_factory=list)
 
     def encloses(self, x: float, y: float) -> bool:
         """Whether a point is on an enclosed face rather than in the sectional cut."""
@@ -681,6 +783,9 @@ def build_lattice(datums: DatumSet,
 
     span_x = plan.width
     span_y = plan.depth
+    # The score's module, laid over the plate. This is the grid before the cores are
+    # placed; `compiler_v3._frame_the_volumes` then redraws it to the cores
+    # (decision 0022), keeping these two extent lines fixed.
     bays_x = max(2, round(span_x / datums.value('bay_x_m')))
     bays_y = max(2, round(span_y / datums.value('bay_y_m')))
     x_lines = [round(plan.x_min + span_x * i / bays_x, 4) for i in range(bays_x + 1)]
@@ -701,7 +806,8 @@ def build_lattice(datums: DatumSet,
         apse_nodes = []
 
     return Lattice(
-        levels=levels, x_lines=x_lines, y_lines=y_lines, apse_nodes=apse_nodes,
+        levels=levels, x_lines=x_lines, y_lines=y_lines, band_lines=list(y_lines),
+        apse_nodes=apse_nodes,
         plan=plan, massing_id=family.id, cutaway=cutaway,
         plan_x_m=round(span_x + (radius if family.west_apse else 0.0), 3),
         plan_y_m=round(span_y, 3))

@@ -1,0 +1,137 @@
+{
+  "schema_version": "mta.program_massing/1.0",
+  "massing_id": "MAS-GIVEN",
+  "label": "Example: five-storey library block",
+  "typology": "library",
+  "note": "Storeys from the ground up. The ground storey is the podium level the entry stands on; a roof plate is added over the top storey. The two stair cores stand flush with the east and west plate edges so their walls are the perimeter there. No grid is given: the compiler draws it to the core faces and fills the spans with the bay module (decision 0021). The plate is sized so the library brief fits.",
+  "levels": [
+    {
+      "plate": [
+        [
+          -16.0,
+          -13.5
+        ],
+        [
+          32.0,
+          -13.5
+        ],
+        [
+          32.0,
+          13.5
+        ],
+        [
+          -16.0,
+          13.5
+        ]
+      ]
+    },
+    {
+      "plate": [
+        [
+          -16.0,
+          -13.5
+        ],
+        [
+          32.0,
+          -13.5
+        ],
+        [
+          32.0,
+          13.5
+        ],
+        [
+          -16.0,
+          13.5
+        ]
+      ]
+    },
+    {
+      "plate": [
+        [
+          -16.0,
+          -13.5
+        ],
+        [
+          32.0,
+          -13.5
+        ],
+        [
+          32.0,
+          13.5
+        ],
+        [
+          -16.0,
+          13.5
+        ]
+      ]
+    },
+    {
+      "plate": [
+        [
+          -16.0,
+          -13.5
+        ],
+        [
+          32.0,
+          -13.5
+        ],
+        [
+          32.0,
+          13.5
+        ],
+        [
+          -16.0,
+          13.5
+        ]
+      ]
+    },
+    {
+      "plate": [
+        [
+          -16.0,
+          -13.5
+        ],
+        [
+          32.0,
+          -13.5
+        ],
+        [
+          32.0,
+          13.5
+        ],
+        [
+          -16.0,
+          13.5
+        ]
+      ]
+    }
+  ],
+  "grid": null,
+  "cores": [
+    {
+      "id": "CORE-A",
+      "kind": "stair",
+      "x": 29.82,
+      "y": 0.0
+    },
+    {
+      "id": "CORE-B",
+      "kind": "stair",
+      "x": -13.82,
+      "y": 0.0
+    },
+    {
+      "id": "LIFT-1",
+      "kind": "lift",
+      "x": 23.0,
+      "y": 0.0
+    }
+  ],
+  "datums": {
+    "flight_width_m": 1.8,
+    "floor_to_floor_m": 4.2,
+    "ground_open_height_m": 4.0
+  },
+  "structural_system_id": null,
+  "grammar_id": null
+}

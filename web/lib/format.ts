@@ -116,3 +116,10 @@ export function dimensionLabel(id: string): string {
 
 /** Colour keys for the semantic layers, matched to the viewport's swatches. */
 export const LAYER_ORDER = ['structure', 'envelope', 'circulation', 'program', 'site'] as const;
+
+/** `m:ss` for a time in seconds; anything unusable reads `0:00`. */
+export function clock(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
+  const whole = Math.floor(seconds);
+  return Math.floor(whole / 60) + ':' + String(whole % 60).padStart(2, '0');
+}

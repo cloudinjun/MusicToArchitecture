@@ -114,6 +114,7 @@ export function buildStory(run: GenerationResponse): StoryStage[] {
   // 03 — the face it shows the street.
   const gates = analysis?.facade_gates ?? null;
   const gatesPassed = gates?.gates.filter((gate) => gate.verdict === 'passed').length ?? 0;
+  const gatesOpen = gates?.gates.filter((gate) => gate.verdict === 'unevaluated').length ?? 0;
   stages.push({
     id: 'envelope', index: '03', title: 'The envelope', layer: 'envelope',
     lines: [
@@ -126,7 +127,8 @@ export function buildStory(run: GenerationResponse): StoryStage[] {
         + (gatesPassed === gates.gates.length
           ? 'passes all ' + gates.gates.length
           : 'passes ' + gatesPassed + ' of ' + gates.gates.length)
-        + ' of that style’s own written rules.',
+        + ' of that style’s own written rules'
+        + (gatesOpen ? '; ' + gatesOpen + ' remain unevaluated.' : '.'),
       ] : []),
     ],
   });
@@ -138,7 +140,7 @@ export function buildStory(run: GenerationResponse): StoryStage[] {
     id: 'circulation', index: '04', title: 'Moving through it', layer: 'circulation',
     lines: [
       ...(analysis?.accessible_route
-        ? ['A wheelchair ramp meets the ADA accessibility standard — switchbacks, landings and all.']
+        ? ['The ramp geometry meets ADA slope and landing rules; its facade portal and continuous interior connection remain open checks.']
         : analysis?.accessible_route_unresolved
           ? ['No compliant ramp fits this form, so a stair stands in — and the design says so openly.']
           : []),

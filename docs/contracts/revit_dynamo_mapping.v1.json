@@ -241,7 +241,8 @@
       "id": "REVIT-COLUMN",
       "source_kinds": [
         "piloti_column",
-        "column"
+        "column",
+        "transfer_post"
       ],
       "strategy": "native_candidate",
       "revit_category": "Structural Columns",
@@ -258,6 +259,11 @@
         "outrigger_strut",
         "truss_chord",
         "truss_web",
+        "transfer_top_chord",
+        "transfer_bottom_chord",
+        "transfer_vertical",
+        "transfer_diagonal",
+        "transfer_restraint",
         "purlin",
         "heavy_joist",
         "knee_brace",
@@ -485,7 +491,8 @@
       "id": "REVIT-ARCHETYPE-STADIA",
       "source_kinds": [
         "auditorium_riser",
-        "stage_platform"
+        "stage_platform",
+        "auditorium_aisle"
       ],
       "strategy": "direct_shape_preview",
       "revit_category": "Floors",
@@ -505,6 +512,50 @@
       "built_in_category": "OST_Furniture",
       "fallback": "direct_shape_preview",
       "review_gate": "Family/type, clearance, host level, quantity intent, and whether layout is schematic"
+    },
+    {
+      "id": "REVIT-PLUMBING-FIXTURE",
+      "source_kinds": [
+        "sanitary_fixture"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Plumbing Fixtures",
+      "built_in_category": "OST_PlumbingFixtures",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Fixture family/type, fixture count against the adopted plumbing code, clearances, and the piping this model does not carry"
+    },
+    {
+      "id": "REVIT-MECHANICAL-EQUIPMENT",
+      "source_kinds": [
+        "mechanical_equipment"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Mechanical Equipment",
+      "built_in_category": "OST_MechanicalEquipment",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Equipment selection and sizing, service clearances, vibration isolation and the connections this model does not carry; the lift machine additionally needs the drive, ropes and controller"
+    },
+    {
+      "id": "REVIT-ELECTRICAL-EQUIPMENT",
+      "source_kinds": [
+        "electrical_equipment"
+      ],
+      "strategy": "native_candidate",
+      "revit_category": "Electrical Equipment",
+      "built_in_category": "OST_ElectricalEquipment",
+      "fallback": "direct_shape_preview",
+      "review_gate": "Panel schedule, working clearance per the adopted electrical code, and the distribution this model does not carry"
+    },
+    {
+      "id": "REVIT-LIFT-CAR",
+      "source_kinds": [
+        "lift_car"
+      ],
+      "strategy": "direct_shape_preview",
+      "revit_category": "Specialty Equipment",
+      "built_in_category": "OST_SpecialityEquipment",
+      "fallback": "review",
+      "review_gate": "Car arrives as a preview solid parked at one landing; the lift system, rails, ropes, buffers, controller and travel are a manufacturer's package"
     },
     {
       "id": "REVIT-FIGURE",

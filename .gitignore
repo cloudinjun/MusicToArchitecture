@@ -71,3 +71,7 @@ htmlcov/
 
 # Blender's automatic backup files are local recovery files.
 *.blend1
+
+# TouchDesigner host project for tools/td_mcp (binary, machine-specific)
+tools/td_mcp/*.toe
+tools/td_mcp/Backup/

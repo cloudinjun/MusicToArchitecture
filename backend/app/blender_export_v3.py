@@ -26,6 +26,7 @@ from .blender_export import (
 )
 from .models import ModelAssetV3
 from .models_v3 import BuildingModelV3
+from .asset_lineage import SOURCE_HASH_BASIS, validate_blender_lineage, validate_render_lineage
 
 ROOT = Path(__file__).resolve().parents[2]
 IMPORT_SCRIPT = ROOT / 'blender' / 'import_building_model_v3.py'
@@ -77,13 +78,23 @@ def export_blender_web_model_v3(
             raise BlenderExportError(
                 'Blender v3 export failed: ' + _blender_output_tail(result))
 
-    for path in (glb_path, manifest_path):
+    for path in (glb_path, manifest_path, blend_path):
         if not path.is_file():
             raise BlenderExportError(
                 f'Blender did not write {path.name}; '
                 f'Blender output: {_blender_output_tail(result)}')
 
     manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+    try:
+        source_hash, blend_hash = validate_blender_lineage(
+            json.loads(model_json_path.read_text(encoding='utf-8')),
+            manifest, blend_path, glb_path)
+        for render_name in manifest.get('renders', []):
+            if Path(render_name).name != render_name:
+                raise ValueError('render manifest must contain local filenames')
+            validate_render_lineage(manifest, render_dir / render_name)
+    except ValueError as error:
+        raise BlenderExportError(str(error)) from error
     return ModelAssetV3(
         asset_url=f'/models/generated/{glb_path.name}',
         manifest_url=f'/models/generated/{manifest_path.name}',
@@ -91,6 +102,9 @@ def export_blender_web_model_v3(
         model_json_path=str(model_json_path.relative_to(ROOT)).replace('\\', '/'),
         asset_sha256=sha256_file(glb_path),
         manifest_sha256=sha256_file(manifest_path),
+        native_blend_sha256=blend_hash,
+        source_model_sha256=source_hash,
+        source_hash_basis=SOURCE_HASH_BASIS,
         element_count=manifest['element_count'],
         merged_object_count=manifest['merged_objects'],
         face_count=manifest['total_faces'],

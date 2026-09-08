@@ -13,6 +13,7 @@
 import type { GenerationResponse } from '../../lib/types';
 import { assetUrl } from '../../lib/api';
 import { compact, seconds, titleCase } from '../../lib/format';
+import { cleanReason } from '../../lib/story';
 import { Disclosure, Empty, Meter, Panel } from '../ui';
 
 /** `STR-SYS-GLULAM-POST-BEAM` → “Glulam post beam”: ids stay in Diagnostics. */
@@ -34,8 +35,12 @@ function DecisionCard({
         {value}
       </p>
       {reasons && reasons.length > 0 && (
+        // Two reasons at most, each cut to a sentence a visitor can read: the
+        // compiler's full wording, thresholds and all, is one click away in Selection.
         <ul className="list-reasons" style={{ marginTop: 10 }}>
-          {reasons.slice(0, 3).map((reason) => <li key={reason}>{reason}</li>)}
+          {reasons.slice(0, 2).map((reason) => (
+            <li key={reason}>{cleanReason(reason.split(/\s+Reasoning:\s+/)[0], 150)}</li>
+          ))}
         </ul>
       )}
     </div>
@@ -95,7 +100,7 @@ export function OverviewWorkspace({
         proposed a <b>{typology.toLowerCase()}</b>
         {massing ? <> — {massing.toLowerCase()}</> : null}
         {grammar ? <>, dressed in <b>{grammar}</b></> : null}
-        {structure ? <>, carried on a {structure.toLowerCase()} frame</> : null}.
+        {structure ? <>, carried on a {structure.toLowerCase().replace(/ frame$/, '')} frame</> : null}.
         Nothing below was configured by hand: each decision was compiled from the music
         and can be traced back to it.
       </p>

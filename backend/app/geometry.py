@@ -236,14 +236,43 @@ def bounds(geometry: Geometry) -> tuple[Vector3, Vector3]:
 # ---------------------------------------------------------------------------
 
 def inset(polygon: list[Vector2], amount: float) -> list[Vector2]:
-    cx = sum(p.x for p in polygon) / len(polygon)
-    cy = sum(p.y for p in polygon) / len(polygon)
-    out: list[Vector2] = []
-    for point in polygon:
-        dx, dy = point.x - cx, point.y - cy
-        distance = math.hypot(dx, dy) or 1.0
-        out.append(v2(point.x - dx / distance * amount, point.y - dy / distance * amount))
-    return out
+    """True polygon offset; positive moves inward and negative moves outboard.
+
+    The former radial move only happened to resemble an offset on a convex block.
+    At a concave Program Volume union it could pull facade corners into the building,
+    violating the shared massing protocol. Square joins preserve registered orthogonal
+    corners. A split result is refused because callers accept one boundary ring.
+    """
+    if not polygon or abs(amount) < 1e-9:
+        return list(polygon)
+    from shapely.geometry import Polygon
+    from shapely.geometry.polygon import orient
+
+    source = Polygon([(point.x, point.y) for point in polygon])
+    # Keep the established convex-family geometry byte-for-byte compatible. Its
+    # radial move remains wholly inboard/outboard and several entrance details are
+    # registered to those exact stations. Concavity is the case where that method
+    # crosses the source boundary and where a true offset is mandatory.
+    if source.equals(source.convex_hull):
+        cx = sum(p.x for p in polygon) / len(polygon)
+        cy = sum(p.y for p in polygon) / len(polygon)
+        out = []
+        for point in polygon:
+            dx, dy = point.x - cx, point.y - cy
+            distance = math.hypot(dx, dy) or 1.0
+            out.append(v2(point.x - dx / distance * amount,
+                          point.y - dy / distance * amount))
+        return out
+    shifted = source.buffer(-amount, join_style=2)
+    if shifted.is_empty:
+        raise ValueError(f'polygon offset {amount:.3f} m erased the boundary')
+    if shifted.geom_type != 'Polygon':
+        raise ValueError(
+            f'polygon offset {amount:.3f} m produced {shifted.geom_type}; '
+            'one boundary ring is required')
+    shifted = orient(shifted, sign=1.0)
+    return [v2(round(float(x), 6), round(float(y), 6))
+            for x, y in list(shifted.exterior.coords)[:-1]]
 
 
 def point_inside(polygon: list[Vector2], x: float, y: float) -> bool:

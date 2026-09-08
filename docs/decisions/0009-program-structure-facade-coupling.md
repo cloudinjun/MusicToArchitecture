@@ -319,6 +319,22 @@ The compile-time use is a validation gate: a `building_model_v2` whose datums fa
 the admissible domain, or whose members fail a sizing check, is a `fail` with the axis and
 the number named.
 
+## Compiler eligibility after the physical domain
+
+`FeasibleDomain` continues to record physical and code screening. Selection intersects
+that domain with the capabilities the compiler can actually emit for the given geometry.
+These exclusions are recorded separately as `compiler_capability_exclusions`; they do
+not relabel a physically feasible timber system as physically impossible.
+
+An auditorium/stage clear volume containing actual registered support nodes requires
+`theatre_gravity_transfer`. The existing steel frame currently declares that capability.
+`prepare_transfer` shares the support-node predicate and still calculates each replacement:
+capability means an emitter exists, while the instance can fail geometry, catalogue,
+equilibrium or support checks. A caller-pinned system missing the capability is refused
+before emission. Music preferences and the reason for any substitution remain on the
+selection record. Timber and concrete retain eligibility for geometries without this
+transfer requirement.
+
 ## Part 7 — Limitations
 
 - **Gravity only.** No wind, no seismic force, no snow drift, no ponding, no notional

@@ -38,16 +38,27 @@ from pydantic import BaseModel, Field
 from .datums import DatumSet, Lattice
 from .geometry import point_inside
 from .program import AllocatedZone, UnplacedSpace
+from .program_volume_contracts import is_exact_registered_room
 from .plan_regions import PLAN_EPS_M, usable_region, rectangular_runs
-from shapely.geometry import box
+from shapely.geometry import Polygon, box
+from shapely.ops import unary_union
 
 
 # --- what a theatre is, in numbers a person can check -------------------------------
 
 # Seated eye above the row floor. Anthropometric practice (Neufert gives 1.10-1.25).
 SEATED_EYE_M = 1.20
-# Row-to-row depth for fixed seating with reasonable legroom.
-ROW_DEPTH_M = 0.95
+# Planning dimensions shared by the sightline derivation and the actual furniture.
+# A flat .60 m passage reaches every row; the remaining row depth accommodates
+# up to three .30 m aisle treads without changing the seating-floor elevation.
+THEATRE_SEAT_DEPTH_M = .52
+ROW_PASSAGE_M = .60
+ROW_REAR_MARGIN_M = .08
+AISLE_TREAD_M = .30
+AISLE_DESIGN_STEPS = 3
+ROW_DEPTH_M = max(THEATRE_SEAT_DEPTH_M + ROW_PASSAGE_M + ROW_REAR_MARGIN_M,
+                  ROW_PASSAGE_M + AISLE_TREAD_M * AISLE_DESIGN_STEPS)
+SEAT_LINE_OFFSET_M = ROW_PASSAGE_M + THEATRE_SEAT_DEPTH_M / 2
 # The rake is derived to this clearance -- the vertical gap between one spectator's
 # sightline to the focal point and the eye of the spectator in front. 60 mm is the
 # accepted minimum for every-row vision; deriving to 90 leaves the gate real margin.
@@ -67,6 +78,8 @@ BACK_CLEARANCE_M = 4.0
 # decision 0016; until it exists the stage gets a working-grid height, not a claim
 # that scenery can fly.
 STAGE_CLEAR_M = 8.0
+# Preliminary floor/structure reserve used by the author and sectional carver.
+SECTION_BUILDUP_ALLOWANCE_M = 0.3
 # Proscenium opening: practice for a mid-size house.
 PROSCENIUM_MAX_W_M = 14.0
 
@@ -179,15 +192,14 @@ def derive_bowl(house_w_m: float, focal_h_m: float = STAGE_RISE_M) -> list[BowlR
         h[i+1] = hf + (h[i] + C - hf) * d[i+1] / d[i]
 
     which is the similar-triangles statement of that sentence, solvable by hand for
-    any row. Distances are measured to the row's seat line, half a row behind its
-    front edge.
+    any row. Distances use the chair's actual seat line behind the flat row passage.
     """
     usable = house_w_m - FIRST_ROW_OFFSET_M - BACK_AISLE_M
     count = int(usable // ROW_DEPTH_M)
     rows: list[BowlRow] = []
     eye = SEATED_EYE_M
     for index in range(count):
-        distance = FIRST_ROW_OFFSET_M + (index + 0.5) * ROW_DEPTH_M
+        distance = FIRST_ROW_OFFSET_M + index * ROW_DEPTH_M + SEAT_LINE_OFFSET_M
         if index > 0:
             previous = rows[-1].distance_m
             eye = focal_h_m + (rows[-1].eye_m + C_VALUE_DESIGN_M - focal_h_m) \
@@ -200,6 +212,17 @@ def derive_bowl(house_w_m: float, focal_h_m: float = STAGE_RISE_M) -> list[BowlR
             floor_m=round(eye - SEATED_EYE_M, 4),
             eye_m=round(eye, 4)))
     return rows
+
+
+def theatre_clearance_height(house_width_m: float) -> float:
+    """Shared gross sectional claim, including the upper floor build-up.
+
+    Authoring reserves this before placing upper rooms; carving checks the same
+    bowl/stage requirements. This does not establish sightline or code approval.
+    """
+    rows = derive_bowl(house_width_m)
+    house_clear = rows[-1].floor_m + BACK_CLEARANCE_M if rows else BACK_CLEARANCE_M
+    return max(house_clear, STAGE_RISE_M + STAGE_CLEAR_M) + SECTION_BUILDUP_ALLOWANCE_M
 
 
 def _refuse(archetype_id: str, brief_spaces, reason: str) -> CarveRefusal:
@@ -229,10 +252,15 @@ def _row_index(y_lines: list[float], y: float) -> int:
 
 
 def _rect_clear_of(level, rect: Rect) -> bool:
-    """Cover the entire room, including corners and holes, not inset probes."""
+    """Cover the entire room, including corners and holes, not inset probes -- and
+    stand clear of floor a prior spatial authority reserved on this level: a given
+    core or Program Volume circulation role outranks a carver's room placement."""
     x0, y0, x1, y1 = rect
-    return (x1 > x0 and y1 > y0
-            and usable_region(level).buffer(PLAN_EPS_M).covers(box(*rect)))
+    if not (x1 > x0 and y1 > y0
+            and usable_region(level).buffer(PLAN_EPS_M).covers(box(*rect))):
+        return False
+    return not any(min(x1, rx1) > max(x0, rx0) and min(y1, ry1) > max(y0, ry0)
+                   for rx0, ry0, rx1, ry1 in getattr(level, 'reserved', ()))
 
 
 def _plate_x_span(level, y0: float, y1: float) -> tuple[float, float] | None:
@@ -254,14 +282,24 @@ def _gutted(lattice: Lattice,
             removed: dict[int, list[Rect]]) -> tuple[str, float, float] | None:
     """The level a claim would demolish rather than section, if there is one.
 
-    Gutted means what remains cannot hold a room and the way to it: under a quarter
-    of the plate, or under 120 m2, whichever accusation is worse. The loss is
-    measured against the plate's bounding box, which overstates it on a rounded
-    plate -- a conservative error, in the direction of refusing.
+    Authored Program Volumes state exactly what must survive: every non-airspace
+    owner, including circulation. Check those full footprints against the actual
+    remaining floor. A fixed 120 m2 threshold cannot measure a small custom brief.
+    Legacy plates without those owners retain their quarter-plate/120 m2 heuristic.
+    Connectivity and full route planning remain separate downstream checks.
     """
     for level in lattice.occupied[1:]:
         cuts = removed.get(level.index)
         if not cuts:
+            continue
+        owners = [region for region in getattr(lattice, 'program_volume_regions', ())
+                  if region.level_id == level.id and region.role != 'sectional_clearance']
+        if owners:
+            floor = usable_region(level)
+            remaining_floor = floor.difference(unary_union([box(*rect) for rect in cuts]))
+            if any(not remaining_floor.buffer(PLAN_EPS_M).covers(
+                    box(*owner.resolve_bounds(lattice))) for owner in owners):
+                return level.id, remaining_floor.area / floor.area, remaining_floor.area
             continue
         pxs = [p.x for p in level.plate]
         pys = [p.y for p in level.plate]
@@ -276,6 +314,89 @@ def _gutted(lattice: Lattice,
         if area > 1.0 and (share < 0.25 or remaining < 120.0):
             return level.id, share, remaining
     return None
+
+
+def _section_boundaries(lattice: Lattice, level) -> list[float]:
+    """Plan-y stations a sectional room may legitimately register to.
+
+    A carve edge belongs either to the structural registration lattice or to the
+    host plate that contains it.  Keeping the finite candidate set explicit makes
+    the topology search deterministic and keeps room placement on the datum chain.
+    """
+    low = min(point.y for point in level.plate)
+    high = max(point.y for point in level.plate)
+    return sorted(set(
+        round(float(value), 6)
+        for value in (*lattice.y_lines, *(point.y for point in level.plate))
+        if low - PLAN_EPS_M <= value <= high + PLAN_EPS_M))
+
+
+def _section_spans(lattice: Lattice, level) -> list[tuple[float, float]]:
+    """All registered y-spans, ordered by the declared selection objective."""
+    low = min(point.y for point in level.plate)
+    high = max(point.y for point in level.plate)
+    boundaries = _section_boundaries(lattice, level)
+    spans = {
+        (math.ceil(start * 1000 - 1e-8) / 1000,
+         math.floor(end * 1000 + 1e-8) / 1000)
+        for start in boundaries for end in boundaries
+        if end > start + PLAN_EPS_M}
+    return sorted(
+        (span for span in spans if span[1] > span[0] + PLAN_EPS_M),
+        key=lambda span: (
+            -round(span[1] - span[0], 6),
+            -(int(abs(span[0] - low) <= 0.001)
+              + int(abs(span[1] - high) <= 0.001)),
+            round(span[0], 6), round(span[1], 6)))
+
+
+def _connected_floor_after(level, cuts: list[Rect], *,
+                           inset_m: float = 0.0) -> bool:
+    """Dry-run the exact boolean the compiler will commit for one upper plate.
+
+    The test is deliberately strict: a disconnected remnant stays a refusal.  When
+    ``inset_m`` is supplied, the emitted outer plate boundary must also survive that
+    true inward offset as one polygon; this is the ceiling condition used later by
+    the structural emitter for a concave plate.
+    """
+    source = usable_region(level)
+    if source.is_empty or not source.is_valid or source.geom_type != 'Polygon':
+        return False
+    remaining = source.difference(unary_union([box(*rect) for rect in cuts]))
+    if (remaining.is_empty or not remaining.is_valid
+            or remaining.geom_type != 'Polygon'):
+        return False
+    if inset_m <= 0.0:
+        return True
+    # The compiler serialises this ring at micrometre precision before the emitter
+    # offsets it. Reject a candidate whose adjacent vertices collapse at that same
+    # precision; passing the zero-length edge into GEOS yields no usable boundary.
+    coordinates = [
+        (round(float(x), 6), round(float(y), 6))
+        for x, y in list(remaining.exterior.coords)[:-1]]
+    if (len(set(coordinates)) < 3
+            or any(a == b for a, b in zip(
+                coordinates, coordinates[1:] + coordinates[:1]))):
+        return False
+    outer = Polygon(coordinates)
+    if outer.is_empty or not outer.is_valid:
+        return False
+    shifted = outer.buffer(-inset_m, join_style=2)
+    return (not shifted.is_empty and shifted.is_valid
+            and shifted.geom_type == 'Polygon')
+
+
+def _section_removals_are_viable(
+        lattice: Lattice, removed: dict[int, list[Rect]], *,
+        inset_m: float = 0.0) -> bool:
+    """All actual upper-floor claims remain connected and useful."""
+    if _gutted(lattice, removed) is not None:
+        return False
+    by_index = {level.index: level for level in lattice.occupied}
+    return all(
+        index in by_index
+        and _connected_floor_after(by_index[index], cuts, inset_m=inset_m)
+        for index, cuts in removed.items())
 
 
 def _place_zone(ask, rect: Rect, level, y_lines, *,
@@ -300,16 +421,13 @@ def carve_theatre(lattice: Lattice, datums: DatumSet,
                   brief) -> TheatreCarve | CarveRefusal:
     """Place the house and the stage on the ground plate, and claim their section.
 
-    The pair takes the full depth of the plate with the stage at the east end; the
-    foyer, the bar and everything else land west of the house, in the same rows,
-    because the band allocator already lays out along the free run of a row. Taking
-    the depth whole keeps the house near square -- the first version pinned it to a
-    16 m strip and asked a 57 m plate for a 42 m house with the last row 40 m from
-    the proscenium, which is not a theatre, it is a corridor facing one. The carve
-    runs before the cores are placed and the core search keeps out of it, which is
-    the right order of authority: the house is what the building is for, and a
-    stair serves it. Deterministic rather than searched: the plate fit already
-    searches, and it searches over plates this carver either accepts or refuses.
+    The pair takes the deepest registered sectional band that leaves each upper
+    floor connected, with the stage at the east end. The foyer, bar and remaining
+    rooms land beside it because the allocator reads the same reservation. Depth is
+    maximised to keep the house near square -- the first version pinned it to a 16 m
+    strip and asked a 57 m plate for a 42 m house with the last row 40 m from the
+    proscenium. The carve runs before cores, and the core search keeps out of it: the
+    house is what the building is for, and a stair serves it.
     """
     house_ask = next((s for s in brief if s.space_type == 'auditorium'), None)
     stage_ask = next((s for s in brief if s.space_type == 'stage'), None)
@@ -323,97 +441,130 @@ def carve_theatre(lattice: Lattice, datums: DatumSet,
         return _refuse('ARCH-THEATRE-BOWL', asks, reason)
 
     ground = lattice.occupied[0]
-    # Fix one canonical pair before deriving the bowl, reservations and voids.
-    # Rounding only AllocatedZone used to add a thin unsupported strip at the edge.
-    px0 = min(p.x for p in ground.plate)
-    px1 = math.floor(max(p.x for p in ground.plate) * 1000 + 1e-8) / 1000
-    py1 = math.floor(max(p.y for p in ground.plate) * 1000 + 1e-8) / 1000
 
-    # Depth: whole structural rows from the north edge, snapped to the band grid so
-    # the rooms beside the carve sit flush against its wall. Deepest first -- depth
-    # is the audience's width and length is its distance from the stage -- capped at
-    # 33 m, past which a 680 m2 house is wider than it is deep by more than the
-    # fan-shaped precedents this rake is derived from.
-    py0 = min(p.y for p in ground.plate)
-    candidates = [y for y in lattice.y_lines
-                  if y >= py0 - 0.01
-                  and house_ask.min_dimension_m <= py1 - y <= 33.0]
-    if not candidates:
-        return refuse(f'no run of rows offers the house its '
-                      f'{house_ask.min_dimension_m:.0f} m minimum dimension '
-                      f'on this plate')
-    y0 = math.ceil(min(candidates) * 1000 - 1e-8) / 1000
-    depth = py1 - y0
+    authored_sections, owner_error = _theatre_program_volume_sections(
+        lattice, ground, house_ask, stage_ask)
+    if owner_error is not None:
+        return refuse(owner_error)
+    owner_authored = authored_sections is not None
 
-    stage_w = max(stage_ask.area_m2 / depth, stage_ask.min_dimension_m)
-    house_w = max(house_ask.area_m2 / depth, house_ask.min_dimension_m)
-    if px1 - px0 < stage_w + house_w + 0.5:
-        need = stage_w + house_w
-        return refuse(f'house and stage need {need:.1f} m along the plate at '
-                      f'{depth:.1f} m deep; this plate offers {px1 - px0:.1f} m')
+    # Search a finite, authored set of sectional bands before committing the carve.
+    # The deepest viable band wins because y is the audience width while x remains
+    # the viewing distance.  Equal-depth ties prefer a perimeter edge, then the
+    # south/east station; these stable tie-breaks preserve the east-stage parti.
+    selected = None
+    candidates = (authored_sections if owner_authored else
+                  _section_spans(lattice, ground))
+    for candidate in candidates:
+        if owner_authored:
+            house, stage = candidate
+            house_x0, y_start, house_x1, y_end = house
+            stage_x0, _stage_y0, stage_x1, _stage_y1 = stage
+            depth = y_end - y_start
+        else:
+            y_start, y_end = candidate
+            depth = y_end - y_start
+            if not (max(house_ask.min_dimension_m, stage_ask.min_dimension_m)
+                    <= depth <= 33.0):
+                continue
+            span = _plate_x_span(ground, y_start, y_end)
+            if span is None:
+                continue
+            stage_w = max(stage_ask.area_m2 / depth, stage_ask.min_dimension_m)
+            house_w = max(house_ask.area_m2 / depth, house_ask.min_dimension_m)
+            if span[1] - span[0] < stage_w + house_w + 0.5:
+                continue
 
-    # Stage at the east end, audience raking west toward the entry side.
-    audience_dx = -1
-    stage_x1 = px1
-    # The shared proscenium uses one coordinate, not two independently rounded edges.
-    stage_x0 = house_x1 = round(stage_x1 - stage_w, 3)
-    house_x0 = math.ceil((house_x1 - house_w) * 1000 - 1e-8) / 1000
+            stage_x1 = math.floor(span[1] * 1000 + 1e-8) / 1000
+            # Floor the west edges so millimetre registration never steals required
+            # area on the legacy whole-plate path.
+            stage_x0 = house_x1 = math.floor(
+                (stage_x1 - stage_w) * 1000 + 1e-8) / 1000
+            house_x0 = math.floor(
+                (house_x1 - house_w) * 1000 + 1e-8) / 1000
+            house = (house_x0, y_start, house_x1, y_end)
+            stage = (stage_x0, y_start, stage_x1, y_end)
+            if not (_rect_clear_of(ground, house)
+                    and _rect_clear_of(ground, stage)):
+                continue
+            if ((house_x1 - house_x0) * depth + PLAN_EPS_M
+                    < house_ask.area_m2
+                    or (stage_x1 - stage_x0) * depth + PLAN_EPS_M
+                    < stage_ask.area_m2):
+                continue
+
+        rows = derive_bowl(house_x1 - house_x0)
+        if len(rows) < 4:
+            continue
+        clear_house = rows[-1].floor_m + BACK_CLEARANCE_M
+        clear_stage = STAGE_CLEAR_M
+        removed: dict[int, list[Rect]] = {}
+        owner_clearance_missing = False
+        for level in lattice.occupied[1:]:
+            rise = level.z - ground.z
+            cut: list[Rect] = []
+            # The plate is cut while any part of its build-up sits inside the
+            # claimed clear height; 0.3 m stands for slab and structure.
+            claims = []
+            if rise < clear_house + SECTION_BUILDUP_ALLOWANCE_M:
+                claims.append(house)
+            if rise < STAGE_RISE_M + clear_stage + SECTION_BUILDUP_ALLOWANCE_M:
+                claims.append(stage)
+            if owner_authored and claims:
+                # The authored clearance is gross by design: the room may use only
+                # part of its owner footprint, while the whole prism keeps the upper
+                # program out and prevents leftover slivers of floor inside the void.
+                authored_cuts = _program_volume_clearance_cuts(
+                    lattice, level, [house, stage])
+                if authored_cuts is None:
+                    owner_clearance_missing = True
+                    break
+                cut.extend(authored_cuts)
+            elif not owner_authored:
+                if rise < clear_house + SECTION_BUILDUP_ALLOWANCE_M:
+                    cut.append(house)
+                if rise < STAGE_RISE_M + clear_stage + SECTION_BUILDUP_ALLOWANCE_M:
+                    # The legacy stage is authored at the east edge of the ground
+                    # plate. A rotated or drifting upper plate can project a small
+                    # triangle past that edge; carry the cut through its actual east
+                    # facade so the subtraction remains one connected notch.
+                    east_face = max(point.x for point in level.plate) + PLAN_EPS_M
+                    cut.append((stage[0], stage[1],
+                                max(stage[2], east_face), stage[3]))
+            if cut:
+                removed[level.index] = cut
+        if owner_clearance_missing:
+            continue
+        if not _section_removals_are_viable(lattice, removed):
+            continue
+
+        selected = (house, stage, rows, clear_house, clear_stage, removed)
+        break
+
+    if selected is None:
+        return refuse(
+            'no lattice- or plate-aligned sectional band can hold the house and '
+            'east-end stage while leaving every claimed upper plate as one '
+            'connected, usable floor')
+
+    house, stage, rows, clear_house, clear_stage, removed = selected
+    house_x0, y0, house_x1, y1 = house
+    stage_x0, _stage_y0, stage_x1, _stage_y1 = stage
+    depth = y1 - y0
     house_w = house_x1 - house_x0
     proscenium_x = house_x1
-    house = (house_x0, y0, house_x1, py1)
-    stage = (stage_x0, y0, stage_x1, py1)
-
-    if not (_rect_clear_of(ground, house) and _rect_clear_of(ground, stage)):
-        return refuse('the ground plate is notched or holed where the house or '
-                      'stage would stand')
-
-    rows = derive_bowl(house_w)
-    if len(rows) < 4:
-        return refuse(f'a {house_w:.1f} m deep house holds {len(rows)} rows; '
-                      f'a bowl needs at least four')
-    clear_house = rows[-1].floor_m + BACK_CLEARANCE_M
-    clear_stage = STAGE_CLEAR_M
-
-    ground_z = ground.z
-    removed: dict[int, list[Rect]] = {}
-    for level in lattice.occupied[1:]:
-        rise = level.z - ground_z
-        cut: list[Rect] = []
-        # The plate is cut while any part of its build-up sits inside the claimed
-        # clear height; 0.3 m stands in for the slab and its structure.
-        if rise < clear_house + 0.3:
-            cut.append((house_x0, y0, house_x1, py1))
-        if rise < clear_stage + 0.3:
-            cut.append((stage_x0, y0, stage_x1, py1))
-        if cut:
-            removed[level.index] = cut
-
-    # A claim that erases a storey is not a section, it is a demolition. On a bar
-    # over a podium the bar stands centred exactly where the house must, so cutting
-    # the house's clear height out of it leaves the bar's levels with no floor at
-    # all -- and every room allocated up there with no stair that can reach it. That
-    # massing needs the tall volume built *for* the stage, which is the fly-tower
-    # phase decision 0016 defers; until it exists the carver refuses the pairing
-    # rather than gutting it.
-    demolished = _gutted(lattice, removed)
-    if demolished is not None:
-        level_id, share, remaining = demolished
-        return refuse(f'the house\'s clear height would leave {level_id} with '
-                      f'{share:.0%} of its floor ({remaining:.0f} m2): this '
-                      f'massing stands its upper storeys where the house must be, '
-                      f'and the tall stage volume that resolves it is the '
-                      f'fly-tower phase decision 0016 defers')
+    audience_dx = -1
 
     zones = [_place_zone(house_ask, house, ground, lattice.y_lines),
              _place_zone(stage_ask, stage, ground, lattice.y_lines)]
 
+    room_digits = 6 if owner_authored else 3
+    serial_house = tuple(round(value, room_digits) for value in house)
+    serial_stage = tuple(round(value, room_digits) for value in stage)
+
     return TheatreCarve(
-        rooms={house_ask.id: (round(house_x0, 3), round(y0, 3),
-                              round(house_x1, 3), round(py1, 3)),
-               stage_ask.id: (round(stage_x0, 3), round(y0, 3),
-                              round(stage_x1, 3), round(py1, 3))},
-        house=(round(house_x0, 3), round(y0, 3), round(house_x1, 3), round(py1, 3)),
-        stage=(round(stage_x0, 3), round(y0, 3), round(stage_x1, 3), round(py1, 3)),
+        rooms={house_ask.id: serial_house, stage_ask.id: serial_stage},
+        house=serial_house, stage=serial_stage,
         audience_dx=audience_dx,
         proscenium_x=round(proscenium_x, 3),
         proscenium_w_m=round(min(PROSCENIUM_MAX_W_M, depth - 3.0), 3),
@@ -421,7 +572,7 @@ def carve_theatre(lattice: Lattice, datums: DatumSet,
         clear_house_m=round(clear_house, 3), clear_stage_m=round(clear_stage, 3),
         rows=rows, zones=zones,
         reservations={ground.index: [
-            (house_x0, y0, house_x1, py1), (stage_x0, y0, stage_x1, py1)]},
+            house, stage]},
         removed=removed,
         tall_walls_m={house_ask.id: round(clear_house, 3),
                       stage_ask.id: round(clear_stage, 3)},
@@ -429,6 +580,10 @@ def carve_theatre(lattice: Lattice, datums: DatumSet,
             f'{len(rows)} rows at {ROW_DEPTH_M} m, derived to C = '
             f'{C_VALUE_DESIGN_M * 1000:.0f} mm against a focal point '
             f'{STAGE_RISE_M} m up at the proscenium',
+            (f'{depth:.1f} m Program Volume owner band consumed without moving its '
+             'authored house/stage seam' if owner_authored else
+             f'{depth:.1f} m datum-aligned sectional band selected as the deepest '
+             'candidate whose claimed upper floors remain connected'),
             f'house claims {clear_house:.1f} m clear, stage {clear_stage:.1f} m; '
             f'the fly tower is its own phase (decision 0016)'])
 
@@ -443,6 +598,289 @@ GALLERY_MAX_DEPTH_M = 24.0
 READING_MAX_DEPTH_M = 20.0
 # Keeps room-edge partitions, doors and their heads on sound floor beside a void.
 VOID_EDGE_CLEARANCE_M = 0.30
+
+
+def _program_volume_owner(lattice: Lattice, space_id: str):
+    """Return the one authored owner region for a room, when this is a PV run."""
+    matches = [region for region in getattr(lattice, 'program_volume_regions', ())
+               if space_id in region.space_ids]
+    if not matches:
+        return None
+    if len(matches) != 1:
+        raise ValueError(
+            f'{space_id} is assigned to {len(matches)} Program Volume regions')
+    region = matches[0]
+    try:
+        level = next(level for level in lattice.occupied if level.id == region.level_id)
+    except StopIteration as exc:
+        raise ValueError(
+            f'{region.id} assigns {space_id} to unknown occupied level '
+            f'{region.level_id}') from exc
+    return level, box(*region.resolve_bounds(lattice))
+
+
+def _program_volume_clearance_cuts(
+        lattice: Lattice, level, claims: list[Rect]) -> list[Rect] | None:
+    """Resolve the gross authored prisms that cover this level's room claims."""
+    regions = [
+        (region, box(*region.resolve_bounds(lattice)))
+        for region in getattr(lattice, 'program_volume_regions', ())
+        if region.role == 'sectional_clearance' and region.level_id == level.id
+    ]
+    selected = []
+    for claim in claims:
+        match = next((region for region, shape in regions
+                      if shape.buffer(PLAN_EPS_M).covers(box(*claim))), None)
+        if match is None:
+            return None
+        selected.append(tuple(float(value) for value in match.resolve_bounds(lattice)))
+    return list(dict.fromkeys(selected))
+
+
+def _owner_axis_spans(lines: list[float], low: float, high: float, *,
+                      minimum: float, maximum: float) -> list[tuple[float, float]]:
+    """Registered spans inside an owner overlap, deepest first.
+
+    Program Volume boundaries remain the authority here. Structural lines may gain
+    core faces later, so only the immutable authoring grid and the two owner edges
+    are eligible stations.
+    """
+    boundaries = sorted(set(
+        [round(float(low), 6), round(float(high), 6)]
+        + [round(float(value), 6) for value in lines
+           if low + PLAN_EPS_M < value < high - PLAN_EPS_M]))
+    spans = [(start, end) for start in boundaries for end in boundaries
+             if minimum <= end - start <= maximum]
+    return sorted(spans, key=lambda span: (
+        -round(span[1] - span[0], 6), round(span[0], 6), round(span[1], 6)))
+
+
+def _theatre_program_volume_sections(
+        lattice: Lattice, ground, house_ask, stage_ask,
+) -> tuple[list[tuple[Rect, Rect]] | None, str | None]:
+    """Read a theatre section from its two owner volumes, or select legacy mode.
+
+    ``None, None`` is deliberately reserved for a lattice with no Program Volume
+    owners. Once either room has an owner, partial or contradictory ownership is a
+    typed refusal; the carver may not escape to a more convenient part of the plate.
+    """
+    house_owner = _program_volume_owner(lattice, house_ask.id)
+    stage_owner = _program_volume_owner(lattice, stage_ask.id)
+    if house_owner is None and stage_owner is None:
+        return None, None
+    if house_owner is None or stage_owner is None:
+        missing = house_ask.id if house_owner is None else stage_ask.id
+        return None, (
+            f'Program Volume ownership is incomplete: {missing} has no authored '
+            'owner while its theatre pair does')
+
+    house_level, house_region = house_owner
+    stage_level, stage_region = stage_owner
+    if house_level.id != stage_level.id:
+        return None, (
+            f'Program Volume owners put {house_ask.id} on {house_level.id} and '
+            f'{stage_ask.id} on {stage_level.id}; the theatre pair needs one '
+            'sectional band')
+    if house_level.id != ground.id:
+        return None, (
+            f'Program Volume owners put the theatre pair on {house_level.id}; its '
+            f'ground host is {ground.id}')
+
+    hx0, hy0, hx1, hy1 = house_region.bounds
+    sx0, sy0, sx1, sy1 = stage_region.bounds
+    if abs(hx1 - sx0) > 0.001:
+        return None, (
+            'Program Volume owners do not give the auditorium a west/east shared '
+            'boundary with the stage')
+    y_low, y_high = max(hy0, sy0), min(hy1, sy1)
+    minimum = max(house_ask.min_dimension_m, stage_ask.min_dimension_m)
+    if y_high - y_low < minimum - PLAN_EPS_M:
+        return None, (
+            f'Program Volume theatre-owner overlap is {y_high - y_low:.2f} m deep, '
+            f'below the {minimum:.2f} m room minimum')
+
+    # Exact authored pairs already resolve the sectional band. Read their physical
+    # rectangles, including 0.1 mm serialization, instead of recomputing a seam from
+    # area/depth and pushing a rounded room a few microns beyond its owner.
+    if (abs(hy0-sy0) <= PLAN_EPS_M and abs(hy1-sy1) <= PLAN_EPS_M
+            and is_exact_registered_room(house_region.bounds, house_ask.area_m2, house_ask.min_dimension_m)
+            and is_exact_registered_room(stage_region.bounds, stage_ask.area_m2, stage_ask.min_dimension_m)
+            and _rect_clear_of(ground, house_region.bounds)
+            and _rect_clear_of(ground, stage_region.bounds)):
+        return [(house_region.bounds, stage_region.bounds)], None
+
+    y_lines = lattice.program_volume_y_lines or lattice.band_lines or lattice.y_lines
+    sections: list[tuple[Rect, Rect]] = []
+    owner_cover = (house_region.buffer(PLAN_EPS_M),
+                   stage_region.buffer(PLAN_EPS_M))
+    seam = (hx1 + sx0) / 2.0
+    for y_start, y_end in _owner_axis_spans(
+            y_lines, y_low, y_high, minimum=minimum, maximum=33.0):
+        depth = y_end - y_start
+        house_w = max(house_ask.area_m2 / depth, house_ask.min_dimension_m)
+        stage_w = max(stage_ask.area_m2 / depth, stage_ask.min_dimension_m)
+        house = (seam - house_w, y_start, seam, y_end)
+        stage = (seam, y_start, seam + stage_w, y_end)
+        if not (owner_cover[0].covers(box(*house))
+                and owner_cover[1].covers(box(*stage))
+                and _rect_clear_of(ground, house)
+                and _rect_clear_of(ground, stage)):
+            continue
+        sections.append((house, stage))
+    if not sections:
+        return None, (
+            'the authored Program Volume theatre owners cannot hold both exact room '
+            'areas at their minimum dimensions inside their shared sectional band')
+    return sections, None
+
+
+def _gallery_program_volume_placement(
+        lattice: Lattice, a_ask, b_ask,
+) -> tuple[tuple[object, Rect, Rect, str] | None, str | None]:
+    """Place an enfilade inside its authored owner pair, or select legacy mode."""
+    a_owner = _program_volume_owner(lattice, a_ask.id)
+    b_owner = _program_volume_owner(lattice, b_ask.id)
+    if a_owner is None and b_owner is None:
+        return None, None
+    if a_owner is None or b_owner is None:
+        missing = a_ask.id if a_owner is None else b_ask.id
+        return None, (
+            f'Program Volume ownership is incomplete: {missing} has no authored '
+            'gallery owner while its enfilade pair does')
+
+    a_level, a_region = a_owner
+    b_level, b_region = b_owner
+    if a_level.id != b_level.id:
+        return None, (
+            f'Program Volume gallery owners lie on {a_level.id} and {b_level.id}; '
+            'an enfilade needs one roof-lit host level')
+    ab = a_region.bounds
+    bb = b_region.bounds
+    owner_covers = (a_region.buffer(PLAN_EPS_M), b_region.buffer(PLAN_EPS_M))
+
+    candidates: list[tuple[float, Rect, Rect]] = []
+    minimum = max(a_ask.min_dimension_m, b_ask.min_dimension_m)
+
+    def derived_spans(low: float, high: float) -> list[tuple[float, float]]:
+        """Deepest legal room depth, anchored to either owner edge."""
+        depth = min(GALLERY_MAX_DEPTH_M, high - low)
+        if depth < minimum - PLAN_EPS_M:
+            return []
+        return sorted(set(((low, low + depth), (high - depth, high))))
+
+    # Normal authored case: two west/east owners share a wall. Support the reverse
+    # ordering too, because room labels do not decide the architectural sequence.
+    vertical = None
+    if abs(ab[2] - bb[0]) <= 0.001:
+        vertical = ('a_west', (ab[2] + bb[0]) / 2.0)
+    elif abs(bb[2] - ab[0]) <= 0.001:
+        vertical = ('b_west', (bb[2] + ab[0]) / 2.0)
+    if vertical is not None:
+        for (ay0, ay1), (by0, by1) in (
+                (a_span, b_span)
+                for a_span in derived_spans(ab[1], ab[3])
+                for b_span in derived_spans(bb[1], bb[3])):
+                a_w = max(a_ask.area_m2 / (ay1 - ay0),
+                          a_ask.min_dimension_m)
+                b_w = max(b_ask.area_m2 / (by1 - by0),
+                          b_ask.min_dimension_m)
+                order, seam = vertical
+                if order == 'a_west':
+                    rect_a = (seam - a_w, ay0, seam, ay1)
+                    rect_b = (seam, by0, seam + b_w, by1)
+                else:
+                    rect_a = (seam, ay0, seam + a_w, ay1)
+                    rect_b = (seam - b_w, by0, seam, by1)
+                overlap = min(ay1, by1) - max(ay0, by0)
+                if overlap >= PORTAL_W_M + PLAN_EPS_M:
+                    candidates.append((overlap, rect_a, rect_b))
+
+    # Hand-authored payloads may place the pair north/south; the same owner rule
+    # remains valid with the party wall rotated ninety degrees.
+    horizontal = None
+    if abs(ab[3] - bb[1]) <= 0.001:
+        horizontal = ('a_south', (ab[3] + bb[1]) / 2.0)
+    elif abs(bb[3] - ab[1]) <= 0.001:
+        horizontal = ('b_south', (bb[3] + ab[1]) / 2.0)
+    if horizontal is not None:
+        for (ax0, ax1), (bx0, bx1) in (
+                (a_span, b_span)
+                for a_span in derived_spans(ab[0], ab[2])
+                for b_span in derived_spans(bb[0], bb[2])):
+                a_h = max(a_ask.area_m2 / (ax1 - ax0),
+                          a_ask.min_dimension_m)
+                b_h = max(b_ask.area_m2 / (bx1 - bx0),
+                          b_ask.min_dimension_m)
+                order, seam = horizontal
+                if order == 'a_south':
+                    rect_a = (ax0, seam - a_h, ax1, seam)
+                    rect_b = (bx0, seam, bx1, seam + b_h)
+                else:
+                    rect_a = (ax0, seam, ax1, seam + a_h)
+                    rect_b = (bx0, seam - b_h, bx1, seam)
+                overlap = min(ax1, bx1) - max(ax0, bx0)
+                if overlap >= PORTAL_W_M + PLAN_EPS_M:
+                    candidates.append((overlap, rect_a, rect_b))
+
+    for _overlap, rect_a, rect_b in sorted(
+            candidates, key=lambda item: (-round(item[0], 6), item[1], item[2])):
+        if (owner_covers[0].covers(box(*rect_a))
+                and owner_covers[1].covers(box(*rect_b))
+                and _rect_clear_of(a_level, rect_a)
+                and _rect_clear_of(a_level, rect_b)):
+            return (a_level, rect_a, rect_b,
+                    'in line inside the Program Volume owner pair'), None
+    return None, (
+        'the authored Program Volume gallery owners lack a shared wall or cannot '
+        'hold both exact room areas at their minimum dimensions')
+
+
+def _place_reading_room_in_owner(level, above, owner, ask) -> tuple[Rect, float] | None:
+    """Solve the library archetype inside its own gross Program Volume."""
+    ox0, oy0, ox1, oy1 = owner.bounds
+    candidates = []
+
+    # First keep the long glazed side on the owner's south face.  If a core clips an
+    # end, derived anchors at the reservation faces let the room slide without leaving
+    # its authored volume.
+    depth = min(READING_MAX_DEPTH_M, oy1 - oy0)
+    width = max(ask.area_m2 / max(depth, PLAN_EPS_M), ask.min_dimension_m)
+    if depth >= ask.min_dimension_m and width <= ox1 - ox0 + PLAN_EPS_M:
+        x_starts = [ox0, ox1 - width]
+        for rx0, _ry0, rx1, _ry1 in getattr(level, 'reserved', ()):
+            x_starts.extend((rx1, rx0 - width))
+        candidates.extend(((x0, oy0, x0 + width, oy0 + depth), depth)
+                          for x0 in x_starts)
+
+    # A narrow owner may carry the capped daylight depth along x.  The room still
+    # touches an authored outer face, and the section keeps its exact required area.
+    depth = min(READING_MAX_DEPTH_M, ox1 - ox0)
+    height = max(ask.area_m2 / max(depth, PLAN_EPS_M), ask.min_dimension_m)
+    if depth >= ask.min_dimension_m and height <= oy1 - oy0 + PLAN_EPS_M:
+        candidates.extend((rect, depth) for rect in (
+            (ox0, oy0, ox0 + depth, oy0 + height),
+            (ox0, oy1 - height, ox0 + depth, oy1),
+            (ox1 - depth, oy0, ox1, oy0 + height),
+            (ox1 - depth, oy1 - height, ox1, oy1),
+        ))
+
+    owner_cover = owner.buffer(PLAN_EPS_M)
+    upper_floor = usable_region(above)
+    legal = []
+    for rect, clear_depth in candidates:
+        footprint = box(*rect)
+        remaining = upper_floor.difference(footprint)
+        if (owner_cover.covers(footprint)
+                and upper_floor.buffer(PLAN_EPS_M).covers(footprint)
+                and _rect_clear_of(level, rect)
+                and remaining.geom_type == 'Polygon'
+                and remaining.is_valid and not remaining.is_empty):
+            legal.append((rect, clear_depth))
+    if not legal:
+        return None
+    return min(legal, key=lambda item: (
+        round(item[0][1], 6), round(item[0][0], 6),
+        round(item[0][3], 6), round(item[0][2], 6)))
 
 
 def carve_museum(lattice: Lattice, datums: DatumSet,
@@ -469,29 +907,41 @@ def carve_museum(lattice: Lattice, datums: DatumSet,
     def refuse(reason: str) -> CarveRefusal:
         return _refuse('ARCH-GALLERY-SEQUENCE', galleries, reason)
 
-    # The topmost plate that holds the pair. The roof-lit plate is the first choice;
-    # where the top plate has stepped or tapered too small -- a slab's upper storeys
-    # narrow toward the roof -- the pair takes the highest plate that fits and the
-    # plates above it are opened over the galleries, so the light still comes from
-    # the roof. Refusing the whole building because its top plate was small is what
-    # left a museum with no galleries in the twenty-track audit.
-    for host_index in range(len(lattice.occupied) - 1, -1, -1):
-        placement = _place_galleries(lattice, lattice.occupied[host_index], a_ask, b_ask)
-        if placement is None:
-            continue
-        rect_a, rect_b, figure = placement
+    owned, owner_error = _gallery_program_volume_placement(lattice, a_ask, b_ask)
+    if owner_error is not None:
+        return refuse(owner_error)
+    if owned is not None:
+        top, rect_a, rect_b, figure = owned
+        host_index = lattice.occupied.index(top)
         above = lattice.occupied[host_index + 1:]
         removed = {level.index: [rect_a, rect_b] for level in above}
-        demolished = _gutted(lattice, removed)
-        if demolished is not None:
-            continue
-        top = lattice.occupied[host_index]
-        break
+        if (_gutted(lattice, removed) is not None
+                or not _section_removals_are_viable(lattice, removed)):
+            return refuse(
+                'the Program Volume gallery owners are valid in plan, but their '
+                'authored roof-light claim disconnects or guts a plate above')
     else:
-        return refuse(f'no plate from {lattice.occupied[-1].id} down holds both '
-                      f'galleries at their minimum dimensions clear of the plate edge '
-                      f'and its voids, straight or wrapped around the court, without '
-                      f'gutting a plate above')
+        # The topmost plate that holds the pair. The roof-lit plate is the first
+        # choice; where a legacy top plate tapers too small, the pair takes the
+        # highest viable plate and opens every plate above it.
+        for host_index in range(len(lattice.occupied) - 1, -1, -1):
+            placement = _place_galleries(
+                lattice, lattice.occupied[host_index], a_ask, b_ask)
+            if placement is None:
+                continue
+            rect_a, rect_b, figure = placement
+            above = lattice.occupied[host_index + 1:]
+            removed = {level.index: [rect_a, rect_b] for level in above}
+            demolished = _gutted(lattice, removed)
+            if demolished is not None:
+                continue
+            top = lattice.occupied[host_index]
+            break
+        else:
+            return refuse(f'no plate from {lattice.occupied[-1].id} down holds both '
+                          f'galleries at their minimum dimensions clear of the plate '
+                          'edge and its voids, straight or wrapped around the court, '
+                          'without gutting a plate above')
 
     zones = [_place_zone(a_ask, rect_a, top, lattice.y_lines),
              _place_zone(b_ask, rect_b, top, lattice.y_lines)]
@@ -655,6 +1105,26 @@ def carve_library(lattice: Lattice, datums: DatumSet,
     if len(lattice.occupied) < 2:
         return refuse('a double-height room needs a plate above it to remove, and '
                       'this massing has one occupied level')
+
+    owner = _program_volume_owner(lattice, ask.id)
+    if owner is not None:
+        host, owner_region = owner
+        host_position = lattice.occupied.index(host)
+        if host_position + 1 >= len(lattice.occupied):
+            return refuse(
+                f'{ask.id} is authored on {host.id}, which has no occupied plate '
+                'above for its double-height volume')
+        above = lattice.occupied[host_position + 1]
+        placed = _place_reading_room_in_owner(host, above, owner_region, ask)
+        if placed is None:
+            return refuse(
+                f'its Program Volume on {host.id} cannot hold {ask.area_m2:.0f} m2 '
+                f'at {ask.min_dimension_m:.0f} m clear of the circulation carrier, '
+                'cores and plate edge')
+        rect, depth = placed
+        return _finish_library_carve(
+            lattice, datums, ask, host, above, rect, depth, refuse)
+
     # High enough to be the quiet end, low enough that a plate remains above to
     # remove: the second occupied level from the top hosts the room and the top
     # plate is opened over it.
@@ -682,7 +1152,11 @@ def carve_library(lattice: Lattice, datums: DatumSet,
         # ends, and a rectangular room over a rounded plate fails its own corners.
         # Only the host plate is probed: where the plate above has already stepped
         # away, the room simply opens higher, which is more volume, not an error.
-        anchors = [px1 - slide for slide in (0.0, 3.0, 6.0)]
+        # Against a core first: a room whose wall is the core wall leaves no sliver
+        # of floor for the grid to frame between them (decision 0022).
+        anchors = [edge for rx0, _ry0, rx1, _ry1 in getattr(host, 'reserved', ())
+                   for edge in (rx0, rx1 + width)]
+        anchors += [px1 - slide for slide in (0.0, 3.0, 6.0)]
         anchors += [px0 + width + slide for slide in (0.0, 3.0, 6.0)]
         for void in host.voids:
             vx0, vx1 = min(p.x for p in void), max(p.x for p in void)
@@ -691,7 +1165,9 @@ def carve_library(lattice: Lattice, datums: DatumSet,
         for x1 in anchors:
             rect = (x1 - width, sy0, x1, y1)
             if rect[0] >= px0 - 0.01 and rect[2] <= px1 + 0.01 \
-                    and _rect_clear_of(host, rect):
+                    and _rect_clear_of(host, rect) \
+                    and _section_removals_are_viable(
+                        lattice, {above.index: [rect]}):
                 placed = (rect, depth)
                 break
         if placed:
@@ -719,7 +1195,9 @@ def carve_library(lattice: Lattice, datums: DatumSet,
             for x1 in anchors:
                 rect = (x1 - width, y0, x1, y1)
                 if rect[0] >= span[0] - 0.01 and rect[2] <= span[1] + 0.01 \
-                        and _rect_clear_of(host, rect):
+                        and _rect_clear_of(host, rect) \
+                        and _section_removals_are_viable(
+                            lattice, {above.index: [rect]}):
                     placed = (rect, width)
                     break
             if placed:
@@ -730,7 +1208,13 @@ def carve_library(lattice: Lattice, datums: DatumSet,
                       f'of the plate edge and its voids across '
                       f'{len(lattice.occupied)} occupied levels')
     rect, depth = placed
+    return _finish_library_carve(
+        lattice, datums, ask, host, above, rect, depth, refuse)
 
+
+def _finish_library_carve(lattice: Lattice, datums: DatumSet, ask,
+                          host, above, rect: Rect, depth: float, refuse):
+    """Apply and describe one already solved library reading-room section."""
     removed = {above.index: [rect]}
     demolished = _gutted(lattice, removed)
     if demolished is not None:
@@ -758,9 +1242,9 @@ def carve_pavilion(lattice: Lattice, datums: DatumSet,
                    brief) -> PavilionCarve | CarveRefusal:
     """The hall as the full-height volume a pavilion is.
 
-    A pavilion is a room, not a stack of them: the main hall takes the east end of
-    the ground plate through the full depth, and every plate above it is opened, so
-    the one daylit volume the brief describes is the volume that gets built.
+    A pavilion is a room, not a stack of them: the main hall takes the deepest safe
+    registered band at the east end, and every plate above it is opened, so the one
+    daylit volume the brief describes is the volume that gets built.
     """
     halls = sorted((s for s in brief
                     if s.category == 'public' and s.level_preference == 'ground'),
@@ -774,30 +1258,41 @@ def carve_pavilion(lattice: Lattice, datums: DatumSet,
         return _refuse('ARCH-HALL', [ask], reason)
 
     ground = lattice.occupied[0]
-    px0 = min(p.x for p in ground.plate)
-    px1 = max(p.x for p in ground.plate)
-    py0 = min(p.y for p in ground.plate)
-    py1 = max(p.y for p in ground.plate)
-    depth = py1 - py0
-    if depth < ask.min_dimension_m:
-        return refuse(f'the plate is {depth:.1f} m deep against the hall\'s '
-                      f'{ask.min_dimension_m:.0f} m minimum dimension')
-    width = max(ask.area_m2 / depth, ask.min_dimension_m)
-    if width > px1 - px0 - 0.5:
-        return refuse(f'the hall needs {width:.1f} m of a {px1 - px0:.1f} m plate')
-    # East end: the west end carries the apse this family rounds, and a rectangular
-    # room over a rounded plate fails its own corners.
-    rect = (px1 - width, py0, px1, py1)
-    if not _rect_clear_of(ground, rect):
-        return refuse('the ground plate is notched or holed where the hall '
-                      'would stand')
 
-    removed = {level.index: [rect] for level in lattice.occupied[1:]}
-    demolished = _gutted(lattice, removed)
-    if demolished is not None:
-        level_id, share, remaining = demolished
-        return refuse(f'opening the hall through {level_id} would leave it '
-                      f'{share:.0%} of its floor ({remaining:.0f} m2)')
+    # Keep the hall at the east end, while selecting its y-span from the same
+    # registration lattice as the building.  The deepest viable span wins.  Before
+    # committing it, dry-run both the exact floor subtraction and the 150 mm true
+    # inward offset used for the concave upper-floor ceiling boundary.
+    selected = None
+    for y_start, y_end in _section_spans(lattice, ground):
+        depth = y_end - y_start
+        if depth < ask.min_dimension_m:
+            continue
+        span = _plate_x_span(ground, y_start, y_end)
+        if span is None:
+            continue
+        width = max(ask.area_m2 / depth, ask.min_dimension_m)
+        if width > span[1] - span[0] - 0.5:
+            continue
+        east = math.floor(span[1] * 1000 + 1e-8) / 1000
+        west = math.floor((east - width) * 1000 + 1e-8) / 1000
+        rect = (west, y_start, east, y_end)
+        if (not _rect_clear_of(ground, rect)
+                or (east - west) * depth + PLAN_EPS_M < ask.area_m2):
+            continue
+        removed = {level.index: [rect] for level in lattice.occupied[1:]}
+        if not _section_removals_are_viable(
+                lattice, removed, inset_m=0.15):
+            continue
+        selected = (rect, removed)
+        break
+
+    if selected is None:
+        return refuse(
+            f'no lattice- or plate-aligned east-end hall can deliver '
+            f'{ask.area_m2:.0f} m2 at {ask.min_dimension_m:.0f} m minimum while '
+            'leaving every upper floor and its 0.15 m ceiling offset connected')
+    rect, removed = selected
 
     roof_z = lattice.levels[-1].z
     clear = round(roof_z - ground.z - 0.3, 3)
@@ -811,7 +1306,10 @@ def carve_pavilion(lattice: Lattice, datums: DatumSet,
         level_index=ground.index,
         clear_m=clear,
         notes=[f'hall open through every plate to {clear:.1f} m under the roof, '
-               f'daylit on three sides at the east end of the plate'])
+               f'daylit on three sides at the east end of the plate',
+               f'{rect[3] - rect[1]:.1f} m datum-aligned hall band selected as the '
+               f'deepest candidate whose floors and 0.15 m ceiling offsets remain '
+               f'connected'])
 
 
 _CARVERS = {
@@ -932,7 +1430,17 @@ def _gate_colonnade(model, rooms: dict[str, Rect], clear_m: float,
             continue
         x, y = element.position.x, element.position.y
         z0 = element.position.z - element.dimensions.z / 2.0
-        if z0 >= base_z + clear_m:
+        z1 = element.position.z + element.dimensions.z / 2.0
+        # Member display bounds include a conservative profile radius at both
+        # ends. Measure the actual swept column so a below-floor piloti is not
+        # mistaken for an intrusion above the floor it supports.
+        if getattr(element.geometry, 'type', None) == 'member':
+            from .mesh_primitives import primitive_mesh
+            vertices, _ = primitive_mesh(element.geometry.model_dump(),
+                {key:value.model_dump() for key,value in model.profiles.items()},
+                element.thickness_m)
+            z0, z1 = min(v[2] for v in vertices), max(v[2] for v in vertices)
+        if min(z1, base_z + clear_m) - max(z0, base_z) <= 1e-6:
             continue
         for rx0, ry0, rx1, ry1 in rooms.values():
             if rx0 + 0.3 < x < rx1 - 0.3 and ry0 + 0.3 < y < ry1 - 0.3:
@@ -968,13 +1476,16 @@ def _gate_perimeter_daylight(model, carve: Carve,
             continue
         level = by_index[zone.level_index]
         rx0, ry0, rx1, ry1 = rect
-        intervals = [b - a for lines in (model.lattice.x_lines,
-                                         model.lattice.y_lines)
-                     for a, b in zip(lines, lines[1:]) if b - a > 0.01]
         # Rooms sit on structural lines while a slab may cantilever or rotate past
-        # them. Half the smallest bay is the measured perimeter zone; a fixed 450 mm
-        # wrongly called the intended glazing line an interior wall on those plates.
-        reach = max(0.45, min(intervals, default=0.9) / 2.0)
+        # them. Half the smaller bay module is the measured perimeter zone; a fixed
+        # 450 mm wrongly called the intended glazing line an interior wall on those
+        # plates. The module, not the structural lines: those now carry the core
+        # faces (decision 0022), and a sliver between a face and a module line would
+        # shrink the zone to nothing.
+        datums = getattr(model, 'datum_set', None)
+        module = (min(datums.value('bay_x_m'), datums.value('bay_y_m'))
+                  if datums is not None else 0.9)
+        reach = max(0.45, module / 2.0)
         beyond = []
         for t in (0.25, 0.5, 0.75):
             x = rx0 + (rx1 - rx0) * t
@@ -1001,13 +1512,50 @@ def _theatre_gates(model, carve: TheatreCarve,
     def plan_distance(e) -> float:
         return (e.position.x - carve.proscenium_x) * carve.audience_dx
 
-    risers = sorted((e for e in model.elements if e.kind == 'auditorium_riser'),
-                    key=plan_distance)
+    by_row = {}
+    for element in model.elements:
+        if element.kind == 'auditorium_riser':
+            by_row.setdefault(element.lattice_index.get('row',plan_distance(element)),[]).append(element)
+    risers = sorted((pieces[0] for pieces in by_row.values()),key=plan_distance)
+    seat_lines = {}
+    for element in model.elements:
+        if (element.kind=='seat' and element.program=='auditorium'
+                and element.part_role=='seat' and 'row' in element.lattice_index):
+            seat_lines.setdefault(element.lattice_index['row'],[]).append(plan_distance(element))
+    derived_distances = {row.index: row.distance_m for row in carve.rows}
     records: list[SightlineRecord] = []
     previous: tuple[float, float] | None = None   # (distance, eye z)
     for index, riser in enumerate(risers):
         top = riser.position.z + riser.dimensions.z / 2.0
-        distance = plan_distance(riser)
+        row_key = riser.lattice_index.get('row',plan_distance(riser))
+        pieces = by_row[row_key]
+        tops = [part.position.z+part.dimensions.z/2 for part in pieces]
+        bands = {part.lattice_index.get('band') for part in pieces}
+        missing_bands = {0, 1} - bands
+        if missing_bands:
+            findings.append(ArchetypeFinding(gate_id='ARCH-SIGHTLINE',severity='violation',
+                elements=tuple(part.id for part in pieces),measure=len(bands & {0,1}),
+                unit='seat bands', detail=f'row {index} lacks supported seating band(s) '
+                f'{sorted(missing_bands)}'))
+        if max(tops)-min(tops)>.001:
+            findings.append(ArchetypeFinding(gate_id='ARCH-SIGHTLINE',severity='violation',
+                elements=tuple(part.id for part in pieces),measure=max(tops)-min(tops),unit='m',
+                detail=f'row {index} riser fragments do not share one derived elevation'))
+        lines = seat_lines.get(row_key,[])
+        if not lines:
+            findings.append(ArchetypeFinding(gate_id='ARCH-SIGHTLINE',severity='violation',
+                elements=tuple(part.id for part in pieces),measure=0,unit='seats',
+                detail=f'row {index} has no actual seat pan from which to measure the eye line'))
+        elif max(lines)-min(lines)>.001:
+            findings.append(ArchetypeFinding(gate_id='ARCH-SIGHTLINE',severity='violation',
+                elements=tuple(part.id for part in pieces),measure=max(lines)-min(lines),unit='m',
+                detail=f'row {index} seat pans do not share one eye line'))
+        # A supported band may be split around an opening. Its first fragment no
+        # longer spans the full row depth, so it cannot reconstruct the eye station.
+        # Missing seats are already a violation; use the authored row distance only
+        # to keep the remaining row-by-row audit numerically meaningful.
+        distance = (sum(lines)/len(lines) if lines else
+                    derived_distances.get(row_key, plan_distance(riser)))
         eye = top + SEATED_EYE_M
         c_measured: float | None = None
         if previous is not None:

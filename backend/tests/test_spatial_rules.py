@@ -67,6 +67,22 @@ def test_no_model_breaks_a_spatial_rule(models, massing):
         rule: count for rule, count in report.counts.items() if count}
 
 
+def test_bar_podium_theatre_keeps_its_documented_core_refusal(models):
+    """ADR 0016 leaves the raised bar for a later circulation/transfer phase.
+
+    A pinned compatibility massing must report that limitation explicitly rather
+    than emitting a stage while its upper occupied levels have no stair.
+    """
+    model = models['MAS-BAR-PODIUM']
+    refusal = model.archetype.refused
+    assert refusal is not None
+    assert all(level_id in refusal for level_id in ('L04', 'L05'))
+    unplaced = {space.space_id: space for space in model.program_allocation.unplaced}
+    assert {'SP-AUDITORIUM', 'SP-STAGE'} <= set(unplaced)
+    assert all('no stair can serve L04, L05' in unplaced[space_id].reason
+               for space_id in ('SP-AUDITORIUM', 'SP-STAGE'))
+
+
 @pytest.mark.parametrize('massing', MASSINGS)
 def test_the_report_travels_on_the_model(models, massing):
     """A rule that only runs when somebody remembers to run it is not a constraint."""
@@ -105,8 +121,12 @@ def test_a_surface_that_is_not_level_with_its_neighbour_is_caught(models):
                   v3(1.5, 1.5, 0.24), 'TEST-STEP-UP')
     report = check_spatial_rules(broken)
     assert report.counts['SP-SURFACE-NOT-FLUSH'] >= 1
+    # The pair with the landing it was copied from: the step also overlaps the run
+    # that arrives at that landing, and that finding measures against the run's
+    # bounding-box top, which is a different (and larger) number.
+    pair = tuple(sorted((landing.id, 'TEST-STEP-UP')))
     finding = next(item for item in report.by_rule('SP-SURFACE-NOT-FLUSH')
-                   if 'TEST-STEP-UP' in item.elements)
+                   if tuple(item.elements) == pair)
     assert finding.measure == pytest.approx(0.24, abs=0.02)
 
 

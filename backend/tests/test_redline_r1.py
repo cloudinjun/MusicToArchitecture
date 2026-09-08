@@ -8,14 +8,14 @@ from types import SimpleNamespace as NS
 
 import pytest
 from shapely.affinity import rotate
-from shapely.geometry import Polygon, box
+from shapely.geometry import Point, Polygon, box
 
 from backend.app.datums import Lattice, LevelDatum, build_lattice
-from backend.app.drawing_geometry import plan_frame
+from backend.app.drawing_geometry import plan_frame, section_frame
 from backend.app.drawing_standard import PLAN_STANDARD
 from backend.app.drawings import (
-    Drawing, DrawingAudit, annotate_doors, annotate_rooms, compile_drawing,
-    floor_plans, issue_drawings,
+    Drawing, DrawingAudit, annotate_doors, annotate_rooms, annotate_section_rooms,
+    compile_drawing, floor_plans, issue_drawings,
 )
 from backend.app.geometry import BoxGeometry, ExtrusionGeometry, v2, v3
 from backend.app.geometry_review import check_room_support
@@ -162,15 +162,27 @@ def test_missing_floor_support_remains_unknown():
     assert result[0].unit == 'unevaluated'
 
 
+@pytest.mark.parametrize('zone_kind', ['box', 'extrusion'])
 @pytest.mark.parametrize('degrees', range(0, 360, 45))
 @pytest.mark.parametrize('sense', [-1, 1])
-def test_door_arc_is_a_quarter_turn_in_every_orientation(degrees, sense):
+def test_door_arc_is_a_quarter_turn_in_every_orientation(degrees, sense, zone_kind):
     angle = math.radians(degrees)
+    along = (math.cos(angle), math.sin(angle))
     across = (-math.sin(angle), math.cos(angle))
     leaf = instance('PRG-PRT-L01-SP-X-N-DR', BoxGeometry(
         center=v3(0, 0, 1), size=v3(1, 0.05, 2), rotation_z=angle))
-    zone = instance('PRG-ZON-L01-SP-X', BoxGeometry(
-        center=v3(across[0]*sense*3, across[1]*sense*3, 0.05), size=v3(2, 2, 0.1)))
+    zone_points = [
+        (along[0] * u + across[0] * v,
+         along[1] * u + across[1] * v)
+        for u, v in ((-2, 0), (2, 0), (2, 3 * sense), (-2, 3 * sense))]
+    zone_geometry = (
+        BoxGeometry(center=v3(across[0] * sense * 1.5,
+                              across[1] * sense * 1.5, 0.05),
+                    size=v3(4, 3, 0.1), rotation_z=angle)
+        if zone_kind == 'box' else
+        ExtrusionGeometry(boundary=[v2(x, y) for x, y in zone_points],
+                          z_base=0.0, z_top=0.1))
+    zone = instance('PRG-ZON-L01-SP-X', zone_geometry)
     drawing = empty_drawing()
     annotate_doors(drawing, model(group('door', leaf, subsystem='partitions'),
                                  group('program_zone', zone)), NS(id='L01'))
@@ -182,11 +194,68 @@ def test_door_arc_is_a_quarter_turn_in_every_orientation(degrees, sense):
     assert sweep == pytest.approx(-sense*math.pi/2)
 
 
+def test_concave_room_label_anchor_stays_inside_the_emitted_zone():
+    shape = Polygon([
+        (0, 0), (12, 0), (12, 3), (4, 3),
+        (4, 9), (12, 9), (12, 12), (0, 12),
+    ])
+    zone = instance('PRG-ZON-L01-SP-X', ExtrusionGeometry(
+        boundary=ring(shape), z_base=0.0, z_top=0.1))
+    m = model(group('program_zone', zone, program='gallery'))
+    m.program_allocation = NS(zones=[NS(
+        level_id='L01', space_id='SP-X', label='Gallery', area_delivered_m2=96.0)])
+    drawing = empty_drawing()
+
+    annotate_rooms(drawing, m, NS(id='L01', voids=[]))
+
+    room_label = next(note for note in drawing.annotations if note.text == 'GALLERY')
+    assert shape.covers(Point(*room_label.anchor))
+    assert not shape.covers(Point(6, 6))
+
+
+def test_section_room_labels_follow_each_continuous_span_around_a_hole():
+    outer = box(0, 0, 12, 12)
+    hole = box(4, 4, 8, 8)
+    zone = instance('PRG-ZON-L01-SP-X', ExtrusionGeometry(
+        boundary=ring(outer), holes=[ring(hole)], z_base=0.0, z_top=0.1))
+    lv = level(outer)
+    drawing = empty_drawing()
+    _plane, frame = section_frame((0, 6), 0)
+
+    annotate_section_rooms(
+        drawing, model(group('program_zone', zone, program='gallery'),
+                       grid=lattice(lv)), _plane, frame)
+
+    labels = [note for note in drawing.annotations if note.text == 'GALLERY']
+    assert len(labels) == 2
+    assert sorted(note.anchor[0] for note in labels) == pytest.approx([2.0, 10.0])
+
+
 def test_lift_landing_is_not_drawn_as_a_hinged_room_door():
     lift_door = instance('CIR-SHF-L01-DR', BoxGeometry(center=v3(0,0,1),size=v3(1,0.2,2)))
     drawing = empty_drawing()
     annotate_doors(drawing, model(group('door',lift_door,subsystem='vertical_core')),NS(id='L01'))
     assert not drawing.annotations
+
+
+def test_door_swing_is_omitted_when_a_stage_pocket_resolves_no_room_side():
+    stage = box(0, 0, 10, 10).difference(box(4, 0, 6, 2))
+    zone = instance('PRG-ZON-L01-SP-STAGE', ExtrusionGeometry(
+        boundary=ring(stage), z_base=0.0, z_top=0.1))
+    door = instance('PRG-PRT-L01-SP-STAGE-S00-DR', BoxGeometry(
+        center=v3(5, 1, 1), size=v3(1, 0.05, 2)))
+    drawing = empty_drawing()
+
+    annotate_doors(
+        drawing,
+        model(group('door', door, subsystem='partitions'),
+              group('program_zone', zone)),
+        NS(id='L01'))
+
+    assert drawing.annotations == []
+    assert drawing.annotation_findings == [
+        'PRG-PRT-L01-SP-STAGE-S00-DR: door swing unresolved; emitted room '
+        'geometry does not select one opening side.']
 
 
 def test_program_zone_does_not_occlude_real_building_marks():
@@ -199,6 +268,23 @@ def test_program_zone_does_not_occlude_real_building_marks():
     assert {mark.element_id for mark in drawing.marks} == {'SLAB'}
     assert drawing.audit.elements_considered == 2
     assert drawing.audit.outside_cut == 1
+
+
+def test_detail_crop_reaccounts_elements_removed_after_projection():
+    near = instance('SLAB-NEAR', BoxGeometry(
+        center=v3(0, 0, -0.15), size=v3(4, 4, 0.3)))
+    far = instance('SLAB-FAR', BoxGeometry(
+        center=v3(20, 0, -0.15), size=v3(4, 4, 0.3)))
+    plane, frame = plan_frame(1.2)
+    drawing = compile_drawing(
+        model(group('floor_slab', near, far)), plane, frame, PLAN_STANDARD,
+        drawing_id='D-TEST', title='Detail crop', kind='detail', keep=(0, 2.1),
+        clip_rect=(-3.0, -3.0, 3.0, 3.0))
+    assert {mark.element_id for mark in drawing.marks} == {'SLAB-NEAR'}
+    assert drawing.audit.elements_considered == 2
+    assert drawing.audit.elements_drawn == 1
+    assert drawing.audit.outside_cut == 1
+    assert drawing.audit.coverage == pytest.approx(1.0)
 
 
 def test_room_label_and_area_come_from_allocation_not_generic_type_or_box():
@@ -242,7 +328,12 @@ def test_vertical_edges_preserve_stair_identity_and_do_not_invent_discharge():
     levels=[level(box(0,0,20,20),name='L01',index=1,z=3),
             level(box(0,0,20,20),name='L02',index=2,z=7)]
     elements=[NS(id=f'CIR-{core}-{lv.id}',kind='stair_landing',level_id=lv.id,
-                 position=v3(x,0,lv.z)) for lv in levels for core,x in [('LND',0),('LND2',10)]]
+                 position=v3(x,2,lv.z),
+                 geometry=BoxGeometry(center=v3(x,2,lv.z-.1),size=v3(1.2,1.2,.2)))
+              for lv in levels for core,x in [('LND',2),('LND2',10)]]
+    elements += [NS(id=f'FLOOR-{lv.id}',kind='floor_slab',level_id=lv.id,
+                    geometry=BoxGeometry(center=v3(10,10,lv.z-.1),size=v3(20,20,.2)))
+                 for lv in levels]
     elements += [NS(id='CIR-LND-ENTRY',kind='stair_landing',level_id='L01',position=v3(2,0,3)),
                  NS(id='RAMP-HIGH',kind='ramp_landing',level_id='L02',position=v3(0,0,7))]
     m=NS(elements=elements,lattice=NS(levels=levels),program_allocation=NS(zones=[]),

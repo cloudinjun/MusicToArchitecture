@@ -31,6 +31,46 @@ that generated geometry and exports. The model and run identities include that s
 hash, and generation aborts if the source changes before the run completes. This protects
 long renders from concurrent edits in another task.
 
+Publication and candidate archiving share an exclusive writer lock. A second window
+cannot overwrite a staging directory or pointer while the first owns publication.
+An abandoned lock identifies its process and time for explicit inspection.
+
+## Complete candidate pairs
+
+Before interactive Rhino acceptance, `--archive-candidate` stores a complete same-run
+pair under `candidates/<version_id>/`: `rhino/model.3dm`, `blender/scene_v3.blend`, GLB,
+the exact portable JSON, original generation response, and diagnostic images. The
+`current_candidate.json` pointer is explicitly a candidate; it never replaces `latest`.
+File-SDK solid validity and readback do not become interactive Rhino acceptance.
+
+The user's current delivery target is an M Arch thesis model demonstrating design
+coordination and software handoff. Complete visible geometry, connected spatial
+interfaces and same-version native files are the delivery gate. Permit calculations,
+construction detailing, universal check clearance and fabrication slicing are outside
+this delivery. Remaining findings stay visible in the model's review record.
+
+Blender manifests bind the canonical source JSON, actual native file, GLB and every
+render by SHA256. Diagnostic views additionally require the matching generation response
+and record the view planes, camera, visibility changes and per-image hash. Relocating
+identical native bytes into an archive is allowed; changed bytes are rejected.
+
+Diagnostic cuts are temporary uncapped view operations. The master `.blend` and complete
+model stay unchanged. These images do not establish successful visual review until a
+reviewer has actually inspected them. No fabrication slicing is part of this workflow.
+
+Concurrent design edits use `backend.scripts.freeze_generation_source`: a verified
+`source_snapshots/<inventory_hash>/` stores Python source, runtime documents and the
+audio input. Each is hashed before and after copying. A fresh isolated Python process
+compiles inside that snapshot and creates its own outputs. `adopt_snapshot_candidate`
+copies the checked native-file pair into the shared candidate directory and records
+which source snapshot owns its relative run paths. It never promotes `latest` or
+requires another design window to stop editing.
+
+Snapshot folder names use a verified 16-character prefix to stay within native Windows
+file-path limits. The complete inventory hash, runtime record and source file hashes
+remain in `source_snapshot.json` and the candidate's `contracts/` directory. Corpus
+recordings are copied from the licensed input manifest and checked before copying.
+
 ## Tool authority
 
 Rhino owns accepted architectural geometry, issued drawings, and the Revit handoff. A

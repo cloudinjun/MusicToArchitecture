@@ -32,6 +32,7 @@ follows from that axis rather than from a nearest-centroid guess.
 from __future__ import annotations
 
 from collections import defaultdict
+from bisect import bisect_left, bisect_right
 from dataclasses import dataclass, field
 import math
 
@@ -94,7 +95,25 @@ def _closest_between(a0: Vector3, a1: Vector3, b0: Vector3, b1: Vector3
     d = ux * wx + uy * wy + uz * wz
     e = vx * wx + vy * wy + vz * wz
     denom = a * c - b * b
-    s_par = 0.0 if denom <= 1e-12 else max(0.0, min(1.0, (b * e - c * d) / denom))
+    if denom <= 1e-12:
+        # Parallel (or one degenerate): the closest pair lies at an endpoint of one
+        # of them. Taking a's start as the answer, as this did, measured a girder
+        # running along a core wall's top line by its far end -- a whole bay away
+        # from the wall it bears on.
+        best: tuple[float, Vector3] | None = None
+        for p in (a0, a1):
+            t_end = 0.0 if c <= 1e-12 else max(0.0, min(1.0, (
+                (p.x - b0.x) * vx + (p.y - b0.y) * vy + (p.z - b0.z) * vz) / c))
+            q = Vector3(x=b0.x + vx * t_end, y=b0.y + vy * t_end, z=b0.z + vz * t_end)
+            gap = math.dist((p.x, p.y, p.z), (q.x, q.y, q.z))
+            if best is None or gap < best[0]:
+                best = (gap, q)
+        for q in (b0, b1):
+            gap = _point_segment_distance(q, a0, a1)
+            if gap < best[0]:
+                best = (gap, q)
+        return best[1], best[0]
+    s_par = max(0.0, min(1.0, (b * e - c * d) / denom))
     t_par = 0.0 if c <= 1e-12 else max(0.0, min(1.0, (b * s_par + e) / c))
     pa = Vector3(x=a0.x + ux * s_par, y=a0.y + uy * s_par, z=a0.z + uz * s_par)
     pb = Vector3(x=b0.x + vx * t_par, y=b0.y + vy * t_par, z=b0.z + vz * t_par)
@@ -204,22 +223,29 @@ class AxisSkeleton:
         # no member ends at is not a joint, however close it passes.
         endpoints = {node_id for segment in self.segments.values()
                      for node_id in (segment.start, segment.end)}
-        by_bucket: dict[tuple[int, int, int], list[str]] = defaultdict(list)
-        for node_id in endpoints:
-            by_bucket[self._bucket(self._nodes[node_id].point)].append(node_id)
+        endpoint_rows = [(self._bucket(self._nodes[node_id].point), node_id)
+                         for node_id in endpoints]
+        # Query occupied endpoint buckets. Walking every centimetre cube in a
+        # diagonal's bounding box costs cubic work even when all cubes are empty.
+        by_axis = [sorted(endpoint_rows, key=lambda row: (row[0][axis], row[1]))
+                   for axis in range(3)]
+        axis_keys = [[bucket[axis] for bucket, _ in rows]
+                     for axis, rows in enumerate(by_axis)]
         for segment in self.segments.values():
             a, b = self.point(segment.start), self.point(segment.end)
             lo = self._bucket(Vector3(x=min(a.x, b.x), y=min(a.y, b.y), z=min(a.z, b.z)))
             hi = self._bucket(Vector3(x=max(a.x, b.x), y=max(a.y, b.y), z=max(a.z, b.z)))
-            for bx in range(lo[0] - 1, hi[0] + 2):
-                for by in range(lo[1] - 1, hi[1] + 2):
-                    for bz in range(lo[2] - 1, hi[2] + 2):
-                        for node_id in by_bucket.get((bx, by, bz), ()):
-                            if node_id in segment.nodes:
-                                continue
-                            if _point_segment_distance(
-                                    self._nodes[node_id].point, a, b) <= ON_AXIS_M:
-                                segment.nodes.add(node_id)
+            ranges = [(bisect_left(keys, lo[axis] - 1),
+                       bisect_right(keys, hi[axis] + 1))
+                      for axis, keys in enumerate(axis_keys)]
+            axis = min(range(3), key=lambda index: ranges[index][1] - ranges[index][0])
+            start, stop = ranges[axis]
+            for bucket, node_id in by_axis[axis][start:stop]:
+                if node_id in segment.nodes or not all(
+                        lo[i] - 1 <= bucket[i] <= hi[i] + 1 for i in range(3)):
+                    continue
+                if _point_segment_distance(self._nodes[node_id].point, a, b) <= ON_AXIS_M:
+                    segment.nodes.add(node_id)
         # Declared bearing joints, placed on the host axis.
         by_owner: dict[str, list[AxisSegment]] = defaultdict(list)
         for segment in self.segments.values():

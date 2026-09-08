@@ -39,6 +39,12 @@ export interface AudioProvenance {
 }
 
 /** Twelve measured features and six temporal segments. All of them, not the first four. */
+/** A recording the client can decode and play: the upload itself, or the copy a run kept. */
+export interface AudioSource {
+  url: string;
+  name: string;
+}
+
 export interface AudioFeatures {
   schema_version?: string;
   provenance: AudioProvenance;
@@ -307,6 +313,9 @@ export interface ModelAssetV3 {
   model_json_path: string;
   asset_sha256: string;
   manifest_sha256: string;
+  native_blend_sha256: string;
+  source_model_sha256: string;
+  source_hash_basis: 'canonical_json_sort_keys_utf8';
   element_count: number;
   merged_object_count: number;
   face_count: number;
@@ -512,17 +521,292 @@ export interface LevelDatum {
   is_terrace: boolean;
 }
 
+export interface WorldXYGrid {
+  origin: [number, number];
+  spacing_x: number;
+  spacing_y: number;
+}
+
+export interface GridBounds {
+  x_min: number;
+  y_min: number;
+  x_max: number;
+  y_max: number;
+}
+
+export interface ColumnFootprint {
+  width_m: number;
+  depth_m: number;
+}
+
+export interface ColumnCandidate {
+  id: string;
+  floor_id: string;
+  point_xy: [number, number];
+  grid_source: string;
+  grid_node_id: string | null;
+  grid_line_axis: string | null;
+  grid_line_index: number | null;
+  raw_boundary_anchor: [number, number] | null;
+  boundary_provenance: string | null;
+  inset_distance_m: number;
+  fits_whole_footprint: boolean;
+  fits_status: string;
+  support_status: string;
+  supporting_floor_ids: string[];
+  reason: string;
+}
+
+export interface WorldXYColumnPlan {
+  grid: WorldXYGrid;
+  bounds: GridBounds;
+  footprint: ColumnFootprint;
+  candidates: ColumnCandidate[];
+  inset_policy: string;
+}
+
+export interface HallSupportGrid {
+  x: Record<string, number>;
+  y: Record<string, number>;
+  source_volume_ids: string[];
+  pier_envelope_m: number;
+  basis: string;
+}
+
 export interface Lattice {
   schema_version: string;
   levels: LevelDatum[];
   x_lines: number[];
   y_lines: number[];
+  world_xy_grid?: WorldXYGrid;
+  site_boundary?: { x: number; y: number }[];
+  world_xy_column_plan?: WorldXYColumnPlan;
+  hall_support_grid?: HallSupportGrid;
   apse_nodes: unknown[];
   plan_x_m: number;
   plan_y_m: number;
   plan: { x_min: number; x_max: number; y_min: number; y_max: number };
   massing_id: string;
   cutaway: boolean;
+  roof_control?: RoofControl | null;
+  facade_control?: FacadeControl;
+  program_volume_grammar_id?: string | null;
+  program_volume_source_digest?: string | null;
+  program_volume_x_lines?: number[];
+  program_volume_y_lines?: number[];
+  program_volume_regions?: ProgramVolumeRegion[];
+  circulation_intent?: ProgramCirculationIntent | null;
+}
+
+export interface RoofSectionProfile {
+  truss_depth_m: number;
+  chord_depth_m: number;
+  purlin_depth_m: number;
+  deck_thickness_m: number;
+  parapet_upstand_m: number;
+}
+
+export interface RoofControl {
+  schema_version: 'mta.roof_control/1.0';
+  boundary: [number, number][];
+  voids: [number, number][][];
+  datum_z: number;
+  physical_top_z: number;
+  profile: RoofSectionProfile;
+  span_proportion?: {
+    span_m: number;
+    depth_to_span: number;
+    hierarchy_position: number;
+    method: 'longest_interior_world_y_chord';
+    basis: string;
+  } | null;
+  review_status: 'professional_review_required';
+}
+
+export type FacadeCanonicalRole =
+  | 'weather_skin'
+  | 'recessed_infill'
+  | 'return_tie'
+  | 'outboard_screen';
+
+export interface FacadeLevelControl {
+  level_id: string;
+  z_base: number;
+  z_top: number;
+  source_boundary: [number, number][];
+  source_voids: [number, number][][];
+  weather_boundary: [number, number][];
+  weather_voids: [number, number][][];
+}
+
+export interface FacadeControl {
+  schema_version: 'mta.facade_control/1.0';
+  program_volume_source_digest: string;
+  grammar_id: string;
+  tectonic_id: string;
+  score_offset_m: number;
+  tectonic_multiplier: number;
+  multiplied_offset_m: number;
+  grammar_depth_range_m: [number, number] | null;
+  resolved_offset_m: number;
+  resolution_status: 'resolved' | 'provisional_unevaluated';
+  resolution_reason: string;
+  outboard_screen_allowance_m: number;
+  levels: FacadeLevelControl[];
+  canonical_roles: FacadeCanonicalRole[];
+  review_status: 'professional_review_required';
+}
+
+export interface ProgramVolumeLevel {
+  index: number;
+  id: string;
+  z_base: number;
+  z_top: number;
+}
+
+export interface AuthoredProgramVolume {
+  id: string;
+  level_index: number;
+  level_id: string;
+  category: ProgramCategory;
+  role: 'program' | 'archetype' | 'circulation_spine' | 'connector' | 'sectional_clearance';
+  space_ids: string[];
+  shared_route_volume_ids?: string[];
+  grid_rect: [number, number, number, number];
+  target_area_m2: number;
+  gross_area_m2: number;
+  reason: string;
+}
+
+export interface ProgramVolumeCoreIntent {
+  id: string;
+  kind: 'stair' | 'lift';
+  source_volume_id: string;
+}
+
+export interface ProgramVolumeRegion {
+  id: string;
+  level_id: string;
+  category: ProgramCategory;
+  role: AuthoredProgramVolume['role'];
+  space_ids: string[];
+  shared_route_volume_ids?: string[];
+  grid_rect: [number, number, number, number];
+  z_base: number;
+  z_top: number;
+}
+
+export interface GridBoundaryStation {
+  level_id: string;
+  source_volume_id: string;
+  grid_edge: [number, number, number, number];
+  fraction: number;
+}
+
+export interface ArrivalAssembly {
+  entry_rect: [number, number, number, number];
+  stair_width_m: number;
+  stair_start_v: number;
+  stair_end_v: number;
+  stair_family: string;
+  facade_allowance_m: number;
+  ramp: RampPlan;
+  link_rect: [number, number, number, number];
+  reserved_rects: [number, number, number, number][];
+  basis: string;
+}
+
+export interface ProgramCirculationIntent {
+  source_volume_digest: string;
+  carrier_volume_ids: string[];
+  connector_volume_ids: string[];
+  entry_station: GridBoundaryStation;
+  public_stair_family: 'broad_straight' | 'terraced_cascade' | 'bridge_split';
+  ramp_preference: 'edge_parallel' | 'terrace_return' | 'notch_switchback';
+  entry_floor_elevation_m: number;
+  approach_depth_m: number;
+  approach_depth_provenance: string;
+  arrival_assembly?: ArrivalAssembly | null;
+  reason: string;
+}
+
+export interface CirculationFinding {
+  id: string;
+  status: 'passed' | 'failed' | 'unevaluated';
+  subject: string;
+  detail: string;
+}
+
+export interface ResolvedCirculationPlan {
+  intent: ProgramCirculationIntent;
+  primary_core_ids: string[];
+  public_stair_ids: string[];
+  ramp_plan: RampPlan | null;
+  attachment_portal_id: string | null;
+  exterior_exception_ids: string[];
+  findings: CirculationFinding[];
+}
+
+export interface ProgramVolumeUnion {
+  level_index: number;
+  level_id: string;
+  boundary: [number, number][];
+  voids: [number, number][][];
+  gross_area_m2: number;
+  source_volume_ids: string[];
+}
+
+export interface ProjectBrief {
+  schema_version: 'project-brief.v1';
+  brief_id: string;
+  typology: 'library' | 'theater' | 'museum';
+  site: { polygon: [number, number][]; units: 'm' };
+  site_setbacks?: { setback_m: number; facade_projection_m: number; provenance: string;
+                    reason: string; needs_review: boolean } | null;
+  occupied_storeys: number;
+  target_gross_area_m2: number;
+  support_sizing?: {
+    source: ProjectBrief['provenance']['provider_type'];
+    basis: string;
+    needs_review: true;
+    sizes: Record<string, { area_m2: number; min_dimension_m: number }>;
+  } | null;
+  circulation_fraction: number | null;
+  circulation_budget_m2: number | null;
+  spaces: {
+    id: string; space_type: string; label: string; category: string;
+    area_m2: number; min_dimension_m: number; level_preference: string;
+    daylight: string; occupancy_id: string; adjacency: string[];
+    reason: string; area_tolerance: number;
+  }[];
+  provenance: {
+    provider_type: 'random' | 'agent_llm' | 'local_llm' | 'openai' | 'external' | 'manual';
+    model: string | null; seed: string | number | null;
+    prompt_template_version: string | null; raw_response_hash: string | null;
+    source_ref: string | null; generated_at: string; normalizer_version: string;
+  };
+  assumptions: string[];
+}
+
+export interface ProgramVolumeModel {
+  schema_version: 'mta.program_volumes/1.0';
+  project_brief?: ProjectBrief | null;
+  score_id: string;
+  typology: string;
+  grammar_id: 'PVG-STACKED-BANDS' | 'PVG-TERRACED-WEAVE' | 'PVG-SPLIT-BRIDGE' | 'PVG-LEGACY-ELLIPSE';
+  grammar_reason: string[];
+  levels: ProgramVolumeLevel[];
+  grid: { x_lines: number[]; y_lines: number[]; band_lines: number[]; apse_nodes: [number, number][] };
+  world_xy_grid?: WorldXYGrid;
+  volumes: AuthoredProgramVolume[];
+  level_unions: ProgramVolumeUnion[];
+  topology_signature: string;
+  design_datums?: Record<string, number>;
+  authored_cores?: ProgramVolumeCoreIntent[];
+  program_volume_regions: ProgramVolumeRegion[];
+  circulation_intent: ProgramCirculationIntent | null;
+  roof_control: RoofControl | null;
+  note: string;
 }
 
 export interface AllocatedZone {
@@ -548,6 +832,15 @@ export interface UnplacedSpace {
   reason: string;
 }
 
+export interface PublicCirculationPlan {
+  clear_width_m: number;
+  wall_allowance_m: number;
+  paths: { level_id: string; target_id: string; points: [number, number][] }[];
+  aprons: Record<string, [number, number][][]>;
+  unresolved: Record<string, string>;
+  basis: string;
+}
+
 export interface ProgramAllocation {
   schema_version: string;
   zones: AllocatedZone[];
@@ -555,6 +848,8 @@ export interface ProgramAllocation {
   usable_area_by_level: Record<string, number>;
   required_area_m2: number;
   delivered_area_m2: number;
+  cores_unreserved: string[];
+  public_circulation: PublicCirculationPlan | null;
 }
 
 export interface ProfileSpec {
@@ -579,6 +874,177 @@ export interface MemberSizingRecord {
   factored_load_kn_m: number;
   element_count: number;
   assumptions: string[];
+}
+
+export interface LinearLoad {
+  factored_kn_m: number;
+  service_total_kn_m: number;
+  service_live_kn_m: number;
+  combination: string;
+  tributary_width_m: number;
+}
+
+export interface Utilisation {
+  label: string;
+  demand: number;
+  capacity: number;
+  ratio: number;
+  unit: string;
+  passes: boolean;
+  basis: string;
+}
+
+export interface ClauseCheck {
+  clause: string;
+  standard: string;
+  label: string;
+  status: 'pass' | 'fail' | 'unevaluated';
+  demand: number | null;
+  capacity: number | null;
+  unit: string;
+  basis: string;
+}
+
+export interface MemberValidation {
+  member_id: string;
+  role: string;
+  designation: string;
+  material_id: string;
+  load_combination: string;
+  checks: ClauseCheck[];
+}
+
+export interface MemberCheck {
+  member_id: string;
+  role: 'beam' | 'girder' | 'column' | 'slab';
+  section_id: string;
+  material_id: string;
+  span_m: number;
+  tributary_width_m: number;
+  load: LinearLoad;
+  utilisations: Utilisation[];
+  governing: string;
+  max_ratio: number;
+  passes: boolean;
+  self_weight_kn: number;
+  assumptions: string[];
+  validation: MemberValidation | null;
+  validation_status: 'professional_review_required';
+}
+
+export interface SelectionResult {
+  member_id: string;
+  selected: boolean;
+  check: MemberCheck | null;
+  candidates_tried: number;
+  reason: string;
+}
+
+export interface TransferLoad {
+  node: number;
+  y: number;
+  dead_kn: number;
+  live_kn: number;
+  roof_live_kn: number;
+  tributary_area_by_level: Record<string, number>;
+}
+
+export interface TransferMember {
+  id: string;
+  role: string;
+  node_a: number;
+  node_b: number;
+  length_m: number;
+  unbraced_length_m: number;
+  section_id: string | null;
+  analysis_section_id: string;
+  axial_kn: Record<string, number>;
+  tension_capacity_kn: number;
+  compression_capacity_kn: number;
+  utilisation: number | null;
+  compression_check: MemberCheck | null;
+  selected: boolean;
+}
+
+export interface TransferPier {
+  id: string;
+  x_index: number;
+  y_index: number;
+  level_index: number;
+  dead_kn: number;
+  live_kn: number;
+  roof_live_kn: number;
+  check: MemberCheck | null;
+}
+
+export interface TransferFrame {
+  id: string;
+  x_index: number;
+  x: number;
+  level_index: number;
+  level_id: string;
+  y_indices: number[];
+  span_m: number;
+  top_z: number;
+  bottom_z: number;
+  clear_top_z: number;
+  nodes: [number, number][];
+  node_loads: TransferLoad[];
+  beam_trial: SelectionResult | null;
+  members: TransferMember[];
+  reactions_kn: Record<string, number[]>;
+  piers: TransferPier[];
+  equilibrium_residual_kn: number | null;
+  total_deflection_mm: number | null;
+  live_deflection_mm: number | null;
+  status: 'failed' | 'review_required';
+  activated: boolean;
+  findings: string[];
+}
+
+export interface TransferEdge {
+  x: number;
+  x_bay_index: number;
+  y_indices: number[];
+  y_coordinates: Record<string, number>;
+  regular_x_index: number | null;
+  level_index: number;
+  check: MemberCheck | null;
+  dead_kn: number;
+  live_kn: number;
+  roof_live_kn: number;
+}
+
+export interface HallEnclosureReport {
+  status: 'failed' | 'review_required';
+  level_id: string | null;
+  roof_bottom_z: number | null;
+  clear_top_z: number | null;
+  roof_area_m2: number;
+  support_grid: HallSupportGrid | null;
+  roof_dead_kn: number;
+  roof_live_kn: number;
+  framing_dead_kn: number;
+  uncovered_area_m2: number | null;
+  open_wall_head_length_m: number | null;
+  primary: SelectionResult | null;
+  secondary: SelectionResult | null;
+  roof_ids: string[];
+  framing_ids: string[];
+  findings: string[];
+  unevaluated: string[];
+}
+
+export interface TransferReport {
+  status: 'not_required' | 'failed' | 'review_required';
+  method: string;
+  basis: string;
+  frames: TransferFrame[];
+  edges: TransferEdge[];
+  boundary_piers: TransferPier[];
+  hall_enclosure: HallEnclosureReport | null;
+  findings: string[];
+  unevaluated: string[];
 }
 
 export interface AxisReading {
@@ -618,6 +1084,8 @@ export interface SelectionRecord {
   admissible_systems: string[];
   admissible_grammars: string[];
   unbuildable_systems: Record<string, string>;
+  required_structural_capabilities: string[];
+  compiler_capability_exclusions: Record<string, string[]>;
   jurisdiction_resolved: boolean;
   note: string;
 }
@@ -636,12 +1104,15 @@ export interface FacadeGateReport {
   grammar_label: string;
   guide_ref: string;
   gates: GateResult[];
+  status: 'passed' | 'failed' | 'unevaluated';
   corrected: string | null;
 }
 
 export interface RampRun {
   index: number;
   x_start: number; x_end: number; y: number;
+  y_start?: number | null;
+  y_end?: number | null;
   z_start: number; z_end: number;
   direction: number;
 }
@@ -687,6 +1158,7 @@ export interface EgressNode {
   x: number;
   y: number;
   occupants: number;
+  occupant_basis: string;
   width_mm: number;
 }
 
@@ -695,6 +1167,72 @@ export interface EgressEdge {
   target: string;
   distance_m: number;
   kind: 'within_floor' | 'vertical';
+  points: [number, number][];
+  points_3d: [number, number, number][];
+  step_count: number;
+  source_surface_ids: string[];
+  sample_id: string | null;
+  basis: string;
+}
+
+export interface NavigationReport {
+  schema_version: string;
+  body_width_m: number;
+  head_height_m: number;
+  step_review_m: number;
+  basis: string;
+  samples: { id: string; space_id: string; level_id: string; point: [number, number]; floor_z_m: number; origin: 'floor' | 'seat_row_access' | 'stage'; source_surface_ids: string[]; reachable_exits: string[] }[];
+  routes: { sample_id: string; source: string; target: string; level_id: string; distance_m: number; points: [number, number][]; points_3d: [number, number, number][]; step_count: number; source_surface_ids: string[] }[];
+  findings: { id: string; status: 'passed' | 'failed' | 'unevaluated'; subject: string; detail: string }[];
+  limitations: string[];
+}
+
+export interface PortalSide {
+  region: [number, number][];
+  support_ids: string[];
+  unsupported_m2: number;
+  elevation_mismatch_m: number | null;
+  clash_ids: string[];
+}
+
+export interface PortalReport {
+  schema_version: string;
+  status: 'passed' | 'failed' | 'unevaluated';
+  basis: string;
+  portals: {
+    id: string; door_ids: string[]; level_id: string; kind: 'room' | 'entrance' | 'lift';
+    center: [number, number]; tangent: [number, number]; normal: [number, number];
+    aperture: [number, number][]; floor_z: number; width_m: number; height_m: number;
+    wall_depth_m: number; host_wall_ids: string[]; side_a: PortalSide; side_b: PortalSide;
+    aperture_clear: boolean; passable: boolean; reasons: string[];
+  }[];
+  findings: { rule_id: string; portal_id: string; elements: string[]; detail: string; measure: number; unit: string }[];
+}
+
+export interface RoomLayoutPlan {
+  schema_version: string;
+  spaces: {
+    space_id: string; space_type: string; level_id: string; proposed_counts: Record<string, number>;
+    required_counts: Record<string, number> | null; count_basis: string;
+    omitted: Record<string, string>; unresolved: string[];
+  }[];
+  assemblies: {
+    assembly_id: string; space_id: string; level_id: string; recipe: string;
+    required_roles: string[]; floor_roles: string[]; floor_z_m: number;
+  }[];
+  reservations: {
+    id: string; space_id: string; level_id: string;
+    purpose: 'fixture_use' | 'equipment_service' | 'longitudinal_aisle' | 'cross_aisle' | 'seat_row_access' | 'wheelchair_position';
+    polygon: [number, number][]; floor_z_m: number; clear_height_m: number; basis: string;
+  }[];
+}
+
+export interface RoomLayoutReport {
+  schema_version: string;
+  status: 'passed' | 'failed' | 'unevaluated';
+  assembly_count: number; counts_by_recipe: Record<string, number>; reservation_count: number;
+  findings: { check_id: string; status: 'failed' | 'unevaluated'; space_id: string; element_ids: string[]; detail: string }[];
+  checks_run: string[]; quantity_adequacy: 'unevaluated'; basis: string;
 }
 
 export interface EgressFinding {
@@ -715,6 +1253,7 @@ export interface LifeSafetyGraph {
   nodes: EgressNode[];
   edges: EgressEdge[];
   findings: EgressFinding[];
+  navigation?: NavigationReport | null;
 }
 
 export interface DependencyRoot {
@@ -1060,8 +1599,11 @@ export interface AnalysisBundle {
   datum_set: DatumSet;
   lattice: Lattice;
   program_allocation: ProgramAllocation;
+  program_volume_model?: ProgramVolumeModel | null;
+  project_brief?: ProjectBrief | null;
   profiles: Record<string, ProfileSpec>;
   sizing: MemberSizingRecord[];
+  transfer_structure?: TransferReport | null;
   element_groups: ElementGroupSummary[];
   element_counts: Record<string, number>;
   layer_counts: Record<string, number>;
@@ -1070,11 +1612,15 @@ export interface AnalysisBundle {
   facade_gates: FacadeGateReport | null;
   accessible_route: RampPlan | null;
   accessible_route_unresolved: string | null;
+  circulation_plan?: ResolvedCirculationPlan | null;
   constitution: ConstitutionReport | null;
   archetype?: ArchetypeReport | null;
   spatial?: SpatialReport | null;
   materials?: Record<string, MaterialSpec>;
   life_safety: LifeSafetyGraph | null;
+  portals?: PortalReport | null;
+  room_layout_plan?: RoomLayoutPlan | null;
+  room_layouts?: RoomLayoutReport | null;
   dependency_graph: DependencyGraph | null;
   axis_report: AxisReport | null;
   site: SiteParameters | null;
@@ -1090,10 +1636,77 @@ export interface AnalysisBundle {
 
 // --- drawings, renders, runs -------------------------------------------------
 
+export interface DetailCheck {
+  id: string;
+  label: string;
+  status: 'passed' | 'failed' | 'unevaluated';
+  evidence: string;
+}
+
+export interface DetailMaterialRole {
+  material_profile: string;
+  drawing_roles: string[];
+  element_kinds: string[];
+  element_ids: string[];
+}
+
+export interface DetailAssemblyAudit {
+  assembly_id: string;
+  element_ids: string[];
+  part_roles: string[];
+  host_element_ids: string[];
+  unresolved_interfaces: string[];
+}
+
+export interface DetailViewAudit {
+  schema_version: 'mta.detail_view_audit/1.0';
+  detail_id: string;
+  spec_id: string;
+  detail_kind: 'roof_edge' | 'facade_floor' | 'entry_circulation' | 'landing_access';
+  scale: string;
+  bearing_deg: number;
+  target_point_m: number[];
+  crop_m: number[];
+  cut_bbox_m: number[];
+  cut_element_bboxes_m: Record<string, number[]>;
+  key_dimensions_m: Record<string, number>;
+  target_element_ids: string[];
+  target_elements_drawn: string[];
+  model_element_ids: string[];
+  assembly_ids: string[];
+  assemblies: DetailAssemblyAudit[];
+  facade_roles: string[];
+  material_roles: DetailMaterialRole[];
+  host_element_ids: string[];
+  unresolved_interfaces: string[];
+  elements_considered: number;
+  elements_drawn: number;
+  elements_cut: number;
+  marks: number;
+  source: 'compiled_model_projection';
+  projection_verified: boolean;
+}
+
+export interface DetailReadinessReport {
+  schema_version: 'mta.detail_readiness/1.0';
+  detail_id: string;
+  audience: 'student_design_review';
+  status: 'ready_with_limitations' | 'blocked';
+  drawing_status: 'generated';
+  d3_status: 'ready_with_limitations' | 'blocked';
+  professional_review_required: true;
+  construction_document_status: 'not_evaluated';
+  permit_status: 'not_evaluated';
+  checks: DetailCheck[];
+  missing_layers: string[];
+  unresolved: string[];
+  limitations: string[];
+}
+
 export interface DrawingOnSheetRef {
   id: string;
   title: string;
-  kind: 'plan' | 'section' | 'elevation';
+  kind: 'plan' | 'section' | 'elevation' | 'detail';
   scale: string;
   subtitle: string;
   content_mm: number[];
@@ -1101,12 +1714,14 @@ export interface DrawingOnSheetRef {
   elements_cut: number;
   elements_drawn: number;
   omitted_by_scale: Record<string, number>;
+  detail_audit?: DetailViewAudit | null;
+  detail_readiness?: DetailReadinessReport | null;
 }
 
 export interface DrawingSheetRef {
   id: string;
   title: string;
-  kind: 'plan' | 'section' | 'elevation' | 'cover';
+  kind: 'plan' | 'section' | 'elevation' | 'detail' | 'cover';
   scale: string;
   subtitle: string;
   url: string;
@@ -1162,6 +1777,8 @@ export interface GenerationResponse {
   generated_at: string;
   compiler_source_sha256: string;
   elapsed_seconds?: number | null;
+  /** Where the recording can be fetched back; absent when a run kept no audio. */
+  audio_url?: string | null;
   audio_features: AudioFeatures;
   architectural_score: ArchitecturalScore;
   building_model: BuildingModel;
@@ -1170,6 +1787,8 @@ export interface GenerationResponse {
   model_asset: ModelAsset | null;
   pipeline_manifest: PipelineRunManifest;
   model_asset_v3?: ModelAssetV3 | null;
+  stage_errors?: Record<string, string>;
+  project_brief?: Record<string, unknown> | null;
   translation_report?: TranslationReport | null;
   datum_coverage?: number | null;
   datum_waiting_on?: string[];

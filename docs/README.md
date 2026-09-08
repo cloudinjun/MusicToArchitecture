@@ -9,10 +9,12 @@ Start with the project claim, then follow the decisions into implementation evid
 | [`decisions/`](decisions/) | Accepted architecture and ownership boundaries |
 | [`guidelines/`](guidelines/) | Program and structural-system contracts |
 | [`style_guides/facade/`](style_guides/facade/) | Facade grammar variables and validation rules |
+| [`code_review_2026-09-08.md`](code_review_2026-09-08.md) | Reproduced pipeline defects, payload measurements, and the fixed-vs-choosable constant split |
 | [`experiments/`](experiments/) | Controlled experiment records and calibration data |
 | [`native_model_workflow.md`](native_model_workflow.md) | Grasshopper, Rhino, Blender, and GLB regeneration |
 | [`revit_dynamo_handoff.md`](revit_dynamo_handoff.md) | Proposed design-to-BIM boundary, Dynamo graph plan, sync policy, and validation experiment |
 | [`contracts/revit_dynamo_mapping.v1.json`](contracts/revit_dynamo_mapping.v1.json) | Machine-readable Revit category, parameter, identity, and fallback registry |
+| [`sound_strip_references.md`](sound_strip_references.md) | The audio visualisers surveyed for the workbench's recording strip, what was borrowed, and what was left out |
 | [`legacy_migration.md`](legacy_migration.md) | Rules for using the read-only legacy repository |
 | [`public_release_checklist.md`](public_release_checklist.md) | Remaining publication checks |
 | [`project_origin.zh-CN.md`](project_origin.zh-CN.md) | Historical Chinese planning summary |

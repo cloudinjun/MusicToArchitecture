@@ -24,6 +24,7 @@ import hashlib
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Literal
 
 from .analysis_bundle import compile_analysis_bundle
 from .audio import extract_audio_features
@@ -37,6 +38,9 @@ from .drawings import issue_drawings, write_drawing_set
 from .integration import compile_facade_host_handoff, compile_pipeline_manifest
 from .mapping_report import compile_mapping_report
 from .models import DrawingOnSheetRef, DrawingSheetRef, GenerationResponse, RenderRef
+from .program_volumes import compile_program_volume_candidate
+from .project_brief import ProjectBrief
+from .legacy_program_layout import LegacyLayoutControls
 from .score import compile_architectural_score
 from .translation_report import compile_translation_report
 
@@ -86,6 +90,8 @@ def drawing_sheet_refs(model_id: str, index: dict | None) -> list[DrawingSheetRe
                 elements_drawn=int(drawing.get('elements_drawn', 0)),
                 omitted_by_scale={str(kind): int(count) for kind, count
                                   in drawing.get('omitted_by_scale', {}).items()},
+                detail_audit=drawing.get('detail_audit'),
+                detail_readiness=drawing.get('detail_readiness'),
             ) for drawing in sheet.get('drawings', [])],
         ))
     return sheets
@@ -109,13 +115,27 @@ def render_refs(model_id: str) -> list[RenderRef]:
     ]
 
 
-def compile_generation(audio_path: Path, filename: str, *,
-                       render: bool = False) -> GenerationResponse:
+def compile_generation(
+    audio_path: Path,
+    filename: str,
+    *,
+    render: bool = False,
+    v3_mode: Literal['legacy', 'program_volume'] | None = None,
+    project_brief: ProjectBrief | None = None,
+    legacy_controls: LegacyLayoutControls | None = None,
+) -> GenerationResponse:
     """Compile one MP3 into every artifact and report this project produces.
 
     Blocking throughout -- librosa and two Blender subprocesses -- so an async caller
     should hand it to a thread rather than awaiting pieces of it.
     """
+    v3_mode = v3_mode or ('program_volume' if project_brief is not None else 'legacy')
+    if project_brief is not None and v3_mode != 'program_volume':
+        raise ValueError('ProjectBrief requires program_volume mode; legacy cannot silently ignore the site')
+    if legacy_controls is not None and project_brief is None:
+        raise ValueError('Bounded layout controls require a ProjectBrief')
+    if v3_mode not in {'legacy', 'program_volume'}:
+        raise ValueError(f'unknown v3_mode: {v3_mode}')
     started = time.perf_counter()
     source_fingerprint = compiler_source_fingerprint()
     features = extract_audio_features(audio_path, filename)
@@ -133,13 +153,24 @@ def compile_generation(audio_path: Path, filename: str, *,
         v2_preview_error = str(error)
 
     # --- v3: the member-level model the viewport draws --------------------------
-    model_v3 = compile_building_model_v3(features, score, cutaway=False)
+    # Decision 0024 keeps the Program Volume path explicit until its promotion gates
+    # pass. Skill/audit runs can exercise the complete new causal chain today while
+    # the public API retains the accepted legacy entry.
+    if v3_mode == 'program_volume':
+        bounded_inputs = ({'project_brief': project_brief, 'legacy_controls': legacy_controls}
+                          if project_brief is not None else {})
+        model_v3, _program_volumes = compile_program_volume_candidate(
+            score, cutaway=False, **bounded_inputs)
+    else:
+        model_v3 = compile_building_model_v3(features, score, cutaway=False)
     translation_report = compile_translation_report(features, score, model_v3)
     bim_handoff = compile_bim_handoff_report(model_v3)
+    stage_errors = {}
     try:
         model_asset_v3 = export_blender_web_model_v3(model_v3, render=render)
-    except BlenderExportError:
+    except BlenderExportError as error:
         model_asset_v3 = None
+        stage_errors['v3_export'] = str(error)
 
     # Plans and sections, issued from the same model the viewport draws. A drawing set
     # that cannot be produced -- a massing whose plate no plane meets, a level with
@@ -148,8 +179,9 @@ def compile_generation(audio_path: Path, filename: str, *,
         issued = issue_drawings(model_v3)
         write_drawing_set(issued, model_v3)
         drawing_index = issued.manifest(model_v3)
-    except ValueError:
+    except ValueError as error:
         drawing_index = None
+        stage_errors['drawings'] = str(error)
 
     # One run, one identity: the audio, the compiler that ran, and the building that
     # came out. Keying runs on the audio alone let a re-run after a compiler change
@@ -157,7 +189,7 @@ def compile_generation(audio_path: Path, filename: str, *,
     # of one piece impossible to keep side by side.
     model_digest = hashlib.sha256(
         model_v3.model_dump_json().encode('utf-8')).hexdigest()
-    run_seed = (f'{features.provenance.sha256}|{COMPILER_VERSION}|'
+    run_seed = (f'{features.provenance.sha256}|{COMPILER_VERSION}|{v3_mode}|'
                 f'{source_fingerprint}|{model_v3.model_id}|{model_digest}')
     run_id = 'run-' + hashlib.sha256(run_seed.encode('utf-8')).hexdigest()[:12]
     pipeline_manifest = compile_pipeline_manifest(
@@ -196,6 +228,8 @@ def compile_generation(audio_path: Path, filename: str, *,
         model_asset=model_asset,
         pipeline_manifest=pipeline_manifest,
         model_asset_v3=model_asset_v3,
+        stage_errors=stage_errors,
+        project_brief=project_brief.model_dump(mode='json') if project_brief is not None else None,
         translation_report=translation_report,
         datum_coverage=model_v3.datum_set.coverage,
         datum_waiting_on=model_v3.datum_set.waiting_on,

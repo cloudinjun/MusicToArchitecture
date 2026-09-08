@@ -73,18 +73,29 @@ def member_mesh(geometry: Mapping, profiles: Mapping) -> tuple[list[Point], list
         _unit(tuple(y-x for x,y in zip(a,b)))
     outline = profile_outline(profiles[geometry['profile']]); n = len(outline)
     up = _unit(_xyz(geometry.get('roll') or {'x':0,'y':0,'z':1}))
+    axes = [_unit(tuple(y-x for x,y in zip(
+        path[max(0,index-1)], path[min(len(path)-1,index+1)])))
+        for index in range(len(path))]
     vertices = []
     for index,point in enumerate(path):
-        a,b = path[max(0,index-1)],path[min(len(path)-1,index+1)]
-        axis = _unit(tuple(y-x for x,y in zip(a,b)))
+        axis = axes[index]
         dot = sum(x*y for x,y in zip(axis,up))
         v = tuple(up[k]-axis[k]*dot for k in range(3))
         if sum(x*x for x in v) < 1e-12:
-            # A caller may choose any roll parallel to the path, not just Z.
-            seed = min(((1.,0.,0.),(0.,1.,0.),(0.,0.,1.)),
-                       key=lambda e: abs(sum(x*y for x,y in zip(e,axis))))
-            dot = sum(x*y for x,y in zip(seed,axis))
-            v = tuple(seed[k]-axis[k]*dot for k in range(3))
+            # A vertical turn has no projected roll. Continue the nearest
+            # determined station's lateral axis, rather than twisting its section
+            # toward an arbitrary world axis. Entirely straight parallel-roll
+            # members retain the historical least-parallel-axis convention.
+            references = sorted(range(len(axes)), key=lambda j: (abs(j-index), j))
+            lateral = next((_cross(up, axes[j]) for j in references
+                            if sum(c*c for c in _cross(up, axes[j])) >= 1e-12), None)
+            if lateral is not None:
+                v = _cross(axis, lateral)
+            else:
+                seed = min(((1.,0.,0.),(0.,1.,0.),(0.,0.,1.)),
+                           key=lambda e: abs(sum(x*y for x,y in zip(e,axis))))
+                dot = sum(x*y for x,y in zip(seed,axis))
+                v = tuple(seed[k]-axis[k]*dot for k in range(3))
         v = _unit(v); u = _unit(_cross(v,axis))
         vertices.extend(tuple(point[k]+u[k]*pu+v[k]*pv for k in range(3))
                         for pu,pv in outline)
@@ -158,6 +169,27 @@ def primitive_mesh(geometry: Mapping, profiles: Mapping, thickness_m=None):
     raise ValueError(f'Unknown primitive: {kind}')
 
 
+def triangulate_quad(vertices: Sequence[Point], face: Face) -> list[tuple[int,int,int]]:
+    """Use the interior diagonal of a planar concave quad; preserve spatial fans."""
+    points = [vertices[i] for i in face]
+    edges = [tuple(b[k]-a[k] for k in range(3))
+             for a,b in zip(points,points[1:]+points[:1])]
+    turns = [_cross(edges[i-1], edges[i]) for i in range(4)]
+    normal = tuple(sum(turn[k] for turn in turns) for k in range(3))
+    length = math.sqrt(sum(c*c for c in normal))
+    diagonal = 0
+    if length > 1e-14:
+        normal = tuple(c/length for c in normal)
+        span = max(math.dist(a,b) for a in points for b in points)
+        planar = all(abs(sum((p[k]-points[0][k])*normal[k] for k in range(3)))
+                     <= 1e-10*max(1.,span) for p in points)
+        if planar:
+            diagonal = next((i for i,turn in enumerate(turns)
+                             if sum(a*b for a,b in zip(turn,normal)) < -1e-14), 0)
+    ring = list(face[diagonal:])+list(face[:diagonal])
+    return [(ring[0],ring[1],ring[2]),(ring[0],ring[2],ring[3])]
+
+
 def triangulate_faces(vertices: Sequence[Point], faces: Sequence[Face]) -> list[tuple[int,int,int]]:
     """Triangulate concave caps without a fan across the empty web/flange corners."""
     from shapely import constrained_delaunay_triangles
@@ -167,7 +199,7 @@ def triangulate_faces(vertices: Sequence[Point], faces: Sequence[Face]) -> list[
         if len(face) == 3:
             out.append(tuple(face)); continue
         if len(face) == 4:
-            out.extend(((face[0],face[1],face[2]),(face[0],face[2],face[3]))); continue
+            out.extend(triangulate_quad(vertices,face)); continue
         points = [vertices[i] for i in face]
         normal = tuple(sum((a[(k+1)%3]-b[(k+1)%3])*(a[(k+2)%3]+b[(k+2)%3])
                            for a,b in zip(points,points[1:]+points[:1])) for k in range(3))

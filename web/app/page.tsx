@@ -12,12 +12,13 @@
  */
 
 import { DragEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { GenerationResponse, RunSummary, WorkspaceId } from '../lib/types';
-import { apiHealthy, generateArchitecture, listRuns, loadDemoRun, loadRun } from '../lib/api';
+import type { AudioSource, GenerationResponse, RunSummary, WorkspaceId } from '../lib/types';
+import { apiHealthy, assetUrl, generateArchitecture, listRuns, loadDemoRun, loadRun } from '../lib/api';
 import { compact, percent, timestamp, titleCase } from '../lib/format';
 import { Drawer } from '../components/Drawer';
 import { ModelStage } from '../components/ModelStage';
 import type { ViewportMode } from '../components/ArchitectureViewport';
+import type { CompileStatus } from '../components/ScoreStrip';
 import { OverviewWorkspace } from '../components/workspaces/OverviewWorkspace';
 import { AudioWorkspace } from '../components/workspaces/AudioWorkspace';
 import { ScoreWorkspace } from '../components/workspaces/ScoreWorkspace';
@@ -115,6 +116,13 @@ export default function Workbench() {
   const [menu, setMenu] = useState<'reports' | 'runs' | null>(null);
   const [layersOpen, setLayersOpen] = useState(false);
   const [sectionOpen, setSectionOpen] = useState(false);
+  // The recording's clock: when a compile began and how long the last one took, so the
+  // wait has a scale; and the cue that starts the music from the top on Generate.
+  const [compile, setCompile] = useState<CompileStatus | null>(null);
+  const [performNonce, setPerformNonce] = useState(0);
+  // A blob URL for the chosen file, revoked when the file changes.
+  const objectUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
+  useEffect(() => () => { if (objectUrl) URL.revokeObjectURL(objectUrl); }, [objectUrl]);
 
   // Blueprint is the default face of the instrument; Studio remains one click away.
   // Storage can be absent or blocked, so both reads are best-effort conveniences.
@@ -180,20 +188,27 @@ export default function Workbench() {
     if (!file) { inputRef.current?.click(); return; }
     setStatus('processing');
     setError(null);
+    // The score takes the stage while its building is compiled.
+    setCompile({ startedAt: Date.now(), estimateSeconds: run?.elapsed_seconds ?? null });
     try {
       const next = await generateArchitecture(file);
       setRun(next);
       setIsDemo(false);
       setStatus('result');
+      // A compiled run is a first open: it performs once its model is in.
+      setPerformNonce((value) => value + 1);
       void refreshRuns();
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Generation failed.');
       setStatus('error');
+    } finally {
+      setCompile(null);
     }
   }
 
   async function openRun(runId: string) {
     setMenu(null);
+    setCompile(null);
     setStatus('processing');
     try {
       const stored = await loadRun(runId);
@@ -209,6 +224,19 @@ export default function Workbench() {
 
   const definition = useMemo(
     () => PANELS.find((entry) => entry.id === panel) ?? null, [panel]);
+
+  // Which recording the stage can hear. The chosen file while it is being compiled or
+  // is the run on show; otherwise the copy the run kept; the frozen demo ships its own.
+  const audioSource = useMemo<AudioSource | null>(() => {
+    const filename = run?.audio_features.provenance.filename ?? null;
+    if (file && objectUrl && (status === 'ready' || status === 'processing'
+      || (!isDemo && filename === file.name))) {
+      return { url: objectUrl, name: file.name };
+    }
+    if (run?.audio_url && filename) return { url: assetUrl(run.audio_url), name: filename };
+    if (run && isDemo && filename) return { url: '/audio/' + filename, name: filename };
+    return null;
+  }, [file, objectUrl, status, isDemo, run]);
   const analysis = run?.analysis ?? null;
   const compliance = analysis?.compliance ?? null;
   const attention = (compliance?.failed_total ?? 0) > 0;
@@ -409,15 +437,13 @@ export default function Workbench() {
         layersOpen={layersOpen}
         onCloseLayers={() => setLayersOpen(false)}
         sectionOpen={sectionOpen}
+        audio={audioSource}
+        compile={status === 'processing' ? compile : null}
+        performNonce={performNonce}
       />
 
-      {file && status !== 'processing' && (
-        <p className="stage-toast">
-          {file.name} ready · press Generate
-        </p>
-      )}
-      {status === 'processing' && (
-        <p className="stage-toast is-processing">Analysing audio and authoring in Blender…</p>
+      {status === 'processing' && !compile && (
+        <p className="stage-toast is-processing">Reopening the run…</p>
       )}
       {error && (
         <p className="stage-toast tone-bad" role="alert">

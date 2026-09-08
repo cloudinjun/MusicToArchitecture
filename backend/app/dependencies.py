@@ -48,6 +48,12 @@ _FACADE_CARRIERS = {
     'field_carrier', 'order_jamb', 'external_strut',
 }
 
+# The current High-Tech emitter calls this subsystem ``expressed_frame`` and marks
+# its assemblies HTA/HTS. Keep the explicit subsystem name as well: older payloads
+# and contract fixtures use ``high_tech_exoskeleton`` instead.
+_HIGH_TECH_EXOSKELETON_SUBSYSTEMS = {'high_tech_exoskeleton', 'expressed_frame'}
+_HIGH_TECH_ASSEMBLY_PREFIXES = ('HTA-', 'HTS-')
+
 _FACADE_INFILL = {
     'transom', 'glazing_panel', 'spandrel_panel', 'solid_wall_panel', 'brise_soleil',
     'screen_fin', 'window_reveal', 'window_head', 'sill', 'slot_opening',
@@ -95,6 +101,15 @@ class _Record:
         return self.instance.position
 
 
+def _is_high_tech_exoskeleton(record: _Record) -> bool:
+    """Whether a facade carrier belongs to the explicit High-Tech support kit."""
+    if record.group.subsystem in _HIGH_TECH_EXOSKELETON_SUBSYSTEMS:
+        return True
+    identifiers = (record.id, record.instance.assembly_id or '')
+    return any(identifier.startswith(_HIGH_TECH_ASSEMBLY_PREFIXES)
+               for identifier in identifiers)
+
+
 def _flatten(groups: Iterable[ElementGroup]) -> list[_Record]:
     return [_Record(group, instance) for group in groups for instance in group.instances]
 
@@ -122,7 +137,16 @@ def _distance_to(record: _Record, point: Vector3) -> float:
     if isinstance(geometry, QuadGeometry):
         return min(_distance(point, corner) for corner in geometry.corners)
     if isinstance(geometry, BoxGeometry):
-        return _distance(point, geometry.center)
+        # To the solid, not its centre: a core wall is metres long and the girder
+        # that bears on it meets its end, not its middle. Zero inside the box.
+        dx, dy = point.x - geometry.center.x, point.y - geometry.center.y
+        angle = geometry.rotation_z or 0.0
+        cos_a, sin_a = math.cos(angle), math.sin(angle)
+        u, v = dx * cos_a + dy * sin_a, -dx * sin_a + dy * cos_a
+        outside_x = max(abs(u) - geometry.size.x / 2.0, 0.0)
+        outside_y = max(abs(v) - geometry.size.y / 2.0, 0.0)
+        outside_z = max(abs(point.z - geometry.center.z) - geometry.size.z / 2.0, 0.0)
+        return math.sqrt(outside_x ** 2 + outside_y ** 2 + outside_z ** 2)
     if isinstance(geometry, ExtrusionGeometry):
         z = (geometry.z_base + geometry.z_top) / 2.0
         return min(math.sqrt((point.x - p.x) ** 2 + (point.y - p.y) ** 2
@@ -216,6 +240,26 @@ def _point_to_geometry(point: Vector3, geometry) -> float:
     return 1e9
 
 
+def rail_solid_bearings(groups):
+    """A rail endpoint must touch each declared box post, without an invented axis."""
+    records = {instance.id:(group,instance) for group in groups for instance in group.instances}
+    connected, failed = set(), set()
+    for identifier,(group,instance) in records.items():
+        if group.subsystem != 'auditorium_handrail' or not isinstance(instance.geometry,MemberGeometry):
+            continue
+        hosts = [records.get(host) for host in instance.supports]
+        ends = (instance.geometry.path[0],instance.geometry.path[-1])
+        valid = (len(set(instance.supports)) >= 2 and all(
+            host is not None and isinstance(host[1].geometry,BoxGeometry)
+            and min(_point_to_geometry(end,host[1].geometry) for end in ends) <= 1e-5
+            for host in hosts))
+        if valid:
+            valid = all(min(_point_to_geometry(end,host[1].geometry) for host in hosts) <= 1e-5
+                        for end in ends)
+        (connected if valid else failed).add(identifier)
+    return connected, failed
+
+
 def _contact_gap(dependent: _Record, host: _Record) -> float:
     """How far apart the two elements actually are, measured both ways.
 
@@ -228,9 +272,18 @@ def _contact_gap(dependent: _Record, host: _Record) -> float:
     here, there = _vertices(ours), _vertices(theirs)
     if not here or not there:
         return 1e9
-    gap = min(min(_point_to_geometry(p, theirs) for p in here),
-              min(_point_to_geometry(q, ours) for q in there))
-    slack = (MEMBER_SLACK_M if isinstance(ours, MemberGeometry) else 0.0)         + (MEMBER_SLACK_M if isinstance(theirs, MemberGeometry) else 0.0)
+    slack = sum(MEMBER_SLACK_M for geometry in (ours, theirs)
+                if isinstance(geometry, MemberGeometry))
+    gap = math.inf
+    # Zero is the exact lower bound after the existing member slack. Start with
+    # the smaller vertex set: a joist end can establish slab contact immediately.
+    # Separated pairs still measure every vertex in both directions as before.
+    directions = sorted(((here, theirs), (there, ours)), key=lambda pair: len(pair[0]))
+    for vertices, geometry in directions:
+        for point in vertices:
+            gap = min(gap, _point_to_geometry(point, geometry))
+            if gap <= slack:
+                return 0.0
     return max(0.0, gap - slack)
 
 
@@ -376,12 +429,16 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
             continue
         if record.layer != 'structure' and record.kind not in {'roof_deck', 'parapet'}:
             continue
+        # A core wall carries the floor framing that meets it and its own weight to
+        # a footing (decision 0022): it is in the gravity graph, not beside it.
         role = ('lateral' if record.kind in
-                {'brace', 'shear_wall', 'core_wall', 'knee_brace'} else 'gravity')
+                {'brace', 'shear_wall', 'knee_brace', 'transfer_restraint'} else 'gravity')
         relation = ('fastens_to' if role == 'lateral' else 'bears_on')
         for host_id in declared[record.id]:
             add(record, host_id, relation, role,
-                'Emitter-declared relation derived from shared lattice indices.',
+                ('Transfer restraint connects real chord-panel nodes; its lateral capacity remains unevaluated.'
+                 if record.kind == 'transfer_restraint' else
+                 'Emitter-declared relation derived from shared lattice indices.'),
                 topology='geometry_checked')
 
     def floor_host(record: _Record) -> str | None:
@@ -399,6 +456,22 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
                     if record.id.startswith('ENV-CAN-POST-')]
     for record in facade:
         if record.kind in {'roof_deck', 'parapet'}:
+            continue
+        if 'PV-FACADE-DECLARED-SUPPORT' in record.group.rule_refs:
+            for host_id in declared[record.id]:
+                add(record, host_id, 'fastens_to', 'assembly',
+                    'Program Volume facade returns through its emitted carrier or '
+                    'return bracket; physical contact is measured and attachment '
+                    'capacity remains unchecked.', topology='geometry_checked')
+            # Empty or broken declarations remain findings. This stable emitter rule
+            # also prevents a second graph compile from inventing a different host.
+            continue
+        if record.group.subsystem in {'edge_closure', 'roof_closure'}:
+            for host_id in declared[record.id]:
+                add(record, host_id, 'fastens_to', 'assembly',
+                    'Closure returns to the actual emitted slab or roof carrier; '
+                    'connection strength and weatherproof detailing remain unverified.',
+                    topology='geometry_checked')
             continue
         if record.id.startswith('ENV-CAN-POST-'):
             # A canopy post stands at the entrance, on grade. `floor_host` reads the
@@ -425,6 +498,22 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
                     topology='geometry_checked')
             continue
         if record.kind in _FACADE_CARRIERS:
+            # High-Tech frame and secondary struts own an inspectable support chain:
+            # frame -> bracket -> slab, and secondary -> frame.  Do not replace a
+            # declared chain with the generic floor host, which makes every member
+            # appear to return directly to the slab and hides the bracket assembly.
+            if _is_high_tech_exoskeleton(record):
+                if declared[record.id]:
+                    for host_id in declared[record.id]:
+                        add(record, host_id, 'fastens_to', 'assembly',
+                            'High-Tech carrier returns through its emitter-declared '
+                            'frame/bracket assembly; connection capacity remains '
+                            'professional_review_required.',
+                            topology='geometry_checked')
+                # A High-Tech carrier without a declaration is an incomplete emitter
+                # result, not a legacy grammar. Leave it uncovered so the graph reports
+                # the omission instead of inventing a direct slab host.
+                continue
             host = floor_host(record)
             if host:
                 add(record, host, 'fastens_to', 'assembly',
@@ -432,6 +521,21 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
                     topology='rule_checked')
             continue
         if record.kind in _FACADE_INFILL:
+            # High-Tech cassettes, glazing and spandrels (and the same assembly's
+            # entry/secondary infill) carry their own host ports.  The nearest-carrier
+            # rule below is for legacy grammars; applying it here replaces a declared
+            # secondary/frame or panel/bracket edge with a guessed host.
+            if _is_high_tech_exoskeleton(record):
+                if declared[record.id]:
+                    for host_id in declared[record.id]:
+                        add(record, host_id, 'fastens_to', 'assembly',
+                            'High-Tech infill returns through its emitter-declared '
+                            'carrier or bracket interface; connection capacity remains '
+                            'professional_review_required.',
+                            topology='geometry_checked')
+                # A High-Tech infill element without a declaration is incomplete; do
+                # not hide that omission behind a generic nearest-carrier guess.
+                continue
             local = [candidate for candidate in carriers
                      if candidate.level_id == record.level_id and candidate.id != record.id]
             wanted = 2 if record.kind in {'glazing_panel', 'facet_glazing',
@@ -455,30 +559,118 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
     for record in records:
         if record.layer != 'circulation':
             continue
+        explicit_pv_supports = 'PV-CIRC-PUBLIC-STAIR' in record.group.rule_refs
+        if record.group.subsystem == 'stage_access':
+            component = ('Stage arrival platform'
+                         if record.kind == 'stage_platform'
+                         else 'Solid stage access step')
+            for host_id in declared[record.id]:
+                add(record, host_id, 'bears_on', 'gravity',
+                    f'{component} stands on its actual emitted floor support.',
+                    topology='geometry_checked')
+            continue
         if record.kind == 'stair_tread':
-            match = _FLIGHT.search(record.id)
-            hosts = ([candidate for candidate in stringers
-                      if match and f'CIR-STG-{match.group(1)}-' in candidate.id])
+            # Program-volume stairs carry their exact stringer hosts from the
+            # emitter.  Keep the ID-derived pairing only for legacy payloads that
+            # predate the explicit support contract; a malformed explicit list must
+            # remain uncovered so the graph reports the emitter defect.
+            if explicit_pv_supports and declared[record.id]:
+                hosts = [by_id[host_id] for host_id in declared[record.id]
+                         if host_id in by_id and by_id[host_id].kind == 'stair_stringer']
+            elif explicit_pv_supports:
+                hosts = []
+            else:
+                match = _FLIGHT.search(record.id)
+                hosts = ([candidate for candidate in stringers
+                          if match and f'CIR-STG-{match.group(1)}-' in candidate.id])
             for host in hosts:
                 add(record, host.id, 'bears_on', 'gravity',
-                    'Tread bears on the two stringers generated for its flight.',
+                    ('Tread bears on the two stringers explicitly emitted for its '
+                     'Program Volume flight.' if explicit_pv_supports else
+                     'Tread bears on the two stringers generated for its flight.'),
                     topology='geometry_checked')
         elif record.kind == 'stair_stringer':
-            host = floor_host(record)
-            if host:
-                add(record, host, 'bears_on', 'gravity',
-                    'Stringer returns the flight to its served floor/podium.',
-                    topology='rule_checked')
+            if explicit_pv_supports and declared[record.id]:
+                for host_id in declared[record.id]:
+                    add(record, host_id, 'bears_on', 'gravity',
+                        'Program Volume stair stringer returns to its explicitly '
+                        'emitted terminal landing or site/podium support.',
+                        topology='geometry_checked')
+            elif explicit_pv_supports:
+                continue
+            else:
+                host = floor_host(record)
+                if host:
+                    add(record, host, 'bears_on', 'gravity',
+                        'Stringer returns the flight to its served floor/podium.',
+                        topology='rule_checked')
         elif record.kind == 'stair_landing':
-            host = floor_host(record)
-            if host:
-                add(record, host, 'bears_on', 'gravity',
-                    'Floor landing is flush with the served slab and abuts its edge; '
-                    'the slab gives up the landing footprint so one surface owns it.',
+            if record.instance.part_role == 'landing_door_threshold':
+                landings = [host_id for host_id in declared[record.id]
+                            if host_id in by_id
+                            and by_id[host_id].kind == 'stair_landing'
+                            and host_id != record.id]
+                for host_id in landings:
+                    add(record, host_id, 'abuts', 'assembly',
+                        'Core-door threshold bears across the protected-stair wall '
+                        'and joins the emitted floor landing at the inner face.',
+                        topology='geometry_checked')
+                slab_hosts = [candidate for candidate in by_kind['floor_slab']
+                              if candidate.level_id == record.level_id
+                              and _contact_gap(record, candidate) <= CONTACT_M]
+                for slab in slab_hosts:
+                    add(record, slab.id, 'bears_on', 'gravity',
+                        'Core-door threshold returns to the structural floor at the '
+                        'outer face while remaining flush with the walking surface.',
+                        topology='geometry_checked')
+                continue
+            if explicit_pv_supports and declared[record.id]:
+                for host_id in declared[record.id]:
+                    add(record, host_id, 'bears_on', 'gravity',
+                        'Landing returns to its explicitly emitted floor support; the '
+                        'slab gives up the landing footprint so one surface owns it.',
+                        topology='geometry_checked')
+            elif explicit_pv_supports:
+                continue
+            else:
+                host = floor_host(record)
+                if host:
+                    add(record, host, 'bears_on', 'gravity',
+                        'Floor landing is flush with the served slab and abuts its edge; '
+                        'the slab gives up the landing footprint so one surface owns it.',
+                        topology='geometry_checked')
+        elif record.kind == 'lift_landing':
+            # The lift threshold is a real coordination solid across the shaft-wall
+            # opening. Its declared floor supports are the slab pieces that own the
+            # landing edge; the moving car and lift operation remain a separate
+            # unevaluated interface in the portal report.
+            hosts = [host_id for host_id in declared[record.id]
+                     if host_id in by_id
+                     and by_id[host_id].kind in {'floor_slab', 'podium_slab'}]
+            if not hosts:
+                host = floor_host(record)
+                hosts = [host] if host else []
+            for host_id in hosts:
+                add(record, host_id, 'bears_on', 'gravity',
+                    'Lift threshold slab bridges the measured shaft opening to the '
+                    'served structural floor; sill and lift operation remain unverified.',
                     topology='geometry_checked')
         elif record.kind == 'door':
-            # A lift landing door sits in the shaft wall of its own level. Partition
-            # doors are hosted below with their partition run; this one has none.
+            # A stair core's exit door hangs in the jambs its emitter named (decision
+            # 0022). A lift landing door sits in the shaft wall of its own level.
+            # Partition doors are hosted below with their partition run.
+            # Core-wall jambs only: `instance.supports` is regenerated from this
+            # graph, so on a second compile a lift door arrives declaring the shaft
+            # segment the first compile gave it, and reading that as a jamb made
+            # the graph differ from itself.
+            jambs = [host for host in declared[record.id]
+                     if host in by_id and by_id[host].kind == 'core_wall']
+            if jambs:
+                for host_id in jambs:
+                    add(record, host_id, 'hosts', 'assembly',
+                        'Exit door hangs in the jambs of the core wall it opens through.',
+                        topology='rule_checked')
+                continue
             shaft = f'CIR-SHF-{record.level_id}'
             host_id = shaft if shaft in by_id else f'CIR-SHF-{record.level_id}-OVR'
             if host_id in by_id:
@@ -486,16 +678,24 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
                     'Lift landing door is an opening in the shaft segment of its level.',
                     topology='rule_checked')
         elif record.kind == 'stair_half_landing':
-            token = record.id.rsplit('-', 1)[-1]
-            number = token[1:] if len(token) > 1 else token
-            flight_letters = FLIGHT_PAIRS.get(token[:1], ())
-            hosts = [candidate for candidate in stringers
-                     if any(f'CIR-STG-{letter}{number}-' in candidate.id
-                            for letter in flight_letters)]
+            if explicit_pv_supports and declared[record.id]:
+                hosts = [by_id[host_id] for host_id in declared[record.id]
+                         if host_id in by_id and by_id[host_id].kind == 'stair_stringer']
+            elif explicit_pv_supports:
+                hosts = []
+            else:
+                token = record.id.rsplit('-', 1)[-1]
+                number = token[1:] if len(token) > 1 else token
+                flight_letters = FLIGHT_PAIRS.get(token[:1], ())
+                hosts = [candidate for candidate in stringers
+                         if any(f'CIR-STG-{letter}{number}-' in candidate.id
+                                for letter in flight_letters)]
             for host in hosts:
                 add(record, host.id, 'bears_on', 'gravity',
-                    'Half landing is carried by the adjacent switchback stringers.',
-                    topology='rule_checked')
+                    ('Program Volume half landing is carried by its explicitly '
+                     'emitted adjacent stringers.' if explicit_pv_supports else
+                     'Half landing is carried by the adjacent switchback stringers.'),
+                    topology='geometry_checked' if explicit_pv_supports else 'rule_checked')
         elif record.kind == 'ramp':
             landings = _nearest(record, by_kind['ramp_landing'], 2,
                                 within=CONTACT_M)
@@ -516,20 +716,43 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
                 'Ramp curb fastens to the run with the same stable run index.',
                 topology='geometry_checked')
         elif record.kind == 'railing':
-            local_bases = [candidate for candidate in by_level[record.level_id]
-                           if candidate.kind in {'stair_tread', 'stair_stringer', 'ramp',
-                                                 'ramp_landing', 'floor_slab'}]
-            hosts = _nearest(record, local_bases, 1)
-            if hosts:
-                add(record, hosts[0].id, 'fastens_to', 'assembly',
-                    'Guard/handrail post or rail anchors to the nearest walking surface '
-                    'or stair carrier on its level.', topology='rule_checked')
+            if explicit_pv_supports and declared[record.id]:
+                hosts = [by_id[host_id] for host_id in declared[record.id]
+                         if host_id in by_id]
+                for host in hosts:
+                    add(record, host.id, 'fastens_to', 'assembly',
+                        'Program Volume guard/handrail part returns to its explicitly '
+                        'emitted post or stair walking-surface host.',
+                        topology='geometry_checked')
+            elif explicit_pv_supports:
+                continue
+            else:
+                local_bases = [candidate for candidate in by_level[record.level_id]
+                               if candidate.kind in {'stair_tread', 'stair_stringer', 'ramp',
+                                                     'ramp_landing', 'floor_slab'}]
+                hosts = _nearest(record, local_bases, 1)
+                if hosts:
+                    add(record, hosts[0].id, 'fastens_to', 'assembly',
+                        'Guard/handrail post or rail anchors to the nearest walking surface '
+                        'or stair carrier on its level.', topology='rule_checked')
         elif record.kind == 'elevator_shaft':
             host = floor_host(record)
             if host:
                 add(record, host, 'bears_on', 'gravity',
                     'Shaft segment returns to the floor/podium at its base level.',
                     topology='rule_checked')
+
+    # The lift car is fastened to its guide-rail walls and its own floor; the rails,
+    # ropes and safety gear are not modelled, and the relation says so.
+    lift_parts = list(by_kind.get('lift_car', [])) + [
+        record for record in by_kind.get('mechanical_equipment', [])
+        if record.layer == 'circulation']
+    for record in lift_parts:
+        for host_id in declared[record.id]:
+            add(record, host_id, 'fastens_to', 'assembly',
+                'Lift car part fastened to the shaft guide-rail wall or to the car '
+                'floor; rails, ropes, buffers and safety gear are not modelled.',
+                topology='rule_checked')
 
     # Interior construction and movable objects.  Program zones and scale figures were
     # exempted above; partitions, openings and furniture still need a real host.
@@ -548,7 +771,14 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
                     'Suspended ceiling hung from the floor structure above it.',
                     topology='geometry_checked')
             continue
-        if (record.kind in {'desk', 'seat', 'shelving_run'}
+        if record.kind == 'railing' and record.group.subsystem == 'auditorium_handrail':
+            for host_id in declared[record.id]:
+                add(record, host_id, 'fastens_to', 'assembly',
+                    'Auditorium rail meets its posts; each post meets the emitted aisle floor.',
+                    topology='geometry_checked')
+            continue
+        if (record.kind in {'desk', 'seat', 'shelving_run', 'sanitary_fixture',
+                            'mechanical_equipment', 'electrical_equipment'}
                 and record.instance.assembly_id is not None):
             # The emitter declares real subassembly edges. Replacing these with
             # floor_host made a floating tabletop look supported by the slab.
@@ -559,7 +789,8 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
                     topology='geometry_checked')
             continue
         if record.kind in {'partition', 'shelving_run', 'desk', 'seat',
-                           'auditorium_riser', 'stage_platform', 'proscenium_wall'}:
+                           'auditorium_riser', 'stage_platform', 'proscenium_wall',
+                           'auditorium_aisle'}:
             host = floor_host(record)
             if host:
                 anchored = record.kind in ('partition', 'proscenium_wall')
@@ -648,6 +879,8 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
     insufficient = []
     for record in required:
         minimum = _MINIMUM_HOSTS.get(record.kind)
+        if record.kind == 'stair_tread' and record.group.subsystem == 'stage_access':
+            minimum = 1  # Solid filled steps bear directly on floor, without two stringers.
         if minimum is not None and len(relation_by_dependent[record.id]) < minimum:
             insufficient.append(record.id)
 
@@ -695,7 +928,10 @@ def compile_dependency_graph(groups: list[ElementGroup]) -> DependencyGraph:
                      'Some spanning-member ends do not meet their declared hosts.'),
             affected_ids=endpoint_failures),
         DependencyCheck(
-            id='DEP-GEOMETRY-CLAIMS', status='passed',
+            id='DEP-GEOMETRY-CLAIMS',
+            status=('failed' if any(
+                'PV-FACADE-DECLARED-SUPPORT' in by_id[dependent_id].group.rule_refs
+                for dependent_id, _host, _gap in downgraded) else 'passed'),
             message=(
                 f'{len(downgraded)} relations claimed a geometric check the geometry '
                 f'does not support and were recorded as rule-placed instead.'

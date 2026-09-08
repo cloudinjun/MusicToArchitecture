@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
+from typing import get_args
 
 from backend.app.bim_handoff import compile_bim_handoff_report
+from backend.app.models_v3 import ElementKind
 
 
 def _group(kind: str, count: int, material: str = 'steel_white'):
@@ -28,9 +30,7 @@ def test_report_joins_the_registry_to_the_emitted_run() -> None:
         _group('column', 6), _group('glazing_panel', 12),
         _group('program_zone', 2), _group('figure', 3)))
 
-    # 73 kinds: the archetype layer (decision 0016) added the riser, the stage
-    # platform and the proscenium wall.
-    assert report.mapped_taxonomy_kind_count == report.taxonomy_kind_count == 73
+    assert report.mapped_taxonomy_kind_count == report.taxonomy_kind_count == len(get_args(ElementKind))
     assert report.contract_coverage == 1.0
     assert report.mapped_emitted_kind_count == report.emitted_kind_count == 4
     assert report.mapped_element_count == report.emitted_element_count == 23

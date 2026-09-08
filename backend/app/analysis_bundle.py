@@ -35,6 +35,9 @@ from .facade_gates import FacadeGateReport
 from .geometry import ProfileSpec
 from .materials import MaterialSpec
 from .life_safety import LifeSafetyGraph
+from .portals import PortalReport
+from .room_fixtures import RoomLayoutPlan, RoomLayoutReport
+from .transfer_structure import TransferReport
 from .spatial_rules import RULES, SpatialReport
 from .models_v3 import (
     AxisReport,
@@ -42,9 +45,12 @@ from .models_v3 import (
     DependencyGraph,
     DerivationChain,
     MemberSizingRecord,
+    ProgramVolumeModel,
     SelectionRecord,
 )
 from .program import ProgramAllocation
+from .project_brief import ProjectBrief
+from .program_volume_contracts import ResolvedCirculationPlan
 from .site import SiteParameters
 from .site_loads import SiteLoadSet
 
@@ -157,6 +163,12 @@ class AnalysisBundle(BaseModel):
     datum_set: DatumSet
     lattice: Lattice
     program_allocation: ProgramAllocation
+    project_brief: ProjectBrief | None = Field(
+        default=None, exclude_if=lambda value: value is None)
+    # The gross, score-authored volume decision remains visible beside the detailed
+    # room allocation it constrained.  Dropping it here made the browser unable to
+    # audit which volume authored a plate, facade bay, roof edge or circulation path.
+    program_volume_model: ProgramVolumeModel | None = None
 
     # what it is made of
     profiles: dict[str, ProfileSpec] = Field(default_factory=dict)
@@ -171,12 +183,17 @@ class AnalysisBundle(BaseModel):
     facade_gates: FacadeGateReport | None = None
     accessible_route: RampPlan | None = None
     accessible_route_unresolved: str | None = None
+    circulation_plan: ResolvedCirculationPlan | None = None
     constitution: ConstitutionReport | None = None
     # What the spatial archetype promised and what the built geometry measures back —
     # sightlines, clearances, and the findings where the two disagree. None on
     # typologies that carry no archetype.
     archetype: ArchetypeReport | None = None
     life_safety: LifeSafetyGraph | None = None
+    portals: PortalReport | None = None
+    room_layout_plan: RoomLayoutPlan | None = None
+    room_layouts: RoomLayoutReport | None = None
+    transfer_structure: TransferReport | None = None
     dependency_graph: DependencyGraph | None = None
     axis_report: AxisReport | None = None
     spatial: SpatialReport | None = None
@@ -454,6 +471,25 @@ def _tally_spatial(report: SpatialReport | None) -> StatusTally | None:
     return tally
 
 
+def _tally_interface_report(report, source: str, label: str) -> StatusTally | None:
+    """Count the report's own verdict without inventing successful subchecks."""
+    if report is None:
+        return None
+    return StatusTally(source=source, label=label, authority=report.basis,
+        passed=int(report.status == 'passed'), failed=int(report.status == 'failed'),
+        unevaluated=int(report.status == 'unevaluated'),
+        blockers=[finding.detail for finding in report.findings[:3]]
+                 if report.status == 'failed' else [])
+
+
+def _tally_transfer(report: TransferReport | None) -> StatusTally | None:
+    if report is None or report.status == 'not_required':
+        return None
+    return StatusTally(source='transfer_structure', label='Theatre gravity transfer',
+        authority=report.basis, failed=int(report.status == 'failed'),
+        unevaluated=1, blockers=report.findings[:3] if report.status == 'failed' else [])
+
+
 def _tally_axis(report: AxisReport | None) -> StatusTally | None:
     if report is None:
         return None
@@ -474,18 +510,38 @@ def _tally_axis(report: AxisReport | None) -> StatusTally | None:
 
 
 def _tally_route(model: BuildingModelV3) -> StatusTally:
-    """The accessible route is one check with exactly two outcomes, by design.
+    """Separate compliant ramp geometry from a verified accessible route.
 
-    `ada.plan_switchback_ramp` returns a compliant plan or nothing, so this reports a
-    pass or the reason a stair was built instead. There is no partial credit.
+    ``ada.plan_switchback_ramp`` proves the slope, rise, clear width and landings of
+    the exterior ramp it plans.  It does not yet prove that the top landing reaches
+    an open facade threshold and continues through an unobstructed interior route.
+    Calling that isolated piece a passed route hid a real Program Volume defect: the
+    split-bridge ramp could finish more than thirty metres from the only entrance.
     """
     tally = StatusTally(
         source='accessible_route',
         label='Accessible route',
-        authority='ADA §405',
+        authority='ADA §405 ramp geometry; threshold and interior continuity pending',
     )
+    if model.circulation_plan is not None:
+        tally.authority = ('Program Volume circulation intent; emitted geometry; '
+                           'ADA §405 ramp checks')
+        for finding in model.circulation_plan.findings:
+            if finding.status == 'passed':
+                tally.passed += 1
+            elif finding.status == 'failed':
+                tally.failed += 1
+                tally.blockers.append(f'{finding.id}: {finding.detail}')
+            else:
+                tally.unevaluated += 1
+                tally.blockers.append(f'{finding.id}: {finding.detail}')
+        return tally
     if model.accessible_route is not None:
-        tally.passed = 1
+        tally.unevaluated = 1
+        tally.blockers.append(
+            'accessible_route: ramp geometry satisfies the evaluated §405 checks, '
+            'but top landing → facade portal → supported interior route has not '
+            'been verified on emitted geometry')
     elif model.accessible_route_unresolved:
         tally.failed = 1
         tally.blockers.append(f'accessible_route: {model.accessible_route_unresolved}')
@@ -592,6 +648,9 @@ def compile_analysis_bundle(
     tallies = companion_tallies + [tally for tally in (
         _tally_facade_gates(model.facade_gates),
         _tally_life_safety(model.life_safety),
+        _tally_interface_report(model.portals, 'portals', 'Door openings and landings'),
+        _tally_interface_report(model.room_layouts, 'room_layouts', 'Room fixtures and clearances'),
+        _tally_transfer(model.transfer_structure),
         _tally_constitution(model.constitution),
         _tally_route(model),
         _tally_dependency(model.dependency_graph),
@@ -627,6 +686,8 @@ def compile_analysis_bundle(
         datum_set=model.datum_set,
         lattice=model.lattice,
         program_allocation=model.program_allocation,
+        project_brief=model.project_brief,
+        program_volume_model=model.program_volume_model,
         profiles=model.profiles,
         sizing=model.sizing,
         element_groups=_summarise_groups(model),
@@ -638,9 +699,14 @@ def compile_analysis_bundle(
         facade_gates=model.facade_gates,
         accessible_route=model.accessible_route,
         accessible_route_unresolved=model.accessible_route_unresolved,
+        circulation_plan=model.circulation_plan,
         constitution=model.constitution,
         archetype=model.archetype,
         life_safety=model.life_safety,
+        portals=model.portals,
+        room_layout_plan=model.room_layout_plan,
+        room_layouts=model.room_layouts,
+        transfer_structure=model.transfer_structure,
         dependency_graph=model.dependency_graph,
         axis_report=model.axis_report,
         spatial=model.spatial,

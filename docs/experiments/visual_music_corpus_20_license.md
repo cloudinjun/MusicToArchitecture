@@ -74,3 +74,15 @@ These notes document the declarations visible on the linked source pages for thi
 research run. They are not a legal opinion or a guarantee against future takedowns,
 metadata changes, or third-party claims. Recheck the source pages and keep the credit
 when a rendered result is distributed.
+
+## 2026-09-07 追加的三首（用于当期图版）
+
+为 2026-09-07 的图版补充三种现有语料未覆盖的风格，来源与许可与目录内其余 16 首 Kevin MacLeod 曲目相同。许可依据为 incompetech 官方 FAQ 明示的目录许可 “Creative Commons: By Attribution 4.0”。CC BY 要求署名，以下文本须随使用保留。
+
+| ID | 曲名 | 风格 | ISRC | 署名文本 |
+|---|---|---|---|---|
+| `tango-de-manzana` | Tango de Manzana | Tango / accordion | USUAN1100404 | Tango de Manzana Kevin MacLeod (incompetech.com). Licensed under Creative Commons: By Attribution 4.0 License. |
+| `aces-high` | Aces High | Big band / swing | USUAN1100763 | Aces High Kevin MacLeod (incompetech.com). Licensed under Creative Commons: By Attribution 4.0 License. |
+| `ibn-al-noor` | Ibn Al-Noor | Middle Eastern / oud and percussion | USUAN1100706 | Ibn Al-Noor Kevin MacLeod (incompetech.com). Licensed under Creative Commons: By Attribution 4.0 License. |
+
+这三首记录在 [`visual_music_plate_20260907.json`](visual_music_plate_20260907.json) 中，逐首带 SHA-256、时长与下载地址；`visual_music_corpus_20.json` 未改动。

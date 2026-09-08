@@ -341,11 +341,23 @@ def test_a_plan_too_narrow_for_two_remote_cores_still_gets_the_best_pair(
         'the second core was omitted rather than placed as well as the plate allows')
     gap = math.hypot(anchors['second'][0] - anchors['primary'][0],
                      anchors['second'][1] - anchors['primary'][1])
-    diagonal = math.hypot(16.0, 13.0)
-    assert gap < diagonal / 3.0, (
-        f'this plate is no longer cramped: {gap:.1f} m against {diagonal / 3.0:.1f} m, '
-        f'so the test has stopped exercising the shortfall path it exists for')
     assert gap > 0.0
+    # Since the sampler offers the sites flush with the plate's extent (decision
+    # 0022) a rectangle this small still clears the clause -- the pair stands at
+    # the two edges. The shortfall path is exercised directly: asked for more
+    # separation than any site can give, the search keeps the farthest usable
+    # site rather than returning nothing, which is what the graph then reports.
+    from backend.app.compiler_v3 import _core_box, _stair_anchor
+    from backend.app.datums import flight_run
+    width = datums.value('flight_width_m')
+    fallback = _stair_anchor(
+        lattice, width, flight_run(width), list(anchors['served']),
+        away_from=anchors['primary'],
+        keep_out=(_core_box(*anchors['primary'], width, flight_run(width)),),
+        required=1.0e6)
+    assert fallback is not None, 'an unmeetable separation must not omit the second stair'
+    assert math.hypot(fallback[0] - anchors['primary'][0],
+                      fallback[1] - anchors['primary'][1]) >= gap - 1e-6
 
 
 @pytest.mark.parametrize('massing_id', ['MAS-SLAB', 'MAS-TOWER', 'MAS-BAR-PODIUM',

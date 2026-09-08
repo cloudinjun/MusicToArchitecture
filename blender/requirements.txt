@@ -1,0 +1,2 @@
+# Install with Blender's own Python, without replacing its bundled NumPy.
+shapely==2.1.2

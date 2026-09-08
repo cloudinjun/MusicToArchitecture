@@ -37,6 +37,12 @@ from pydantic import BaseModel, Field
 MassingId = Literal[
     'MAS-SLAB', 'MAS-TOWER', 'MAS-COURTYARD', 'MAS-ZIGGURAT',
     'MAS-BAR-PODIUM', 'MAS-SPLIT', 'MAS-PAVILION',
+    # Plates handed in by a program massing rather than drawn by a family
+    # (decision 0022). It has no profile of its own: the levels are the input.
+    'MAS-GIVEN',
+    # The plate is the exact per-storey union of score/brief-authored full-height
+    # Program Volumes.  It enters through ProgramMassing and has no profile here.
+    'MAS-PROGRAM-VOLUME',
 ]
 
 # How the plate changes as it goes up.

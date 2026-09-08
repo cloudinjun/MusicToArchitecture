@@ -25,15 +25,44 @@ paper, work here — replace a figure or add one — rather than starting a seco
 | `fig9_presentation_presets` | paired row | five presentation looks of one saved model | `artifacts/v3_demo/model_v3.blend` |
 | `fig10_bim_handoff` | verbatim capture | the Workbench Revit/Dynamo handoff panel | `building-v3-b7ad95fa45a6` |
 | `table1_verification` | journal table | passed / failed / unevaluated per authority | demo run |
+| `system_architecture` | branch-and-merge | current compiler, adapters and pending acceptance paths | code + pinned archived preview |
+| `pipeline_2026-09-07/pipeline` | phase band | measure → register → compile → issue, two real artifacts per phase | `carefree`, batch 2026-09-07 |
+| `twenty_buildings_2026-09-07` | specimen grid | twenty recordings, one camera solve; three that did not compile keep their cells | batch 2026-09-07 |
 
 Figures 2–5 are the core recipe between the score and the massing, drawn from the demo
 run's own records: its datum set, its selection record, its lattice. They are the figures
 a technical reviewer should read first.
 
 "Demo run" is whatever `web/public/reports/demo_run.json` holds at render time; the
-manifest records which run that was. Figures 1, 6 and 7 use the fourteen-track corpus
+manifest records which run that was. **The current set was rendered on 2026-09-07
+against `building-v3-17d43fed2ff2`** — `android-sock-hop` from the twenty-recording
+batch, a library on a steel frame with an International Style envelope, 21,886 elements,
+81 checks passed / 6 failed / 36 unevaluated. That run was staged into `demo_run.json`
+for the render and the published demo was put back afterwards, so regenerating right now
+would produce a different specimen unless it is staged again:
+`python tools/portfolio/stage_web_demo.py artifacts/visual_audit/2026-09-07-portfolio --track android-sock-hop`,
+render, then `--restore`. It also needs that model's review renders present at
+`artifacts/v3_runs/<model-id>/`, which the batch keeps under its own `geometry/`,
+and — for figure 9 — its five presets under `artifacts/render_presets/<model-id>/`.
+Figure 9 used to point at `model_v3` whatever the rest of the set showed; it now
+prefers the demo run's own presets and falls back to that stable model only when the
+run has none, so the whole set exhibits one building.
+
+Presentation renders of the same model, at 2400 px and in two moods, sit in
+[`artifacts/render_presets/building-v3-17d43fed2ff2-2400`](../artifacts/render_presets/building-v3-17d43fed2ff2-2400)
+with their own note. They are pictures, not figures, so they stay out of this folder. Figures 1, 6 and 7 use the fourteen-track corpus
 rerun of 2026-08-31 so that cross-recording comparisons are between models compiled by
 the same compiler build.
+
+The two 2026-09-07 figures read the twenty-recording batch in
+[`artifacts/visual_audit/2026-09-07-portfolio`](../artifacts/visual_audit/2026-09-07-portfolio):
+compiler 3.9.1 on the Program Volume path, every track compiled from one frozen copy of
+the generation source so the twenty are comparable to each other. They are named outside
+the `fig*_*` pattern, and `pipeline_2026-09-07/` keeps its own `assets/`, because
+`render_paper_figures.py` deletes `portfolio/assets/` and every `portfolio/fig*_*.*` each
+time it runs. Their provenance is in
+[`pipeline_2026-09-07/sources.md`](pipeline_2026-09-07/sources.md) and
+[`twenty_buildings_2026-09-07.sources.md`](twenty_buildings_2026-09-07.sources.md).
 
 Each figure exists as `<name>.svg` (the source: Times, grayscale chrome, thumbnails
 linked from `assets/`) and `<name>.png` (3300 px wide, rasterised from that same SVG).
@@ -81,6 +110,11 @@ manifest records it. To **add** one, write a `figN()` in the same vocabulary (`s
 the skeleton by what the figure asserts — sequence, composition, relation, comparison or
 extent — before drawing; if two unrelated skeletons want the same canvas, that is two
 panels or two figures.
+
+`system_architecture` is a standalone editable overview with `.drawio`, `.svg`, `.png`
+and a self-contained `.scene.json`. Its provenance, status boundaries and export method
+are in [`system_architecture.sources.md`](system_architecture.sources.md). It is maintained
+from that scene independently of the numbered paper-figure regeneration command.
 
 ## Superseded
 

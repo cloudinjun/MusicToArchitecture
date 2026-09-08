@@ -12,20 +12,47 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createTimeline, svg as animeSvg } from 'animejs';
-import type { GenerationResponse, RampPlan } from '../../lib/types';
+import type { GenerationResponse, RampPlan, RampRun } from '../../lib/types';
 import { compact, number, titleCase, toneFor } from '../../lib/format';
 import { reducedMotion } from '../../lib/motion';
 import { Empty, KeyValue, Panel, Pill, Stat, StatGrid, StatusPill } from '../ui';
 
+function runEndpoints(run: RampRun) {
+  return {
+    start: { x: run.x_start, y: run.y_start ?? run.y },
+    end: { x: run.x_end, y: run.y_end ?? run.y },
+  };
+}
+
+function runFootprint(run: RampRun, width: number) {
+  const { start, end } = runEndpoints(run);
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const length = Math.hypot(dx, dy) || 1;
+  const offset = {
+    x: -dy / length * width / 2,
+    y: dx / length * width / 2,
+  };
+  return [
+    { x: start.x + offset.x, y: start.y + offset.y },
+    { x: end.x + offset.x, y: end.y + offset.y },
+    { x: end.x - offset.x, y: end.y - offset.y },
+    { x: start.x - offset.x, y: start.y - offset.y },
+  ];
+}
+
 function RampDiagram({ plan }: { plan: RampPlan }) {
   const hostRef = useRef<SVGSVGElement>(null);
   const [trace, setTrace] = useState(0);
+  const runFootprints = new Map(
+    plan.runs.map((run) => [run.index, runFootprint(run, plan.width_m)]),
+  );
   const xs = [
-    ...plan.runs.flatMap((run) => [run.x_start, run.x_end]),
+    ...[...runFootprints.values()].flatMap((points) => points.map((point) => point.x)),
     ...plan.landings.flatMap((landing) => [landing.x - landing.size_x / 2, landing.x + landing.size_x / 2]),
   ];
   const ys = [
-    ...plan.runs.map((run) => run.y),
+    ...[...runFootprints.values()].flatMap((points) => points.map((point) => point.y)),
     ...plan.landings.flatMap((landing) => [landing.y - landing.size_y / 2, landing.y + landing.size_y / 2]),
   ];
   if (xs.length === 0 || ys.length === 0) return null;
@@ -44,10 +71,13 @@ function RampDiagram({ plan }: { plan: RampPlan }) {
   // measured, so what animates is literally what was verified.
   const centreline = [...plan.runs]
     .sort((a, b) => a.index - b.index)
-    .flatMap((run) => [
-      toX(run.x_start).toFixed(2) + ',' + toY(run.y).toFixed(2),
-      toX(run.x_end).toFixed(2) + ',' + toY(run.y).toFixed(2),
-    ])
+    .flatMap((run) => {
+      const { start, end } = runEndpoints(run);
+      return [
+        toX(start.x).toFixed(2) + ',' + toY(start.y).toFixed(2),
+        toX(end.x).toFixed(2) + ',' + toY(end.y).toFixed(2),
+      ];
+    })
     .join(' ');
 
   return (
@@ -56,16 +86,16 @@ function RampDiagram({ plan }: { plan: RampPlan }) {
       role="img" aria-label="Accessible route in plan" style={{ maxHeight: 320 }}>
       {plan.runs.map((run) => (
         <g key={'run' + run.index}>
-          <rect
-            x={Math.min(toX(run.x_start), toX(run.x_end))}
-            y={toY(run.y) - plan.width_m / 2}
-            width={Math.abs(toX(run.x_end) - toX(run.x_start))}
-            height={plan.width_m}
+          <polygon
+            points={(runFootprints.get(run.index) ?? [])
+              .map((point) => toX(point.x).toFixed(2) + ',' + toY(point.y).toFixed(2))
+              .join(' ')}
             fill="rgba(0, 85, 255, .13)" stroke="var(--accent)" strokeWidth="0.08"
           />
           <text
-            x={Math.min(toX(run.x_start), toX(run.x_end)) + 0.3}
-            y={toY(run.y) + 0.3} fontSize="0.7" fill="var(--accent)"
+            x={toX((run.x_start + run.x_end) / 2) + 0.3}
+            y={toY(((run.y_start ?? run.y) + (run.y_end ?? run.y)) / 2) + 0.3}
+            fontSize="0.7" fill="var(--accent)"
           >
             {'+' + run.z_end.toFixed(2) + ' m'}
           </text>
@@ -380,13 +410,14 @@ export function ComplianceWorkspace({ run }: { run: GenerationResponse | null })
       )}
 
       <Panel
-        title="Accessible route"
+        title="Accessible ramp geometry"
         sub="ADA §405"
-        note="plan_switchback_ramp returns a compliant plan or nothing. An almost-compliant ramp occupies the place the accessible route belongs and reports the problem as solved, so there is no third outcome."
+        note="The planner verifies ramp slope, runs and landings. The route remains unevaluated until its top landing, facade portal and supported interior continuation are checked as one chain."
       >
         {route ? (
           <div className="cols-2">
             <div>
+              <Pill tone="warn">connection unevaluated</Pill>
               <RampDiagram plan={route} />
             </div>
             <div>

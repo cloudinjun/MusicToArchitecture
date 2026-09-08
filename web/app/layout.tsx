@@ -14,7 +14,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        {/* The music font, fetched with the page so the score never shows a glyph box. */}
+        <link rel="preload" href="/fonts/Bravura.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {children}
+      </body>
     </html>
   );
 }

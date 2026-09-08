@@ -34,11 +34,15 @@ from .materials import MaterialSpec
 from .spatial_rules import SpatialReport
 from .geometry import BoxGeometry, ExtrusionGeometry, MemberGeometry, ProfileSpec, QuadGeometry, Vector3
 from .program import ProgramAllocation
+from .project_brief import ProjectBrief
+from .tectonics import StructuralCompilerCapability
 
 ElementKind = Literal[
     # structure
     'footing', 'piloti_column', 'column', 'primary_beam', 'secondary_joist',
     'brace', 'outrigger_strut', 'truss_chord', 'truss_web', 'purlin',
+    'transfer_top_chord', 'transfer_bottom_chord', 'transfer_vertical',
+    'transfer_diagonal', 'transfer_post', 'transfer_restraint',
     'floor_slab', 'slab_fascia', 'podium_slab', 'roof_deck',
     # structure, by frame tectonic. A flat slab has no secondary tier and a drop panel
     # instead; a mass-timber floor is panel bands; a post-and-beam frame triangulates
@@ -66,12 +70,21 @@ ElementKind = Literal[
     'entrance_head',
     'railing',
     'elevator_shaft', 'ramp',
+    # The car in the shaft: its floor, parked flush with a landing, is the one place
+    # a lift door opens onto floor; the canopy and back wall give it a body.
+    'lift_car',
+    # The measured threshold slab through a lift-wall opening. It closes the
+    # geometric sill gap without claiming that the moving car or its operation
+    # has been verified at that landing.
+    'lift_landing',
     # A compliant ramp is not one object. It is runs, the landings between them,
     # and the edge protection along them, and a taxonomy that cannot name the parts
     # cannot record which one violated a clause.
     'ramp_landing', 'ramp_curb',
     # program
     'program_zone', 'partition', 'shelving_run', 'desk', 'seat', 'figure',
+    'sanitary_fixture', 'mechanical_equipment', 'electrical_equipment',
+    'auditorium_aisle',
     # program, by spatial archetype (decision 0016). A riser is a walking surface a
     # seat row stands on; a stage platform is a raised working floor; a proscenium
     # wall is the one wall between house and stage, carrying the opening.
@@ -419,6 +432,8 @@ class SelectionRecord(BaseModel):
     admissible_systems: list[str]
     admissible_grammars: list[str]
     unbuildable_systems: dict[str, str]
+    required_structural_capabilities: list[StructuralCompilerCapability] = Field(default_factory=list)
+    compiler_capability_exclusions: dict[str, list[StructuralCompilerCapability]] = Field(default_factory=dict)
     jurisdiction_resolved: bool
     note: str
 
@@ -445,6 +460,12 @@ class BuildingModelV3(BaseModel):
     datum_set: DatumSet
     lattice: Lattice
     program_allocation: ProgramAllocation
+    project_brief: ProjectBrief | None = Field(
+        default=None, exclude_if=lambda value: value is None)
+    # Present only on the new form-authoring path. It remains beside the detailed
+    # allocation because the former made the building's boundary and the latter
+    # records what the kernel could actually fit inside it.
+    program_volume_model: 'ProgramVolumeModel | None' = None
     profiles: dict[str, ProfileSpec]
     sizing: list[MemberSizingRecord]
     element_groups: list[ElementGroup]
@@ -459,6 +480,10 @@ class BuildingModelV3(BaseModel):
     # empty, or the reason no compliant ramp fits and a stair was built instead.
     accessible_route: 'RampPlan | None' = None
     accessible_route_unresolved: str | None = None
+    # Program Volume circulation is one authored decision followed through the core,
+    # expressive stair, accessible approach, facade threshold and interior route.
+    # Findings remain three-valued so a checked ramp never stands in for the whole path.
+    circulation_plan: 'ResolvedCirculationPlan | None' = None
     # Whether the building contains what a building must contain, and whether
     # everyone in it can get out. Both are reports rather than verdicts: they carry
     # what was checked, what failed, and what could not be evaluated at all.
@@ -469,6 +494,10 @@ class BuildingModelV3(BaseModel):
     site_loads: 'SiteLoadSet | None' = None
     constitution: 'ConstitutionReport | None' = None
     life_safety: 'LifeSafetyGraph | None' = None
+    portals: 'PortalReport | None' = None
+    room_layout_plan: 'RoomLayoutPlan | None' = None
+    room_layouts: 'RoomLayoutReport | None' = None
+    transfer_structure: 'TransferReport | None' = None
     # Every physical element either joins this typed graph or carries an explicit
     # exemption.  This is the cross-system seam between structure, envelope,
     # circulation, interior assemblies and site roots.
@@ -516,7 +545,12 @@ from .constitution import ConstitutionReport  # noqa: E402
 from .site import SiteParameters  # noqa: E402
 from .site_loads import SiteLoadSet  # noqa: E402
 from .life_safety import LifeSafetyGraph  # noqa: E402
+from .portals import PortalReport  # noqa: E402
+from .room_fixtures import RoomLayoutPlan, RoomLayoutReport  # noqa: E402
+from .transfer_structure import TransferReport  # noqa: E402
 from .facade_gates import FacadeGateReport  # noqa: E402
 from .archetypes import ArchetypeReport  # noqa: E402
+from .program_volumes import ProgramVolumeModel  # noqa: E402
+from .program_volume_contracts import ResolvedCirculationPlan  # noqa: E402
 
 BuildingModelV3.model_rebuild()

@@ -152,6 +152,7 @@ ROLE_OF_KIND: dict[str, DrawingRole] = {
     'ceiling': 'partition',
     'stair_tread': 'circulation', 'stair_stringer': 'circulation',
     'stair_landing': 'circulation', 'stair_half_landing': 'circulation',
+    'stage_platform': 'circulation',
     'ramp': 'circulation', 'ramp_landing': 'circulation', 'ramp_curb': 'circulation',
     'railing': 'circulation',
     # A lift shaft is a concrete core: it is cut at the weight of structure and
@@ -342,12 +343,16 @@ class DrawingStandard:
         return min(self.depth_planes, int(share * (self.depth_planes + 1)))
 
 
-# The two standards this pipeline issues drawings at. A plan of a whole floor fits a
-# sheet at 1:100; a section through the building is read at the same scale so the two
-# can be laid up together and measured against each other.
+# The standards this pipeline issues drawings at. Plans and building sections share
+# 1:100. Detail sections use the scales a student review can actually interrogate:
+# 1:20 for the assembly in context and 1:10 only for a selected enlargement.
 PLAN_STANDARD = DrawingStandard(scale=Scale(100))
 SECTION_STANDARD = DrawingStandard(scale=Scale(100))
-DETAIL_STANDARD = DrawingStandard(scale=Scale(50))
+DETAIL_20_STANDARD = DrawingStandard(scale=Scale(20))
+DETAIL_10_STANDARD = DrawingStandard(scale=Scale(10))
+# Compatibility for callers that asked for the old generic name. Its meaning is now
+# explicit and no longer the unused 1:50 intermediate scale.
+DETAIL_STANDARD = DETAIL_20_STANDARD
 
 
 def export_profile(standard: DrawingStandard) -> dict:

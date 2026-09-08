@@ -24,6 +24,8 @@ def _v3_asset() -> ModelAssetV3:
         model_json_path='artifacts/v3_runs/fixture-v3/building_model_v3.json',
         asset_sha256='5' * 64,
         manifest_sha256='6' * 64,
+        native_blend_sha256='7' * 64,
+        source_model_sha256='8' * 64,
         element_count=1,
         merged_object_count=1,
         face_count=12,

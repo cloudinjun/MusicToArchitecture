@@ -196,16 +196,64 @@ def test_a_zone_that_needs_enclosing_gets_more_than_one_wall(model):
         'no zone is enclosed on more than one side')
 
 
+def _assert_openings_have_heads(model):
+    from shapely.geometry import LineString
+    from shapely.ops import unary_union
+    from backend.app.navigation import _projection
+    heads=[e for e in model.elements
+           if e.kind=='partition_head' and e.subsystem=='partitions']
+    doors=[e for e in model.elements
+           if (e.kind=='door' and e.subsystem=='partitions') or e.kind=='entrance_door']
+    profiles={k:v.model_dump() if hasattr(v,'model_dump') else v
+              for k,v in getattr(model,'profiles',{}).items()}
+    head_geometry={head.id:_projection(head,profiles) for head in heads}
+    door_geometry={door.id:_projection(door,profiles) for door in doors}
+    # Each new room leaf must have actual wall above its complete aperture.
+    for door in doors:
+        if door.kind=='entrance_door':
+            continue
+        footprint,(_,top)=door_geometry[door.id]
+        assert any(abs(vertical[0]-top)<.005 and vertical[1]>top+.01
+                   and polygon.buffer(1e-5).covers(footprint)
+                   for polygon,vertical in head_geometry.values()), door.id
+    # A program wall may continue a facade entrance. Read the existing entrance
+    # leaves to account for that head, rather than demanding duplicate room leaves.
+    for head in heads:
+        footprint,(base,_)=head_geometry[head.id]
+        rectangle=footprint.minimum_rotated_rectangle
+        points=list(rectangle.exterior.coords)
+        a,b=max(zip(points,points[1:]),key=lambda pair:LineString(pair).length)
+        dx,dy=b[0]-a[0],b[1]-a[1]
+        length=(dx*dx+dy*dy)**.5
+        tx,ty=dx/length,dy/length
+        head_extent=[x*tx+y*ty for x,y in footprint.exterior.coords]
+        intervals=[]
+        for door in doors:
+            polygon,(_,top)=door_geometry[door.id]
+            if abs(base-top)>.005 or not footprint.buffer(.01).intersects(polygon):
+                continue
+            extent=[x*tx+y*ty for x,y in polygon.exterior.coords]
+            intervals.append(LineString([(min(extent),0),(max(extent),0)]))
+        expected=LineString([(min(head_extent),0),(max(head_extent),0)])
+        assert intervals and unary_union(intervals).buffer(1e-5).covers(expected), head.id
+
+
 def test_every_partition_opening_is_a_door_with_a_head_over_it(model):
-    """A rated wall that stops at the door head is not rated."""
-    doors = [e for e in model.elements
-             if e.kind == 'door' and e.subsystem == 'partitions']
-    heads = [e for e in model.elements
-             if e.kind == 'partition_head' and e.subsystem == 'partitions']
-    assert doors
-    assert {door.id.removesuffix('-DR') + '-HD' for door in doors} == {
-        head.id for head in heads
-    }
+    """Measure heads against room leaves and reused external entrance leaves."""
+    assert any(e.kind=='door' and e.subsystem=='partitions' for e in model.elements)
+    _assert_openings_have_heads(model)
+
+
+def test_missing_partition_head_fails_the_measured_opening_check():
+    from types import SimpleNamespace as NS
+    from backend.app.geometry import BoxGeometry,v3
+    door=NS(id='DOOR',kind='door',subsystem='partitions',thickness_m=None,
+            geometry=BoxGeometry(center=v3(0,0,1.05),size=v3(.915,.08,2.1)))
+    head=NS(id='HEAD',kind='partition_head',subsystem='partitions',thickness_m=None,
+            geometry=BoxGeometry(center=v3(0,0,2.55),size=v3(.915,.2,.9)))
+    _assert_openings_have_heads(NS(elements=[door,head],profiles={}))
+    with pytest.raises(AssertionError,match='DOOR'):
+        _assert_openings_have_heads(NS(elements=[door],profiles={}))
 
 
 def test_doors_clear_the_accessible_width(model):

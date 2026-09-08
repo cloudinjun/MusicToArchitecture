@@ -39,6 +39,7 @@ from .massing import MassingFamily, choose_massing
 from .program import ProgramAllocation
 from .tectonics import (
     ENVELOPE_TECTONICS, GRAMMAR_ENVELOPE, SYSTEM_BUILDABILITY, buildable_systems,
+    StructuralCompilerCapability,
 )
 
 # ---------------------------------------------------------------------------
@@ -377,6 +378,7 @@ def select_project(
     jurisdiction: JurisdictionProfile = UNRESOLVED_JURISDICTION,
     massing: MassingFamily | None = None,
     massing_why: list[str] | None = None,
+    required_capabilities: tuple[StructuralCompilerCapability, ...] = (),
 ) -> tuple[SelectionRecord, FeasibleDomain]:
     """Choose one (system, grammar) pair the music prefers and the screen permits."""
     base = program_by_id(program_id)
@@ -403,7 +405,17 @@ def select_project(
     # code screens from `screen_project`, and whether this compiler can emit the
     # system at all.
     buildable = set(buildable_systems())
-    options = [o for o in domain.feasible if o.system_id in buildable]
+    required = sorted(set(required_capabilities))
+    capability_exclusions = {
+        system: sorted(set(required) - set(SYSTEM_BUILDABILITY[system].compiler_capabilities))
+        for system in sorted(buildable)
+        if set(required) - set(SYSTEM_BUILDABILITY[system].compiler_capabilities)}
+    options = [o for o in domain.feasible if o.system_id in buildable
+               and o.system_id not in capability_exclusions]
+
+    if required and not options:
+        raise ValueError('No physically admissible system has the required compiler '
+                         'capabilities: ' + ', '.join(required))
 
     if not options:
         # The screen has removed everything this compiler can build. Falling back to
@@ -468,6 +480,12 @@ def select_project(
             if not entry.implemented:
                 parts.append(f'{preferred_system} is not emitted by this compiler: '
                              f'{entry.reason}')
+            elif preferred_system in capability_exclusions:
+                parts.append(
+                    f'{preferred_system} lacks compiler_v3 capability '
+                    f'{", ".join(capability_exclusions[preferred_system])} required '
+                    'by the interrupted support stations; physical/code feasibility '
+                    'has not been reclassified')
             else:
                 gates = next((o.failed_gates + o.blocking_rules
                               for o in domain.physically_infeasible + domain.excluded
@@ -520,5 +538,7 @@ def select_project(
         admissible_grammars=sorted({o.grammar_id for o in domain.feasible}),
         unbuildable_systems={s: e.reason for s, e in SYSTEM_BUILDABILITY.items()
                              if not e.implemented},
+        required_structural_capabilities=required,
+        compiler_capability_exclusions=capability_exclusions,
         jurisdiction_resolved=domain.jurisdiction_resolved, note=note)
     return record, domain

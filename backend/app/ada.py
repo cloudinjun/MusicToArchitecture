@@ -63,6 +63,12 @@ class RampRun(BaseModel):
     x_start: float
     x_end: float
     y: float
+    # Optional general-plan endpoints. Legacy switchbacks run parallel to world X
+    # and keep these empty; Program Volume entries may sit on any orthogonal facade
+    # edge, so their transformed runs carry both coordinates without discarding the
+    # original `y` compatibility field.
+    y_start: float | None = None
+    y_end: float | None = None
     z_start: float
     z_end: float
     direction: int
@@ -73,7 +79,17 @@ class RampRun(BaseModel):
 
     @property
     def length(self) -> float:
-        return abs(self.x_end - self.x_start)
+        return math.hypot(
+            self.x_end - self.x_start,
+            self.end_y - self.start_y)
+
+    @property
+    def start_y(self) -> float:
+        return self.y if self.y_start is None else self.y_start
+
+    @property
+    def end_y(self) -> float:
+        return self.y if self.y_end is None else self.y_end
 
     @property
     def slope(self) -> float:
@@ -97,6 +113,10 @@ class RampPlan(BaseModel):
 
     rise_m: float
     width_m: float
+    # The leg pitch: each run's deck is cast this wide, so the legs of a switchback
+    # abut instead of leaving a slot between two decks at different heights. Never
+    # narrower than the clear width, never narrower than a turn landing.
+    pitch_m: float = 0.0
     runs: list[RampRun]
     landings: list[RampLanding]
     footprint_x_m: float
@@ -195,7 +215,9 @@ def plan_switchback_ramp(
     # along most of their length, so a gap between them is a drop you can put a foot
     # through. Edge protection belongs on the deck edges, not either side of a void.
     pitch = max(width, MIN_TURN_LANDING_M)
-    needed_y = run_count * pitch + MIN_TURN_LANDING_M
+    # Centres span n-1 pitches; the two end half-landings supply the remainder.
+    # Counting another full landing rejected compact sites that contain the route.
+    needed_y = (run_count - 1) * pitch + max(width, MIN_LANDING_LENGTH_M)
     if needed_y > y_available:
         return None
 
@@ -271,7 +293,8 @@ def plan_switchback_ramp(
     path.append((landings[-1].x, y_cursor, z_cursor))
 
     plan = RampPlan(
-        rise_m=round(rise_m, 4), width_m=round(width, 4), runs=runs, landings=landings,
+        rise_m=round(rise_m, 4), width_m=round(width, 4), pitch_m=round(pitch, 4),
+        runs=runs, landings=landings,
         centre_line=[(round(x, 4), round(y, 4), round(z, 4)) for x, y, z in path],
         footprint_x_m=round(span, 3), footprint_y_m=round(needed_y, 3),
         handrails_required=rise_m > HANDRAIL_RISE_THRESHOLD_M,

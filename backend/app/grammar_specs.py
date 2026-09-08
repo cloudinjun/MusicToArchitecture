@@ -22,12 +22,15 @@ claiming to implement it. Deconstructivism sits at the other end and says so. Th
 number is why two grammars given the same score produce differently *disciplined*
 buildings, not just differently shaped ones.
 
-**`opening_ratio`.** The guides bound it per grammar, and those bounds are checked after
-emission by `facade_gates.py`. A Brutalist elevation that came out 70 % glass would be a
-curtain wall wearing a Brutalist label, and the gate says so instead of shipping it.
+**`opening_ratio`.** Where a guide publishes a bound, it is checked after emission by
+`facade_gates.py`. A Brutalist elevation that came out 70 % glass would fail its stated
+0.10-0.45 band. High-Tech publishes programme and assembly controls instead of a ratio,
+so its measured ratio remains explicitly unevaluated.
 """
 
 from __future__ import annotations
+
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -44,17 +47,20 @@ class GrammarSpec(BaseModel):
     # The module the elevation is set out on, in metres.
     module_range_m: tuple[float, float]
     # Share of the elevation that may be opening. Checked after emission.
-    opening_ratio_range: tuple[float, float]
+    # ``None`` is deliberate: several guides govern openings by program, climate or
+    # assembly logic and publish no universal ratio.  Recording a plausible band for
+    # those grammars would turn an invented number into a passing validation result.
+    opening_ratio_range: tuple[float, float] | None
     # Depth of a reveal, a screen or a projecting layer, in metres. (0, 0) means the
     # grammar declares no projecting depth of its own.
     depth_range_m: tuple[float, float] = (0.0, 0.0)
     # How many distinct materials the elevation may show. Minimalism caps this at
     # three and the cap is the grammar.
-    material_families: tuple[int, int] = (1, 4)
+    material_families: tuple[int, int] | None = (1, 4)
     # Area share that may be an accent or a motif, as a fraction of the elevation.
-    accent_area_max: float = Field(default=0.12, ge=0.0, le=1.0)
+    accent_area_max: float | None = Field(default=0.12, ge=0.0, le=1.0)
     # Smallest panel or fragment the grammar tolerates before it reads as debris.
-    minimum_fragment_m: float = 0.30
+    minimum_fragment_m: float | None = 0.30
 
     # --- how much of its declared range the score may use ------------------------
     # 1.0 lets a datum travel its whole declared range; 0.12 is Minimalism's stated
@@ -62,6 +68,9 @@ class GrammarSpec(BaseModel):
     # grammar stays recognisable whatever the music does.
     score_authority: float = Field(ge=0.0, le=1.0)
     score_authority_source: str
+    # Most current grammars spend their score authority on opaque/open area.  High-Tech
+    # publishes a different lever: 1-5 visible secondary members per assembly bay.
+    score_control: Literal['opaque_share', 'secondary_density'] = 'opaque_share'
 
     # --- properties a gate can check --------------------------------------------
     # Orientation must change the response (Critical Regionalism, CR-INV-02).
@@ -73,6 +82,14 @@ class GrammarSpec(BaseModel):
     neighbour_jump_max: float | None = None
     # Parametricism reports, and caps, the share of panels that are unique.
     unique_panel_ratio_max: float | None = None
+
+    # --- High-Tech assembly variables, transcribed from guide 05 ----------------
+    primary_assembly_bay_range_m: tuple[float, float] | None = None
+    enclosure_submodule_range_m: tuple[float, float] | None = None
+    visible_secondary_members_per_bay: tuple[int, int] | None = None
+    external_circulation_share_range: tuple[float, float] | None = None
+    color_coded_system_families: tuple[int, int] | None = None
+    standard_component_share_min: float | None = None
 
     forbidden: tuple[str, ...] = ()
     note: str
@@ -136,14 +153,25 @@ GRAMMAR_SPECS: dict[str, GrammarSpec] = {
         GrammarSpec(
             grammar_id='FCD-05-HIGH-TECH', label='High-Tech',
             guide_ref='docs/style_guides/facade/05_high_tech.md',
-            invariants=('HT-INV-01',),
-            module_range_m=(0.75, 1.8), opening_ratio_range=(0.45, 0.85),
-            depth_range_m=(0.60, 2.40), material_families=(2, 4),
-            accent_area_max=0.12, score_authority=0.35,
-            score_authority_source='visible secondary-member density, 1-5 per bay, is '
-                                   'score-eligible under a structural clamp',
+            invariants=('HT-INV-01', 'HT-INV-02', 'HT-INV-03', 'HT-INV-04',
+                        'HT-INV-05', 'HT-INV-06'),
+            module_range_m=(0.75, 1.8), opening_ratio_range=None,
+            depth_range_m=(0.60, 2.40), material_families=None,
+            accent_area_max=None, minimum_fragment_m=None, score_authority=1.0,
+            score_authority_source='the guide assigns the complete bounded 1-5 visible '
+                                   'secondary-member range to density, with structural '
+                                   'size held outside score authority',
+            score_control='secondary_density',
+            primary_assembly_bay_range_m=(3.0, 9.0),
+            enclosure_submodule_range_m=(0.75, 1.80),
+            visible_secondary_members_per_bay=(1, 5),
+            external_circulation_share_range=(0.0, 0.35),
+            color_coded_system_families=(0, 5),
+            standard_component_share_min=0.80,
             note='The frame and its ties are the elevation. Facade system depth is '
-                 'generous because the guide expects routing and maintenance in it.'),
+                 'generous because the guide expects routing and maintenance in it. '
+                 'The guide publishes no universal opening or material-family ratio; '
+                 'program chooses transparent versus insulated cassette bays.'),
 
         GrammarSpec(
             grammar_id='FCD-06-POSTMODERNISM', label='Postmodernism',

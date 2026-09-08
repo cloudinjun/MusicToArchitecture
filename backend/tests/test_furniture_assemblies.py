@@ -4,15 +4,22 @@ from types import SimpleNamespace
 from math import pi
 
 import pytest
-from shapely.geometry import box
+from shapely.geometry import LineString, box
+from shapely.ops import unary_union
 
 from backend.app.assembly_review import review_furniture
 from backend.app.axis import AxisSkeleton
-from backend.app.compiler_v3 import _Builder, _emit_program
+from backend.app.compiler_v3 import (
+    SHELF_CROSS_AISLE_M, SHELF_DEPTH_M, SHELF_FIRST_ROW_OFFSET_M,
+    SHELF_REGION_BODY_MARGIN_M, SHELF_ROW_PITCH_M, _Builder, _emit_program,
+    _plan_shelving_field, _shelving_cross_aisle_x, _shelving_run_layout,
+)
 from backend.app.dependencies import compile_dependency_graph
 from backend.app.furniture import furniture_parts, emit_furniture, usable_floor, footprint, REQUIRED_ROLES
 from backend.app.geometry import BoxGeometry, ExtrusionGeometry, MemberGeometry, convention_profile, v2, v3
 from backend.app.models_v3 import ElementInstance
+from backend.app.navigation import BODY_WIDTH_M, WalkMesh, free_floor, polygons
+from backend.app.room_fixtures import placement_obstacles
 from backend.app.spatial_rules import SpatialIndex, check_spatial_rules, plan_overlap
 
 
@@ -20,6 +27,10 @@ def builder_with_floor():
     b = _Builder.__new__(_Builder)
     b.groups={}; b.element_ids=set(); b.element_kinds={}; b.element_levels={}
     b.profiles={}; b.count=0; b.axis=AxisSkeleton()
+    # `_Builder.add` now reads the optional facade-control protocol. This narrow
+    # fixture bypasses `__init__`, so install its explicit no-control lattice before
+    # emitting the first test solid.
+    b.lattice = SimpleNamespace(facade_control=None)
     b.add('SIT-POD-001','podium_slab','site','podium',
           BoxGeometry(center=v3(0,0,-.25),size=v3(20,20,.5)),'concrete',level_id='L00')
     b.add('STR-SLB-L01','floor_slab','structure','slabs',
@@ -121,6 +132,100 @@ def test_actual_program_emitter_builds_parts_not_floating_boards():
         for flat in g.expand():
             if g.subsystem=='furniture':
                 assert flat.assembly_id and flat.part_role
+
+
+def test_shelf_rows_reserve_one_continuous_measured_cross_aisle():
+    b, level, zone = builder_with_floor()
+    zone.space_type = 'special_collections'
+    allocation = SimpleNamespace(zones_on=lambda index: [zone])
+    b.add('STR-COL-AISLE-TEST', 'column', 'structure', 'columns',
+          BoxGeometry(center=v3(0, 0, 4.5), size=v3(0.4, 0.4, 3.0)),
+          'concrete', level_id=level.id, supports=['STR-SLB-L01'])
+    region = usable_floor(level, zone, placement_obstacles(b, level))
+    row_count = max(1, int((zone.y1 - zone.y0) / SHELF_ROW_PITCH_M))
+    aisle_x = _shelving_cross_aisle_x(
+        region, zone.x0, zone.y0, zone.x1, zone.y1, row_count)
+    assert aisle_x is not None
+    assert aisle_x != pytest.approx(0.0)
+
+    _emit_program(b, allocation)
+
+    elements = [element for group in b.groups.values() for element in group.expand()]
+    shelf_roots = [element for element in elements
+                   if element.kind == 'shelving_run' and element.part_role == 'shelf_0']
+    assert shelf_roots
+    for shelf in shelf_roots:
+        shelf_edge = (shelf.position.x - shelf.dimensions.x / 2.0
+                      if shelf.position.x > aisle_x
+                      else shelf.position.x + shelf.dimensions.x / 2.0)
+        assert abs(shelf_edge - aisle_x) >= SHELF_CROSS_AISLE_M / 2.0 - 1e-9
+
+    model = SimpleNamespace(elements=elements, profiles=b.profiles)
+    domain, unresolved = free_floor(model, level)
+    cross_aisle = LineString([(aisle_x, zone.y0 + 0.5),
+                              (aisle_x, zone.y1 - 0.5)])
+    assert not unresolved
+    assert domain.covers(cross_aisle)
+    assert WalkMesh(domain).route(*cross_aisle.coords) is not None
+
+
+@pytest.mark.parametrize(
+    ('bounds', 'column_centres'),
+    [
+        (
+            (-35.07, 3.489, -26.47, 17.441),
+            [(x, y) for x in (-35.0702, -31.882)
+             for y in (6.3448, 13.9528, 16.6774)],
+        ),
+        (
+            (-25.87, -17.441, -5.325, 3.488),
+            ([(x, y) for x in (-25.5056, -19.1292)
+              for y in (-13.538, -6.9764, -3.2054, 0.0, 1.559)]
+             + [(x, y) for x in (-15.0702, -12.7528, -6.3764)
+                for y in (-13.538, -6.9764)]),
+        ),
+    ],
+)
+def test_shelf_field_keeps_every_fixed_grid_bay_connected(bounds, column_centres):
+    """Round 04: shelf rows plus columns must not create sampled floor islands."""
+
+    columns = [box(x - .1524, y - .1524, x + .1524, y + .1524)
+               for x, y in column_centres]
+    region = box(*bounds).difference(unary_union(columns)).buffer(-.05, join_style=2)
+    x0, y0, x1, y1 = bounds
+    row_count = max(1, int((y1 - y0) / SHELF_ROW_PITCH_M))
+    aisle_x = _shelving_cross_aisle_x(region, *bounds, row_count)
+    assert aisle_x is not None
+    runs = _shelving_run_layout(x0, x1, aisle_centre=aisle_x)
+    candidates = [
+        (row, column, x,
+         y0 + SHELF_FIRST_ROW_OFFSET_M + row * SHELF_ROW_PITCH_M, width)
+        for row in range(row_count)
+        for column, (x, width) in enumerate(runs)
+    ]
+
+    def navigation_domain(placements):
+        domain = region.buffer(-SHELF_REGION_BODY_MARGIN_M, join_style=2)
+        for _row, _column, x, y, width in placements:
+            footprint = box(
+                x - width / 2.0, y - SHELF_DEPTH_M / 2.0,
+                x + width / 2.0, y + SHELF_DEPTH_M / 2.0)
+            if region.covers(footprint):
+                domain = domain.difference(
+                    footprint.buffer(BODY_WIDTH_M / 2.0, join_style=2))
+        return domain
+
+    # The long stacks field reproduces the Round 04 islands with the former
+    # cross-aisle-only layout.  The smaller processing fixture still exercises the
+    # column-bound perimeter bay, although its simplified obstacle set lets the
+    # aisle search choose a safer centre than the complete emitted room did.
+    if len(column_centres) > 10:
+        assert len(polygons(navigation_domain(candidates))) > 1
+
+    kept, omitted = _plan_shelving_field(region, *bounds)
+    assert kept and omitted
+    assert len(kept) / (len(kept) + len(omitted)) >= .70
+    assert len(polygons(navigation_domain(kept))) == 1
 
 
 def test_optional_metadata_keeps_old_instance_payload_readable():

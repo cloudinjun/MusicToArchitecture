@@ -44,6 +44,29 @@ def run_path(run_id: str) -> Path | None:
     return RUN_DIRECTORY / f'{run_id}.json'
 
 
+def audio_path(run_id: str) -> Path | None:
+    """The stored recording for a run, beside its JSON. None if the id is not ours."""
+    if not _is_run_id(run_id):
+        return None
+    return RUN_DIRECTORY / f'{run_id}.mp3'
+
+
+def store_audio(run_id: str, payload: bytes) -> Path | None:
+    """Keep the uploaded MP3 with the run so it can be played back beside the model.
+
+    The run id is a hash of the audio, so an identical upload overwrites its own
+    identical copy and nothing else. Returns the file, or None if unkeyed.
+    """
+    path = audio_path(run_id)
+    if path is None:
+        return None
+    RUN_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    staging = path.with_suffix('.mp3.partial')
+    staging.write_bytes(payload)
+    staging.replace(path)
+    return path
+
+
 def store_run(response: GenerationResponse) -> Path | None:
     """Write one response to the run library. Returns the file, or None if unkeyed."""
     path = run_path(response.run_id)

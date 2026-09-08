@@ -318,6 +318,15 @@ break them, and three real massing defects — an asymmetric taper, an uncapped 
 about a drifting centroid, and a minimum-plate guard checked before the last narrowing —
 were found by these tests rather than by looking at renders.
 
+## Redline R2 → architecture, not a fix list
+
+`docs/decisions/0021-review-evidence-architecture.md` digests the R2 simulated plan
+review (42 items) into six root causes and a staged plan: a `ProjectPremises` object,
+boundary identity on every plan line, an `AccessMatrix` with the rule *occupancy
+follows access*, evidence sheets projected from the reports the model already carries,
+and a generated closeout table. Read it before answering any review item; a fix that
+closes one sheet and not the contract behind it reopens on the next compile.
+
 ## Redline hardening R1
 
 `docs/implementation/redline-r1.md` records the first source-level response to the
@@ -467,10 +476,103 @@ the checks. Three rules keep it that way:
 the Craftbot lesson, adopted deliberately and per the user's direction, HUD included:
 
 - **Two modes, one component set.** `data-mode` on `.shell` flips the tokens:
-  `blueprint` (the default) is a cyanotype — Prussian-blue ground, white line work
-  with hidden-line occlusion (opaque ground-colour fills under white `EdgesGeometry`
-  overlays), graph-paper grid, mono type; `studio` is the light macOS face. Neither
-  mode owns any component; everything reads the same tokens.
+  `blueprint` (the default) is a cyanotype — Prussian-blue ground, pale line work
+  with hidden-line occlusion (opaque fills under `EdgesGeometry` overlays),
+  graph-paper grid, mono type; `studio` is the light macOS face. Neither mode owns
+  any component; everything reads the same tokens.
+- **Blueprint is a drawing, not an X-ray.** The user's words for the first version,
+  and the three rules that fixed it (`ArchitectureViewport`): fills are *shaded*
+  (`MeshLambertMaterial`, `toneMapped: false`, under a blueprint-only light rig) so a
+  volume has a lit face and a shaded face instead of one flat ground-colour; line work
+  comes in three weights by subsystem (`LINE_TIER` — fabric white, partitions and
+  glass mullions mid-blue, furniture / guardrails / scale figures / zone plates faint)
+  because 3,500 elements in one weight read as wireframe; and a camera-relative
+  `Fog` (`DepthFade`) lets the back of the building sit back. Glass (transmission or
+  a `glass` material name) gets a translucent tinted fill, never an opaque wall. Add a
+  new subsystem to `SUBSYSTEM_TIER` when the exporter adds one; unlisted ones fall to
+  the layer default.
+- **The music is a score, and the score is still.** `ScoreStrip` shows the recording
+  as the score it was read as: six measures at the compiler's cuts, notes per measure
+  from onset density (one quarter note to a beamed run of eighths), their height from
+  spectral centroid, a dynamic *p*–*f* from loudness against the track's mean, ♩ = bpm
+  at the head — every mark a reported measurement, in a vocabulary a musician reads.
+  The user's two rulings decide the rest and are not to be re-litigated: playback has
+  no relationship to the building (the *analysis* does), so nothing on the strip moves
+  with playback except a hairline and listening is a small secondary control; and a
+  live spectrum ("spectrum in, form out") is the cliché this project must not be seen
+  as, so a spectrum appears in one role only — as the machine's *hearing*, computed
+  once offline (`lib/hearing.ts`, 16 kHz, 1,024 × 32), surfaced for two seconds while
+  the staff draws and the notes crystallise out of it, then gone; a measure's patch of
+  it returns under the pointer to show where its notes came from. Motion is anime.js
+  on the SVG and collapses under `prefers-reduced-motion`; nothing touches the r3f
+  scene. Generate puts the score on the stage with a reading line sweeping an empty
+  staff — no autoplay, no music during the wait. The backend still keeps the MP3
+  beside the run (`run_store.store_audio`, `/api/runs/{id}/audio`) and the demo ships
+  its fixture at `web/public/audio/`. `docs/sound_strip_references.md` records the
+  first, player-shaped design and each borrowing that was retired; read it before
+  proposing a waveform, a meter or a beat pulse again. The sheet is engraved in
+  Bravura (SMuFL, OFL, unmodified in `web/public/fonts/`; one em = four staff spaces;
+  metrics in `web/lib/smufl.ts`) — clef, heads, dynamics and the metronome mark are
+  glyphs, strokes are at Bravura's thicknesses, and the entrance writes the score
+  stroke by stroke (Legumes) while listening lights the measure the hairline is in
+  (abcjs / OSMD / alphaTab). A drawn-head fallback covers a font that never arrives.
+- **The score becomes the building, by rungs — and the crossing is whole → number
+  → rule, never note → element.** Freezing into a score is half-way; frozen music
+  has to freeze into the *building*, with the relationship to the modelling visible.
+  The reference is painting's abstraction (Mondrian's tree → lines → grid) made into
+  our own version: four rungs, each a thing the pipeline produces, in order — the
+  hearing (field) → the score (marks) → the **lattice** (`analysis.lattice` drawn as
+  level lines and bay lines in the model's space, `LatticeLines`) → the building
+  rising onto it. The stage holds the model below ground (`hold`) until the score is
+  written and the lattice drawn; a performance is *armed* by an open, Play or a landed
+  compile and *starts* on the strip's `onEntered`. The user's second ruling, after a
+  first crossing that lit note heads and ran a leader to one column: **the analysis
+  is of the whole piece** — a dimension is one number for the whole recording, a
+  datum one rule holding everywhere — so nothing may read as note-by-note building.
+  The crossing is therefore an analysis bracket under *all* measures (music theory),
+  votes from every measure into its label (the Hough accumulator: the whole field
+  votes, the reading is a peak), one leader from that number to a dimension string
+  drawn across the whole lattice — a tick at every level, every bay line (drawing
+  practice) — or one tag over the whole layer; TouchDesigner's idiom, the number
+  moving the whole field, is the reference for the motion. Links are read off the run
+  (`lib/links.ts`), spoken one at a time in the strip's footer. Never a highlighted
+  note, never a leader to one element, never a building that stands before its lines.
+  `docs/sound_strip_references.md` § "The fifth movement". TouchDesigner is reachable
+  as compute support through `tools/td_mcp/` (a Web Server DAT speaking MCP).
+
+- **The hearing is a cloud, and the survey is drawn on it** (the user's asks of
+  2026-09-07: particles "like casting a spell" that sweep over each new piece of the
+  building and become it; boxes on the particles, one datum each, joined by a data
+  net; references of point clouds under survey frames and monospace captions; the
+  ladder 音乐 → 图形 → 抽象 → 几何 → 建筑). `HearingCloud.tsx`: the hearing hangs as
+  a ribbon of ~14k particles beside the plan, born when the score is written; a wire
+  box per part with the compiler's per-part numbers as a survey caption and a net to
+  the whole-piece numbers; the lattice waits for the net (graphic → abstraction →
+  geometry); each layer's particles — from everywhere on the ribbon, to everywhere
+  on the layer — spiral across and land as the elements arrive, then go out. One GPU
+  buffer, positions a pure function of the assembly clock (`AssemblyClock`). Never a
+  particle that follows playback, never a note to an element, never CPU work per
+  frame. § "The sixth movement" in the same note.
+
+- **The hearing lab (`/hearing`) is exempt from the playback rule; the stage is not.**
+  `HearingLab.tsx` (Survey: the recording taken apart, still), `NebulaSpectrum.tsx`
+  (Live: a GPU particle mass on a breathing ring — nebula, school, the FFT ring's
+  breath inherited — no frames) and `LiveSpectrum.tsx` (Frames: the spectrum as a
+  dotted history with analysis frames —
+  centroid thread, onset crosses with coordinate captions, stage frames, the now
+  frame, ruler and scale) exist so the analysis visual can be judged on its own, in
+  the register of the user's references (point clouds under survey frames, simulation
+  renders on drawing sheets). There is no building on that page, so the "nothing
+  moves with playback" ruling does not apply there — and it still applies, unchanged,
+  to the stage. Do not port live, playback-driven motion back onto the stage.
+
+- **Callouts are keynotes.** Labels are DOM, not `Html`-in-3D: `useCalloutLayout`
+  projects each anchor per frame and stacks the notes in a column at the side the
+  element is nearer, with SVG leaders and an anchor dot, steering round every stage
+  element marked `data-avoid` (HUD columns, feed, caption, hint, layers panel, dock).
+  Mark any new stage overlay `data-avoid` or the notes will sit on it. Notes step out
+  with their element — hidden layer, or an anchor the section plane has cut away —
+  and while the Layers panel is open. Nothing in that loop touches React state.
 - **The model assembles itself** in construction order (site → structure → envelope →
   circulation → program, `LAYER_ORDER` in `ArchitectureViewport`), narrating the stage
   through the HUD; `prefers-reduced-motion` skips it, and the Build button replays it.
@@ -481,9 +583,14 @@ the Craftbot lesson, adopted deliberately and per the user's direction, HUD incl
   rule survives the polish — every number in a sentence exists in the payload, and a
   stage with missing data says less, never invents. The compiler's own wording, with
   its thresholds and clause ids, stays one click away in Evidence and Diagnostics.
-- **HUD blocks are readouts, never decoration.** Model identity, levels (click to cut
-  that plan), verification counts and the takeoff — every number is from the run, and
-  a block that cannot cite its field in the payload does not ship.
+- **The HUD is one block, and a readout, never decoration.** Typology, form, style,
+  frame, and one line of verdicts (passed · failed · open, which opens Compliance).
+  There were four corners once — identity, levels, verification, takeoff — and with
+  the notes, the feed and the strip they turned the stage into a console; the user's
+  words were "越加越臃肿". Levels now live in the section dock as chips, quantities in
+  Layers, the verdict detail in Compliance. A number that cannot cite its payload
+  field does not ship; a number that already has a home elsewhere does not get a
+  second one on the glass.
 - **The performance shows all three at once: building, process, judgment.** Opening a
   run (and the Play button) runs the narrated build: assembly slows to ~3 s per layer
   while the rationale feed (`web/lib/story.ts` → `.story-feed`) streams the compiled
@@ -512,7 +619,9 @@ the Craftbot lesson, adopted deliberately and per the user's direction, HUD incl
   rationale feed closes, and only elements whose key or size changed animate in (a
   fast, unnarrated cascade; `fingerprintRef` in `ArchitectureViewport`). The camera
   fits once per Canvas lifetime and never re-frames on a switch. The full narrated
-  performance belongs to the first open and to the Play button, never to a switch.
+  performance belongs to the first open, to the Play button, and to a run that has
+  just been compiled (`performNonce`: marked when Generate lands, spent when that
+  run's GLB reports ready) — never to a switch between stored runs.
   The Runs menu always carries a “Frozen demo run” entry so the shipped run stays
   reachable after browsing the library.
 - **Every payload field is referenced somewhere in the client, and a script proves
@@ -542,6 +651,75 @@ bar, a full-bleed model, and one drawer that holds whichever panel was asked for
 - The model's own controls stay off the glass: the layer tree is a floating panel, the
   section plane is a dock that appears with it, and neither is on screen unless it was
   asked for.
+
+**One surface language on the stage** (the 2026-09-07 readability pass, after the UI
+had grown by accretion — a new tab or panel per feature, each in its own idiom):
+
+- **One recipe for everything that floats.** HUD, keynotes, feed, strip, dock, layers
+  panel, menus: `--r-surface` radius, `--glass` ground, one hairline, one shadow. No
+  2 / 3 / 4 px radii, no per-surface glass. A new surface copies the recipe or it is
+  not a new surface — it is a row in an existing one, or a report.
+- **Mono is for numbers.** `--mono` sets the time readout, the compile clock, the HUD
+  status figures, ids in tables — tabular things a reader compares. Sentences, titles
+  and labels are the system sans (`--stage-body`, `--stage-label`). A whole panel set
+  in mono is not "technical", it is hard to read.
+- **Nothing on the stage below 12 px.** Labels are 11 px caps with tracking; body is
+  12.5 px; the small print that used to run at 9–10.5 px is gone, not shrunk.
+- **One voice at a time.** While the rationale feed is open the keynotes are not
+  shown; when it closes they appear. A keynote is an index and a title; its sentence
+  opens under the pointer. The hint line at the foot says something only when the
+  stage is in a state worth naming (assembling, cut, filtered) and is otherwise absent.
+- **Contrast is a token, not a per-element fix.** Blueprint text runs `#f4f8ff` /
+  `#dde7fb` / `#aabfe6` over glass at 0.84 opacity; Studio muted ink is `#6e6e73`
+  over glass at 0.86. If a surface needs its own darker ground to be readable, the
+  token is wrong, not the surface.
+
+## The massing is the contract (decision 0022)
+
+Downstream component construction depends on the volumes the program massing gives
+it -- plates, grid, cores, datums -- and invents none of its own. Two rules follow:
+
+- The grid follows the volumes. Stair cores are placed from the plates alone and
+  the grid is drawn to them: every core face is a grid line, the plate extents,
+  carved room edges and given grid lines stay fixed, the module fills the spans
+  between, and no line runs through a core. Nothing structural is framed inside a
+  core; the framing that meets a face bears on the core wall standing there. Rooms
+  lay out on the module rows (`Lattice.band_lines`), not on every structural line,
+  so a core face never splits a row into a strip no room can use.
+- The core is structure. Four reinforced-concrete core walls stand on the faces of
+  each stair core from a raft footing to the roof, screened as bearing walls for
+  their own weight and the floor they carry, with the exit door as a real aperture
+  (jambs and head, plus a `door` element in the `stairs` subsystem). There are no
+  transfer frames around wells any more; a girder through a stair is not a case to
+  frame around, and the code that did so was deleted rather than switched off.
+- A massing alone is a complete input. `backend/app/program_massing.py` defines
+  `ProgramMassing`; `compile_from_massing` builds the full model from it with no
+  recording, and `program_massing_of` writes the massing a compiled model stands on.
+  `backend/scripts/compile_from_massing.py --massing <json> --out <dir>` builds the
+  model and issues the drawing set; `docs/contracts/program_massing.v1.example.json`
+  is a worked input. Given cores are validated against every plate they serve and
+  refused by name when they do not stand; they reserve their floor on each level so
+  the archetype carvers keep their rooms out of them.
+
+Everything after the plate is settled runs through `_compile_from_lattice` for both
+the music path and the massing path. Do not add a second tail. Rooms are allocated
+by the typology brief, and a massing smaller than the brief reports unplaced rooms
+rather than shrinking them.
+
+## Zones: the writer decides, the kernel measures (decision 0023)
+
+`ProgramMassing.zones` assigns groups of briefed spaces to rectangles on a level.
+The allocator (`allocate_program(zoned=...)`) lays each zone's rooms out inside its
+rectangle on the structural rows, keeps the rest of the brief out of it, and reports
+per zone (`ZoneReport`: usable, asked, delivered, placed, unplaced). A room that does
+not fit its zone is reported against the zone by name and is never placed elsewhere;
+a zone off the usable floor, in a core, in carved floor, naming an unknown space or a
+space twice is refused by name. `brief_for_massing` (and the script's `--brief`)
+gives a zone writer every number: the brief, each storey's usable floor after cores
+and carve, the removed plates, the rows. The writer -- a designer or a model -- does
+the judgement and no arithmetic; the loop is `.claude/skills/zone-massing/SKILL.md`.
+Zones are the model-facing half of the pipeline: keep every measurement in the
+kernel, and never let a zone be "satisfied" without a delivered area behind it.
 
 ## Repository roles
 

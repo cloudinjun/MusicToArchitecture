@@ -7,9 +7,12 @@ cannot occupy the same positive 3-D volume, and a malformed plan ring cannot be
 silently treated as an empty intersection.
 
 ``BoxGeometry`` and ``ExtrusionGeometry`` are measured with Shapely polygons.  An
-extrusion's holes remain holes in every intersection.  Members do not have a swept
-solid here; where an overhead member may affect a stair head-clearance review, the
-center-line buffer is returned as a warning that needs review rather than a pass.
+extrusion's holes remain holes in every intersection.  A member with a declared
+upright profile is swept into its real section -- half its width either side of the
+centre-line in plan, half its depth in height -- so an overhead beam is measured
+against a stair as the solid it is.  Only a member without a resolvable section, or
+one that is rolled or curved, falls back to a buffered centre-line returned as a
+warning that needs review rather than a pass.
 
 The 2.0 m head-clearance value is a project design-review convention.  It does not
 state code compliance.
@@ -17,7 +20,7 @@ state code compliance.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import math
 import re
 from typing import Any, Iterable, Sequence
@@ -30,6 +33,9 @@ from .geometry import BoxGeometry, ExtrusionGeometry, MemberGeometry
 
 
 AREA_EPS_M2 = 1.0e-7
+# Half the width of a seam two coplanar surfaces leave where they were cut from
+# one line: healed as rounding, while a real gap is square metres.
+SEAM_M = 1.0e-4
 Z_EPS_M = 1.0e-6
 HEAD_CLEARANCE_REVIEW_M = 2.0
 PLAN_RING_TOLERANCE_M = 1.0e-9
@@ -46,6 +52,8 @@ _OVERHEAD_MEMBER_KINDS = {
     'primary_beam', 'secondary_joist', 'heavy_joist', 'purlin',
     'truss_chord', 'truss_web', 'brace', 'outrigger_strut',
     'frame_expression', 'external_strut',
+    'transfer_top_chord', 'transfer_bottom_chord', 'transfer_vertical',
+    'transfer_diagonal', 'transfer_post', 'transfer_restraint',
 }
 
 
@@ -77,6 +85,11 @@ class _ReviewContext:
     z_intervals: dict[str, tuple[float, float] | None]
     member_lines: dict[str, LineString | None]
     plan_rings: dict[str, list[tuple[str, list[tuple[float, float]]]]]
+    # For members swept into their real section: the section depth and the
+    # centre-line path, so a clearance can be measured to the member's underside at
+    # the place it passes rather than to the lowest point of a whole diagonal.
+    member_depth: dict[str, float] = field(default_factory=dict)
+    member_path: dict[str, list[tuple[float, float, float]]] = field(default_factory=dict)
 
 
 def _elements(model: Any) -> list[_Element]:
@@ -92,23 +105,126 @@ def _elements(model: Any) -> list[_Element]:
     return out
 
 
+def _profile_dimensions(profiles: Any, profile_id: str) -> tuple[float, float] | None:
+    """(depth, width) of a declared profile, whether it arrives as a model or a dict."""
+    if not profiles:
+        return None
+    spec = profiles.get(profile_id) if hasattr(profiles, 'get') else None
+    if spec is None:
+        return None
+    depth = getattr(spec, 'depth_m', None)
+    width = getattr(spec, 'width_m', None)
+    if isinstance(spec, dict):
+        depth, width = spec.get('depth_m'), spec.get('width_m')
+    try:
+        depth, width = float(depth), float(width)
+    except (TypeError, ValueError):
+        return None
+    return (depth, width) if depth > 0 and width > 0 else None
+
+
+def _is_vertical(geometry: Any) -> bool:
+    """A member whose path has no plan length: a post, a mullion, a column."""
+    if not isinstance(geometry, MemberGeometry):
+        return False
+    try:
+        xs = [point.x for point in geometry.path]
+        ys = [point.y for point in geometry.path]
+    except (TypeError, ValueError):
+        return False
+    return (max(xs) - min(xs)) <= PLAN_RING_TOLERANCE_M * 1e6 \
+        and (max(ys) - min(ys)) <= PLAN_RING_TOLERANCE_M * 1e6
+
+
+def _member_solid(geometry: Any, profiles: Any) -> tuple[Polygon | None, tuple[float, float] | None]:
+    """The swept section of a member as a plan polygon and a height range.
+
+    Members are centre-lines in the portable contract, but every emitted member
+    declares a profile the model carries, and a profile has a depth and a width.
+    A member whose roll is upright -- every beam, joist and header this compiler
+    emits -- occupies the centre-line buffered by half its width in plan and half
+    its depth either side of the line in height. That is the exact volume a
+    head-clearance review needs, not an approximation of it. A rolled or a curved
+    member is left unresolved rather than guessed.
+    """
+    if not isinstance(geometry, MemberGeometry):
+        return None, None
+    dimensions = _profile_dimensions(profiles, geometry.profile)
+    if dimensions is None:
+        return None, None
+    roll = getattr(geometry, 'roll', None)
+    if roll is not None and (abs(roll.x) > 1e-6 or abs(roll.y) > 1e-6):
+        return None, None
+    depth, width = dimensions
+    try:
+        line = LineString([(point.x, point.y) for point in geometry.path])
+    except (TypeError, ValueError):
+        return None, None
+    if line.is_empty or line.length <= PLAN_RING_TOLERANCE_M:
+        # A vertical member -- a post, a mullion, a column. It has no underside
+        # anything walks beneath, so it is not swept here; the head-clearance review
+        # skips it rather than warning about it.
+        return None, None
+    polygon = line.buffer(width / 2.0, cap_style=2, join_style=2)
+    if polygon.is_empty or not polygon.is_valid:
+        return None, None
+    zs = [point.z for point in geometry.path]
+    return polygon, (min(zs) - depth / 2.0, max(zs) + depth / 2.0)
+
+
 def _context(model: Any) -> _ReviewContext:
     elements = _elements(model)
+    profiles = getattr(model, 'profiles', None) or {}
     by_kind: dict[str, list[_Element]] = {}
     polygons: dict[str, Polygon | None] = {}
     z_intervals: dict[str, tuple[float, float] | None] = {}
     member_lines: dict[str, LineString | None] = {}
     plan_rings: dict[str, list[tuple[str, list[tuple[float, float]]]]] = {}
+    member_depth: dict[str, float] = {}
+    member_path: dict[str, list[tuple[float, float, float]]] = {}
     for element in elements:
         by_kind.setdefault(element.kind, []).append(element)
         polygons[element.id] = _polygon(element.geometry)
         z_intervals[element.id] = _z_interval(element.geometry)
         member_lines[element.id] = _member_line(element.geometry)
+        if isinstance(element.geometry, MemberGeometry):
+            # Members get their real swept section where the model declares one;
+            # the centre-line stays for the checks that only need it.
+            solid_polygon, solid_z = _member_solid(element.geometry, profiles)
+            if solid_polygon is not None:
+                polygons[element.id] = solid_polygon
+                z_intervals[element.id] = solid_z
+                dimensions = _profile_dimensions(profiles, element.geometry.profile)
+                member_depth[element.id] = dimensions[0] if dimensions else 0.0
+                member_path[element.id] = [(p.x, p.y, p.z) for p in element.geometry.path]
         try:
             plan_rings[element.id] = _plan_rings(element)
         except (TypeError, ValueError):
             plan_rings[element.id] = []
-    return _ReviewContext(elements, by_kind, polygons, z_intervals, member_lines, plan_rings)
+    return _ReviewContext(elements, by_kind, polygons, z_intervals, member_lines,
+                          plan_rings, member_depth, member_path)
+
+
+def _member_underside_at(path: list[tuple[float, float, float]], depth: float,
+                         x: float, y: float) -> float:
+    """The underside of a member where it passes over a plan point.
+
+    A diagonal brace spans the storey: its lowest point is at a column foot and its
+    highest at the beam above, and a tread under its plan footprint is under one
+    place on it, not under all of it. The centre-line height is interpolated at the
+    nearest point of the path and half the depth taken off.
+    """
+    best_z, best_d = path[0][2], float('inf')
+    for (ax, ay, az), (bx, by, bz) in zip(path, path[1:]):
+        dx, dy = bx - ax, by - ay
+        length2 = dx * dx + dy * dy
+        t = 0.0 if length2 <= 1e-12 else max(
+            0.0, min(1.0, ((x - ax) * dx + (y - ay) * dy) / length2))
+        px, py = ax + t * dx, ay + t * dy
+        d = math.hypot(x - px, y - py)
+        if d < best_d:
+            best_d, best_z = d, az + t * (bz - az)
+    return best_z - depth / 2.0
 
 
 def _box_ring(geometry: BoxGeometry) -> list[tuple[float, float]]:
@@ -346,7 +462,15 @@ def check_stair_head_clearance(
     context = context or _context(model)
     elements = context.elements
     treads = _solid_rows(elements, {'stair_tread'})
-    overhead = _solid_rows(elements, {'floor_slab', 'ceiling'})
+    # Slabs and ceilings, and every overhead member whose swept section the model
+    # can state exactly. A member is an obstacle with a real underside, not a line
+    # to be wary of; the ones without a resolvable section stay in the warning loop.
+    members = _solid_rows(elements, _OVERHEAD_MEMBER_KINDS)
+    exact_members = [member for member in members
+                     if isinstance(member.geometry, MemberGeometry)
+                     and context.polygons.get(member.id) is not None]
+    exact_ids = {member.id for member in exact_members}
+    overhead = _solid_rows(elements, {'floor_slab', 'ceiling'}) + exact_members
     findings: list[GeometryFinding] = []
     warned_treads: set[str] = set()
     warned_obstacles: set[str] = set()
@@ -372,7 +496,19 @@ def check_stair_head_clearance(
             overlap_area = _solid_overlap(tread_polygon, obstacle_polygon)
             if overlap_area <= AREA_EPS_M2:
                 continue
-            candidates.append((obstacle_z[0] - tread_z[1], overlap_area, obstacle))
+            underside = obstacle_z[0]
+            if obstacle.id in context.member_path:
+                # Where the member actually passes over this tread, not the lowest
+                # point of the whole member.
+                shared = tread_polygon.intersection(obstacle_polygon)
+                point = shared.representative_point() if not shared.is_empty else tread_polygon.representative_point()
+                underside = _member_underside_at(context.member_path[obstacle.id],
+                                                 context.member_depth[obstacle.id],
+                                                 point.x, point.y)
+                if underside <= tread_z[0] + Z_EPS_M:
+                    # It passes below the tread here: not overhead.
+                    continue
+            candidates.append((underside - tread_z[1], overlap_area, obstacle))
         if candidates:
             clearance, overlap_area, obstacle = min(candidates, key=lambda item: item[0])
             if clearance < HEAD_CLEARANCE_REVIEW_M - Z_EPS_M:
@@ -385,11 +521,18 @@ def check_stair_head_clearance(
                             'is a project design-review convention, not a code claim.'),
                 ))
 
-    # Structural members are center-lines in the portable contract.  A buffered line
-    # is useful to surface a possible overhead member, but it stays a warning because
-    # section depth/roll is not authoritative in this small review gate.
+    # Members whose section the model does not declare -- or whose roll or curve
+    # this review does not sweep -- are still centre-lines here. A buffered line
+    # surfaces a possible overhead member, and it stays a warning because its depth
+    # is not known; every member with a declared upright profile was measured above.
     warned_members: set[str] = set()
-    for member in _solid_rows(elements, _OVERHEAD_MEMBER_KINDS):
+    profiles = getattr(model, 'profiles', None) or {}
+    for member in members:
+        if member.id in exact_ids:
+            continue
+        if _is_vertical(member.geometry):
+            # A post or mullion stands beside a stair; nothing walks under it.
+            continue
         line = context.member_lines.get(member.id)
         member_z = context.z_intervals.get(member.id)
         if line is None or member_z is None:
@@ -397,7 +540,20 @@ def check_stair_head_clearance(
                 findings.append(_invalid_geometry_warning(rule_id, member, 'overhead member'))
                 warned_members.add(member.id)
             continue
-        approx_plan = line.buffer(MEMBER_APPROX_RADIUS_M, cap_style=2, join_style=2)
+        dimensions = (_profile_dimensions(profiles, member.geometry.profile)
+                      if isinstance(member.geometry, MemberGeometry) else None)
+        # A known section whose roll/curve this small review cannot sweep still has
+        # a rotation-independent circular envelope.  Its diagonal radius gives a
+        # conservative plan reach and underside: when even that lower bound clears
+        # the review volume, an ``unevaluated`` warning would discard usable model
+        # evidence.  Near the threshold the warning remains, because this envelope
+        # cannot prove the actual rolled orientation.
+        section_radius = (math.hypot(*dimensions) / 2.0 if dimensions else None)
+        probe_radius = max(MEMBER_APPROX_RADIUS_M, section_radius or 0.0)
+        approx_plan = line.buffer(probe_radius, cap_style=2, join_style=2)
+        path_bottom = (min(point.z for point in member.geometry.path) - section_radius
+                       if section_radius is not None
+                       and isinstance(member.geometry, MemberGeometry) else None)
         for tread in treads:
             tread_polygon = context.polygons.get(tread.id)
             tread_z = context.z_intervals.get(tread.id)
@@ -407,12 +563,16 @@ def check_stair_head_clearance(
                 continue
             if _solid_overlap(tread_polygon, approx_plan) <= AREA_EPS_M2:
                 continue
-            clearance = member_z[0] - tread_z[1]
+            clearance = ((path_bottom if path_bottom is not None else member_z[0])
+                         - tread_z[1])
+            if (path_bottom is not None
+                    and clearance >= HEAD_CLEARANCE_REVIEW_M - Z_EPS_M):
+                continue
             findings.append(_unknown(
                 rule_id, (tread.id, member.id),
                 (f'overhead member center-line is within the stair review volume '
-                 f'with approximate clearance {clearance:.3f} m; section depth '
-                 'and roll require review.'),
+                 f'with conservative clearance {clearance:.3f} m; section roll '
+                 'or path requires review.'),
             ))
             warned_members.add(member.id)
             break
@@ -551,7 +711,14 @@ def check_room_support(model: Any, *, context: _ReviewContext | None = None
     context = context or _context(model)
     findings: list[GeometryFinding] = []
     by_level: dict[str, list[_Element]] = {}
-    for slab in _solid_rows(context.elements, {'floor_slab', 'podium_slab'}):
+    # A floor landing owns its footprint -- the slab is cut back to its edge so the two
+    # walking surfaces abut instead of lying one inside the other -- and it is floor
+    # at the plate's own height. A room that reaches onto it is supported, which the
+    # flush test below is what decides; a landing at another height stays excluded.
+    # The ramp's top landing is the same case: the podium slab gives up its footprint
+    # and the landing is the floor there.
+    for slab in _solid_rows(context.elements,
+                            {'floor_slab', 'podium_slab', 'stair_landing', 'ramp_landing'}):
         by_level.setdefault(slab.level_id, []).append(slab)
     for room in context.by_kind.get('program_zone', []):
         footprint = context.polygons.get(room.id)
@@ -574,8 +741,13 @@ def check_room_support(model: Any, *, context: _ReviewContext | None = None
                 'same-level floor support is missing, invalid or at another height'))
             continue
         supported = unary_union(support)
-        # Numeric tolerance only; 49.6 m2 outside a rotated slab is not rounding.
-        outside = footprint.difference(supported.buffer(1.0e-7)).area
+        # Numeric tolerance only; 49.6 m2 outside a rotated slab is not rounding. The
+        # closing (grow, then shrink, square joins) heals the seam where a landing's
+        # cut-out meets the slab it was cut from -- the same line computed twice --
+        # and returns every real edge and hole to its exact place; a plain buffer
+        # moved the measured area by a tenth of a millimetre times the perimeter.
+        closed = supported.buffer(SEAM_M, join_style=2).buffer(-SEAM_M, join_style=2)
+        outside = footprint.difference(closed.buffer(AREA_EPS_M2)).area
         if outside > AREA_EPS_M2:
             findings.append(GeometryFinding(
                 rule_id=rule_id, severity='violation', elements=(room.id,),

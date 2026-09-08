@@ -110,8 +110,17 @@ stored locally under `artifacts/web_runs/`.
 The default view is the building, in a cyanotype blueprint mode (a light Studio mode
 is one click away). Opening a run plays a narrated build: the model assembles in
 construction order while a plain-language rationale feed streams what was measured,
-chosen and checked — every line filled from the run itself. Leader-line callouts
-annotate the finished model, corner HUD readouts track its state, and switching runs
+chosen and checked — every line filled from the run itself. The blueprint draws shaded
+volumes in three line weights so the model reads as a building rather than a wireframe;
+keynote callouts stack beside it with leaders to the elements they explain, one HUD
+block names the building and where its checks stand, and the recording sits at the foot
+of the stage as the score it was read as, engraved in Bravura: six measures at the
+compiler's cuts, notes for onsets, height for brightness, a dynamic for loudness with
+hairpins where it changes, the tempo at the head — still, because the building is
+frozen music. When a reading arrives the notes are drawn
+out of the machine's hearing as it dissolves; hovering a measure shows where its notes
+came from. Pressing Generate puts the score on the stage until the building arrives.
+Switching runs
 holds the camera still and re-assembles only what changed, so two compilations of the
 same piece can be compared from one viewpoint. Layers and the section plane float over
 the viewport; reports open in one drawer.

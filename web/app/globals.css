@@ -33,7 +33,7 @@
   /* ink */
   --text: #1d1d1f;
   --text-2: #48484e;
-  --muted: #86868b;
+  --muted: #6e6e73;
 
   --accent: #0071e3;
   --accent-hover: #0077ed;
@@ -74,9 +74,14 @@
   --shadow-panel: 0 0 0 0.5px rgba(0, 0, 0, 0.05), 0 12px 40px rgba(0, 0, 0, 0.14);
   --shadow-sheet: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 24px 70px rgba(0, 0, 0, 0.2);
 
-  /* materials */
-  --glass: rgba(250, 250, 252, 0.78);
-  --glass-strong: rgba(252, 252, 253, 0.9);
+  /* materials — opaque enough that 12 px type reads over line work */
+  --glass: rgba(250, 250, 252, 0.86);
+  --glass-strong: rgba(252, 252, 253, 0.95);
+
+  /* one recipe for everything that floats on the stage */
+  --r-surface: var(--r-md);
+  --stage-label: 600 11px/1.3 -apple-system, BlinkMacSystemFont, var(--font-geist-sans), 'SF Pro Text', 'Helvetica Neue', Inter, Arial, sans-serif;
+  --stage-body: 400 12.5px/1.5 -apple-system, BlinkMacSystemFont, var(--font-geist-sans), 'SF Pro Text', 'Helvetica Neue', Inter, Arial, sans-serif;
 
   /* motion */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -88,6 +93,16 @@
   --background: var(--bg);
   --surface-muted: var(--surface-3);
   --surface-hover: var(--surface-3);
+}
+
+/* Bravura, Steinberg's SMuFL reference font (SIL OFL 1.1, licence beside the file).
+   One em is four staff spaces, so a glyph set at 4 × the staff gap is engraved to scale. */
+@font-face {
+  font-family: 'Bravura';
+  src: url('/fonts/Bravura.woff2') format('woff2');
+  font-display: block;
+  font-weight: normal;
+  font-style: normal;
 }
 
 * { box-sizing: border-box; }
@@ -223,17 +238,13 @@ ul, ol { padding: 0; list-style: none; }
 
 .stage { position: relative; min-height: 0; background: var(--bg); overflow: hidden; }
 .stage canvas { display: block; }
-.stage-empty { display: grid; place-items: center; background: var(--bg); }
-.stage-caption {
-  position: absolute; left: 22px; bottom: 40px; max-width: 46ch;
-  display: flex; flex-direction: column; gap: 3px; pointer-events: none;
-}
-.stage-caption strong { font-size: 22px; font-weight: 650; letter-spacing: -0.022em; }
-.stage-caption span { color: var(--muted); font-size: 12.5px; }
+.stage-empty { position: relative; display: grid; place-items: center; background: var(--bg); }
+/* The hint speaks only when the stage is in a state worth naming; otherwise it is not there. */
 .stage-hint {
   position: absolute; left: 22px; bottom: 16px;
-  color: var(--muted); font-size: 11px; pointer-events: none;
+  color: var(--muted); font: var(--stage-body); font-size: 12px; pointer-events: none;
 }
+.stage-hint:empty { display: none; }
 .stage-toast {
   position: absolute; left: 50%; top: 14px; transform: translateX(-50%); z-index: 20;
   display: flex; align-items: center; gap: 8px;
@@ -290,7 +301,16 @@ ul, ol { padding: 0; list-style: none; }
 }
 @keyframes dock-in { from { opacity: 0; transform: translate(-50%, 10px); } }
 .section-dock .slider { width: 200px; margin: 0; }
-.section-dock .num { min-width: 52px; color: var(--muted); font-size: 12px; }
+.section-dock .num { min-width: 52px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+/* The levels live with the cut, as chips: one click sets the plane to that plan. */
+.dock-levels { display: flex; gap: 3px; padding-left: 10px; border-left: 1px solid var(--hairline-soft); }
+.dock-level {
+  min-height: 24px; padding: 0 8px; border: 0; border-radius: var(--r-sm);
+  background: transparent; color: var(--text-2); cursor: pointer;
+  font: var(--stage-label); font-variant-numeric: tabular-nums;
+}
+.dock-level:hover { background: var(--hover); color: var(--text); }
+.dock-level.is-active { background: var(--accent-soft-2); color: var(--accent); }
 
 .viewport-busy {
   position: absolute; inset: 0; z-index: 10; display: grid; place-items: center;
@@ -844,7 +864,7 @@ details.disclosure .disclosure-body { padding: 0 16px 14px; }
    both modes share one set of components.
    ========================================================================== */
 
-.shell[data-mode='blueprint'] {
+.shell[data-mode='blueprint'], .hearing-lab {
   --bg: #0e2f66;
   --surface: #10336f;
   --surface-2: #123a7c;
@@ -853,11 +873,11 @@ details.disclosure .disclosure-body { padding: 0 16px 14px; }
   --press: rgba(219, 233, 255, 0.15);
   --line: #1c4489;
   --line-strong: #2b56a0;
-  --hairline: rgba(219, 233, 255, 0.28);
-  --hairline-soft: rgba(219, 233, 255, 0.15);
-  --text: #eaf2ff;
-  --text-2: #c6d7f7;
-  --muted: #8fa9d9;
+  --hairline: rgba(219, 233, 255, 0.34);
+  --hairline-soft: rgba(219, 233, 255, 0.18);
+  --text: #f4f8ff;
+  --text-2: #dde7fb;
+  --muted: #aabfe6;
   --accent: #9cc4ff;
   --accent-hover: #b3d2ff;
   --accent-soft: rgba(156, 196, 255, 0.15);
@@ -866,8 +886,8 @@ details.disclosure .disclosure-body { padding: 0 16px 14px; }
   --warn: #ffd27a; --warn-soft: rgba(255, 210, 122, 0.15);
   --bad: #ff8f86; --bad-soft: rgba(255, 143, 134, 0.17);
   --unknown: #a7b8d8; --unknown-soft: rgba(167, 184, 216, 0.15);
-  --glass: rgba(10, 34, 78, 0.72);
-  --glass-strong: rgba(11, 38, 86, 0.88);
+  --glass: rgba(6, 22, 56, 0.84);
+  --glass-strong: rgba(6, 22, 56, 0.93);
   --shadow-raise: 0 0 0 0.5px rgba(219, 233, 255, 0.14), 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-menu: 0 0 0 0.5px rgba(219, 233, 255, 0.16), 0 10px 34px rgba(0, 0, 0, 0.5);
   --shadow-panel: 0 0 0 0.5px rgba(219, 233, 255, 0.14), 0 12px 40px rgba(0, 0, 0, 0.5);
@@ -906,140 +926,276 @@ details.disclosure .disclosure-body { padding: 0 16px 14px; }
 .shell[data-mode='blueprint'] *::-webkit-scrollbar-thumb:hover {
   background: rgba(219, 233, 255, 0.5); border: 3px solid transparent; background-clip: content-box;
 }
-.shell[data-mode='blueprint'] .stage-caption strong {
-  font-family: var(--mono); font-size: 18px; letter-spacing: 0.04em; text-transform: uppercase;
-}
-.shell[data-mode='blueprint'] .stage-caption span,
-.shell[data-mode='blueprint'] .stage-hint { font-family: var(--mono); font-size: 10.5px; }
 
 /* --- HUD: corner readouts on the drawing ---------------------------------- */
 
-.hud { position: absolute; inset: 0; z-index: 15; pointer-events: none; font-family: var(--mono); }
-.hud-col { position: absolute; display: flex; flex-direction: column; gap: 10px; width: 218px; }
-.hud-tl { top: 14px; left: 14px; }
-.hud-tr { top: 14px; right: 14px; }
-.hud-br { right: 14px; bottom: 14px; }
+/* One block, top-left: what the building is, and where its checks stand. Everything
+   the three old corners held is still one click away — levels in the section dock,
+   quantities in Layers, the verification detail in Compliance. */
+.hud { position: absolute; inset: 0; z-index: 15; pointer-events: none; }
 .hud-block {
+  position: absolute; top: 14px; left: 14px; width: 232px;
   pointer-events: auto;
-  padding: 9px 11px 10px;
+  padding: 11px 13px 12px;
   border: 1px solid var(--hairline);
-  border-radius: 3px;
+  border-radius: var(--r-surface);
   background: var(--glass);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  backdrop-filter: blur(14px) saturate(140%);
-  color: var(--text-2);
-  font-size: 10px; line-height: 1.65;
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  color: var(--text-2); font: var(--stage-body);
 }
 .hud-block h3 {
-  margin: 0 0 5px; color: var(--muted);
-  font-size: 9.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  margin: 0 0 7px; color: var(--muted);
+  font: var(--stage-label); letter-spacing: 0.08em; text-transform: uppercase;
 }
-.hud-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.hud-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 1.5px 0; }
 .hud-row span { color: var(--muted); }
 .hud-row b {
   max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  color: var(--text); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums;
+  color: var(--text); font-weight: 600; text-align: right;
 }
-.hud-row b.tone-ok { color: var(--ok); }
-.hud-row b.tone-bad { color: var(--bad); }
-.hud-row b.tone-unknown { color: var(--unknown); }
-.hud-sep { height: 1px; margin: 6px 0; background: var(--hairline-soft); }
-.hud-note { margin-top: 5px; color: var(--muted); font-size: 9px; letter-spacing: 0.03em; }
+.hud-status {
+  display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 8px; padding-top: 8px;
+  border-top: 1px solid var(--hairline-soft); font-variant-numeric: tabular-nums;
+}
+.hud-status b { font-weight: 600; }
+.hud-status .tone-ok { color: var(--ok); }
+.hud-status .tone-bad { color: var(--bad); }
+.hud-status .tone-unknown { color: var(--unknown); }
 .hud-assembly {
-  margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--hairline-soft);
-  color: var(--accent); font-size: 9.5px; font-weight: 700;
-  letter-spacing: 0.14em; text-transform: uppercase;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--hairline-soft);
+  color: var(--accent); font: var(--stage-label); letter-spacing: 0.08em; text-transform: uppercase;
 }
-.hud-level {
-  display: flex; gap: 8px; align-items: baseline; width: calc(100% + 8px);
-  margin: 0 -4px; padding: 2.5px 4px; border: 0; border-radius: 2px;
-  background: transparent; color: var(--text-2); cursor: pointer;
-  font: inherit; font-size: 10px; text-align: left;
-}
-.hud-level:hover { background: var(--hover); color: var(--text); }
-.hud-level span { min-width: 30px; color: var(--text); font-weight: 600; }
-.hud-level i { flex: 1; overflow: hidden; color: var(--muted); font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
-.hud-level b { font-weight: 500; font-variant-numeric: tabular-nums; }
-@media (max-width: 900px) {
-  .hud-tr, .hud-br { display: none; }
-  .hud-col { width: 190px; }
-}
+@media (max-width: 900px) { .hud-block { width: 200px; } }
 
 /* --- callouts: the model annotating its own reasoning --------------------- */
 
+/* Keynotes: the labels stand in a column beside the drawing and point at their
+   elements, the way notes sit on a sheet. Positions are written per frame by the
+   viewport; the CSS only says what a note looks like. */
+.callout-layer { position: absolute; inset: 0; z-index: 18; overflow: hidden; pointer-events: none; }
+.callout-layer[data-shown='0'] { display: none; }
+/* Hidden by visibility, not display, so a note keeps its size and can be laid out unseen. */
+.callout[data-hidden='1'] { visibility: hidden; }
+.callout-leaders { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.callout-leaders line { stroke: var(--text-2); stroke-width: 1; opacity: 0.8; }
+.callout-leaders circle { fill: var(--bg); stroke: var(--text); stroke-width: 1.25; }
+.callout-leaders g { animation: fade-in 240ms var(--ease-out); }
+@keyframes fade-in { from { opacity: 0; } }
+/* A note is a number and a title. The sentence behind it opens under the pointer,
+   so five notes on screen are five lines, not five paragraphs. */
 .callout {
-  position: relative; display: block; width: 212px;
-  transform: translate(-50%, -100%);
-  padding: 7px 9px 8px;
-  border: 1px solid var(--hairline); border-radius: 2px;
+  position: absolute; left: 0; top: 0; display: block; width: 208px;
+  padding: 7px 10px 7px 12px;
+  border: 1px solid var(--hairline); border-radius: var(--r-surface);
   background: var(--glass-strong);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: var(--shadow-raise);
-  color: var(--text-2); font-family: var(--mono);
-  font-size: 10px; line-height: 1.55; text-align: left; cursor: pointer;
+  color: var(--text-2); font: var(--stage-body); text-align: left; cursor: pointer;
+  pointer-events: auto; will-change: transform;
   animation: callout-in 240ms var(--ease-sheet);
 }
-@keyframes callout-in { from { opacity: 0; transform: translate(-50%, calc(-100% + 6px)); } }
-.callout:hover { border-color: var(--accent); }
+@keyframes callout-in { from { opacity: 0; } }
+.callout:hover, .callout:focus-visible { border-color: var(--accent); }
 .callout i {
-  position: absolute; top: -7px; left: -7px;
-  display: grid; place-items: center; width: 16px; height: 16px;
+  position: absolute; top: -8px; left: -8px;
+  display: grid; place-items: center; width: 18px; height: 18px;
   border-radius: 50%; background: var(--accent); color: #fff;
-  font-size: 8.5px; font-style: normal; font-weight: 700;
+  font: var(--stage-label); font-size: 10px; font-style: normal;
 }
+.callout[data-side='right'] i { left: auto; right: -8px; }
 .shell[data-mode='blueprint'] .callout i { color: #0a2350; }
-.callout b {
-  display: block; margin-bottom: 2px; color: var(--text);
-  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+.callout b { display: block; color: var(--text); font-weight: 600; }
+.callout span { display: none; margin-top: 3px; color: var(--text-2); }
+.callout:hover span, .callout:focus-visible span { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  .callout, .callout-leaders g { animation: none; }
 }
-.callout span { display: block; color: var(--muted); }
+
+/* --- the transfer: one line from the score to the building, while it crosses ---- */
+.transfer-layer { position: absolute; inset: 0; z-index: 21; pointer-events: none; overflow: hidden; }
+.transfer-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.transfer-leader {
+  fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linecap: round;
+  stroke-dasharray: 5 9; opacity: 0.95;
+  animation: transfer-flow 700ms linear infinite;
+}
+@keyframes transfer-flow { to { stroke-dashoffset: -14; } }
+.transfer-dot { fill: var(--accent); stroke: var(--bg); stroke-width: 1.5; }
+/* The dimension's label in the model: where the leader lands. */
+.transfer-label {
+  position: absolute; transform: translate(-50%, -100%);
+  padding: 2px 7px; border-radius: 4px;
+  border: 1px solid var(--hairline); background: var(--glass-strong);
+  color: var(--accent); font: var(--stage-label); letter-spacing: 0.03em; white-space: nowrap;
+}
+/* The analysis on the ribbon: a survey caption at each part's box corner, a node above the net. */
+.net-labels { position: absolute; inset: 0; }
+.net-label {
+  position: absolute; padding: 2px 5px;
+  border: 1px solid var(--hairline); background: var(--glass);
+  color: var(--text); font: 500 9.5px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  letter-spacing: 0.02em; white-space: pre;
+}
+.net-label.is-part { transform: translate(0, 4px); }
+.net-label.is-node { transform: translate(-50%, calc(-100% - 8px)); font-weight: 600; }
+/* On the sheet: the analysis bracket under all the measures, and the votes into it. */
+.score-bracket-line, .score-bracket-tick { stroke: var(--accent); stroke-width: 1; fill: none; }
+.score-bracket-label { fill: var(--accent); font: var(--stage-label); font-size: 10.5px; letter-spacing: 0.03em; }
+.score-vote { fill: var(--accent); opacity: 0; }
+.score-sweep { fill: var(--accent); opacity: 0; }
+.score-sheet g.is-driving text { fill: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .transfer-leader { animation: none; } }
+
+/* --- the score strip: the music, as the score it was read as ---------------- */
+
+.score-strip {
+  position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 22;
+  display: flex; flex-direction: column; gap: 4px;
+  width: clamp(380px, calc(100% - 600px), 660px);
+  padding: 9px 12px 9px;
+  border: 1px solid var(--hairline); border-radius: var(--r-surface);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: var(--shadow-panel);
+  color: var(--text-2); font: var(--stage-body);
+  animation: dock-in 220ms var(--ease-sheet);
+}
+.score-strip.is-prominent {
+  bottom: auto; top: 50%; transform: translate(-50%, -50%);
+  width: min(880px, calc(100% - 64px)); gap: 10px; padding: 16px 18px;
+  animation: panel-pop 220ms var(--ease-sheet);
+}
+/* While a compile runs, the score is the stage: the last building recedes behind it. */
+.stage.has-prominent::after {
+  content: ''; position: absolute; inset: 0; z-index: 20;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  backdrop-filter: blur(8px) saturate(120%);
+  animation: fade-in 260ms var(--ease-out);
+}
+.score-head { display: flex; align-items: center; gap: 10px; }
+.score-title {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px;
+  border: 0; padding: 0; background: transparent; text-align: left; cursor: pointer;
+  color: inherit; font: inherit;
+}
+.score-title b { overflow: hidden; color: var(--text); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.score-title:hover b { color: var(--accent); }
+.is-prominent .score-title b { font-size: 14px; }
+.score-title span { color: var(--muted); font-size: 12px; }
+/* Listening is available, and secondary: a small control, a hairline, nothing else. */
+.score-play {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 0 9px;
+  border: 1px solid var(--hairline); border-radius: 999px; background: transparent;
+  color: var(--text-2); cursor: pointer; font: var(--stage-label); font-size: 10px;
+}
+.score-play:hover, .score-play.is-on { color: var(--text); border-color: var(--text-2); }
+.score-time { font-family: var(--mono); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+/* The sheet. Staff, bar lines, stems, beams and hairpins are strokes in the ink
+   colour at Bravura's engraving thicknesses; clef, noteheads, dynamics and the
+   metronome mark are Bravura glyphs. The measure under the pointer — or under the
+   cursor while listening — takes the accent, and only that one. */
+.score-sheet { display: block; width: 100%; overflow: visible; }
+.score-glyph { font-family: 'Bravura'; fill: var(--text); }
+.score-line { stroke: var(--text-2); stroke-width: 1; opacity: 0.55; }
+.score-bar { stroke: var(--text-2); opacity: 0.7; }
+.score-bar.is-final { opacity: 0.9; }
+.score-clef { opacity: 0.85; }
+.score-note { fill: var(--text); }
+.score-note.is-drawn { transition: fill 140ms ease; }
+.score-stem { stroke: var(--text); }
+.score-beam { fill: var(--text); }
+.score-hairpin { fill: none; stroke: var(--text-2); stroke-linejoin: miter; opacity: 0.85; }
+.score-measure { transition: transform 200ms var(--ease-out); }
+.score-measure.is-hover { transform: translateY(-2px); }
+.score-measure.is-hover .score-note, .score-measure.is-hover .score-beam,
+.score-measure.is-live .score-note, .score-measure.is-live .score-beam { fill: var(--accent); }
+.score-measure.is-hover .score-stem, .score-measure.is-live .score-stem { stroke: var(--accent); }
+.score-measure.is-hover .score-dynamic, .score-measure.is-live .score-dynamic { fill: var(--accent); }
+.score-hit { fill: transparent; cursor: default; }
+.score-number, .score-empty { fill: var(--muted); font: var(--stage-label); font-size: 10.5px; }
+.score-tempo-text { fill: var(--text-2); font: var(--stage-label); font-size: 11px; }
+.score-dynamic { fill: var(--text-2); }
+.score-dynamic.is-fallback { font: italic 700 13px Georgia, 'Times New Roman', serif; }
+.is-prominent .score-dynamic.is-fallback { font-size: 16px; }
+/* The hearing: raw material that surfaces for the entrance and dissolves; under the
+   pointer, one measure's patch of it returns beneath its notes. */
+.score-hearing { pointer-events: none; }
+.score-hearing-hover { opacity: 0.55; pointer-events: none; animation: fade-in 180ms var(--ease-out); }
+.score-reader { stroke: var(--accent); stroke-width: 1; opacity: 0.9; }
+.score-cursor { stroke: var(--accent); stroke-width: 1; opacity: 0.8; }
+
+/* One line under the sheet: what a hovered measure measured, or what the marks mean. */
+.score-read {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
+  min-height: 18px; color: var(--muted); font-size: 12px;
+}
+.score-read b { color: var(--text); font-weight: 600; }
+.score-read b.is-processing { font: var(--stage-label); letter-spacing: 0.08em; text-transform: uppercase; }
+.score-clock { color: var(--accent); font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.score-pill {
+  position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 22;
+  max-width: 360px; padding: 6px 12px; border: 1px solid var(--hairline); border-radius: 999px;
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  box-shadow: var(--shadow-raise); color: var(--text-2); cursor: pointer;
+  font: var(--stage-body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.score-pill:hover { color: var(--text); border-color: var(--accent); }
+.score-glyph-inline { font-family: 'Bravura'; font-size: 16px; line-height: 0; vertical-align: -2px; }
+.stage.has-strip .section-dock { bottom: 162px; }
+@media (max-width: 1100px) { .score-strip { width: clamp(320px, calc(100% - 320px), 520px); } }
+@media (prefers-reduced-motion: reduce) {
+  .score-strip, .stage.has-prominent::after { animation: none; }
+  .score-measure, .score-note { transition: none; }
+}
 
 /* --- the rationale feed: judgment, streaming beside the building ----------- */
 
 .story-feed {
   position: absolute; top: 14px; right: 14px; bottom: 14px; z-index: 26;
   display: flex; flex-direction: column;
-  width: 316px;
-  border: 1px solid var(--hairline); border-radius: 3px;
+  width: 336px;
+  border: 1px solid var(--hairline); border-radius: var(--r-surface);
   background: var(--glass);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   backdrop-filter: blur(18px) saturate(150%);
   box-shadow: var(--shadow-panel);
-  font-family: var(--mono);
+  font: var(--stage-body);
   animation: panel-pop 200ms var(--ease-sheet);
 }
 .story-feed > header {
   display: flex; align-items: center; gap: 6px;
-  padding: 9px 8px 8px 12px; border-bottom: 1px solid var(--hairline-soft);
+  padding: 10px 8px 9px 14px; border-bottom: 1px solid var(--hairline-soft);
 }
 .story-feed > header h2 {
   flex: 1; color: var(--muted);
-  font-size: 9.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  font: var(--stage-label); letter-spacing: 0.08em; text-transform: uppercase;
 }
-.story-feed-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 12px 14px; }
-.story-stage + .story-stage { margin-top: 12px; }
+.story-feed-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 14px 16px; }
+.story-stage + .story-stage { margin-top: 14px; }
 .story-stage h4 {
-  display: flex; align-items: baseline; gap: 7px; margin: 0 0 4px;
-  color: var(--text); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase;
+  display: flex; align-items: baseline; gap: 8px; margin: 0 0 5px;
+  color: var(--text); font: var(--stage-label); letter-spacing: 0.08em; text-transform: uppercase;
 }
-.story-stage h4 i {
-  color: var(--accent); font-style: normal; font-weight: 700; font-size: 9px;
-}
+.story-stage h4 i { color: var(--accent); font-style: normal; font-variant-numeric: tabular-nums; }
 .story-line {
-  position: relative; margin: 0 0 3px; padding-left: 11px;
-  color: var(--text-2); font-size: 10px; line-height: 1.6;
+  position: relative; margin: 0 0 4px; padding-left: 12px;
+  color: var(--text-2);
   animation: story-line-in 260ms var(--ease-out);
 }
 .story-line::before {
-  content: ''; position: absolute; left: 0; top: 7px;
+  content: ''; position: absolute; left: 0; top: 9px;
   width: 5px; height: 1px; background: var(--muted);
 }
 .story-line.is-live { color: var(--text); }
 @keyframes story-line-in { from { opacity: 0; transform: translateY(3px); } }
 .story-caret {
-  margin: 2px 0 0 11px; color: var(--accent); font-size: 10px;
+  margin: 2px 0 0 12px; color: var(--accent); font-size: 11px;
   animation: pulse 1s steps(2, end) infinite;
 }
 @media (max-width: 900px) { .story-feed { width: min(316px, calc(100vw - 28px)); } }
@@ -1142,3 +1298,82 @@ details.disclosure .disclosure-body { padding: 0 16px 14px; }
   margin: 3px 0 0; color: var(--muted); font-size: 10.5px;
   letter-spacing: 0.02em; text-transform: lowercase;
 }
+
+/* --- the hearing lab: the recording taken apart, and nothing else -------------- */
+.hearing-lab { position: fixed; inset: 0; overflow: hidden; background: var(--bg); color: var(--text); }
+.hearing-lab canvas { display: block; }
+.lab-labels { position: absolute; inset: 0; pointer-events: none; }
+.lab-label {
+  position: absolute; padding: 2px 5px; opacity: 0;
+  border: 1px solid var(--hairline); background: rgba(14, 47, 102, 0.72);
+  color: var(--text); font: 500 10px/1.35 var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.02em; white-space: pre;
+}
+.lab-label.is-part { transform: translate(0, -50%); }
+.lab-label.is-measure { transform: translate(-50%, calc(-100% - 7px)); }
+.lab-label.is-dimension { transform: translate(-50%, 8px); color: #ffd28a; }
+.lab-label.is-axis { transform: translate(-100%, -50%); border: 0; background: none; color: var(--muted); }
+.lab-label.is-time { transform: translate(-50%, 0); border: 0; background: none; color: var(--muted); }
+.lab-title { position: absolute; left: 22px; top: 16px; max-width: 720px; pointer-events: none; white-space: nowrap; }
+.lab-title h1 { margin: 0 0 6px; font: var(--stage-label); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); }
+.lab-title p { margin: 0; color: var(--text-2); font: var(--stage-body); }
+.lab-title .lab-status { margin-top: 6px; color: var(--muted); }
+.lab-actions { position: absolute; right: 22px; top: 16px; display: flex; gap: 8px; }
+.lab-actions .topbar-btn { text-decoration: none; }
+.live-controls { position: absolute; left: 22px; bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.live-clock { color: var(--text-2); font: var(--stage-label); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+.lab-label.is-hz { transform: translate(-50%, 0); border: 0; background: none; color: var(--muted); }
+.lab-label.is-tick { transform: translate(-100%, -50%); border: 0; background: none; color: var(--muted); }
+.lab-label.is-stage { transform: translate(0, -100%); }
+.lab-label.is-now { transform: translate(0, -100%); color: #ffd28a; border-color: rgba(255, 210, 138, 0.5); }
+.lab-label.is-event { transform: translate(0, -50%); border: 0; background: none; color: var(--text-2); font-size: 9px; }
+.lab-label.is-scale { transform: translate(0, -50%); border: 0; background: none; color: var(--muted); }
+/* The analysis frame, drawn the way a survey draws one: a hairline rectangle, crisp
+   brackets at the corners, a small cross at its centre. */
+.survey-box {
+  --edge: #ffd9a0;
+  --faint: rgba(255, 217, 160, 0.5);
+  position: absolute; opacity: 0; pointer-events: none;
+  border: 1px solid var(--faint);
+  filter: drop-shadow(0 0 2px rgba(2, 8, 22, 0.95)) drop-shadow(0 0 6px rgba(2, 8, 22, 0.7));
+  background:
+    linear-gradient(var(--edge), var(--edge)) 0 0 / 13px 1px no-repeat,
+    linear-gradient(var(--edge), var(--edge)) 0 0 / 1px 13px no-repeat,
+    linear-gradient(var(--edge), var(--edge)) 100% 0 / 13px 1px no-repeat,
+    linear-gradient(var(--edge), var(--edge)) 100% 0 / 1px 13px no-repeat,
+    linear-gradient(var(--edge), var(--edge)) 0 100% / 13px 1px no-repeat,
+    linear-gradient(var(--edge), var(--edge)) 0 100% / 1px 13px no-repeat,
+    linear-gradient(var(--edge), var(--edge)) 100% 100% / 13px 1px no-repeat,
+    linear-gradient(var(--edge), var(--edge)) 100% 100% / 1px 13px no-repeat;
+}
+.survey-box::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 9px; height: 9px;
+  transform: translate(-50%, -50%);
+  background:
+    linear-gradient(var(--faint), var(--faint)) 50% 0 / 1px 9px no-repeat,
+    linear-gradient(var(--faint), var(--faint)) 0 50% / 9px 1px no-repeat;
+}
+
+.survey-net { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.survey-net line { stroke: #ffd9a0; stroke-linecap: round; filter: drop-shadow(0 0 2px rgba(2, 8, 22, 0.95)); }
+
+
+/* survey labels: dark backing so they read over the cloud */
+/* Its caption: an index, a rule, and the reading — no filled plate. */
+.survey-tag {
+  position: absolute; transform: translate(0, calc(-100% - 7px));
+  padding: 3px 1px 2px; border-top: 1px solid rgba(240, 246, 255, 0.85);
+  color: #f0f6ff; font: 500 11px/1.25 var(--font-geist-mono), ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: 0.05em; white-space: nowrap; text-shadow: 0 1px 3px rgba(4, 13, 36, 0.95), 0 0 8px rgba(4, 13, 36, 0.8);
+  opacity: 0; pointer-events: none;
+}
+.survey-tag::before {
+  content: attr(data-index); margin-right: 7px; color: rgba(255, 217, 160, 0.85); font-weight: 400;
+}
+.survey-tag::after {
+  content: ''; position: absolute; left: 0; top: 100%; width: 1px; height: 7px;
+  background: rgba(255, 217, 160, 0.8);
+}
+.survey-tag.is-below { transform: translate(0, 7px); border-top: 0; border-bottom: 1px solid #ffd9a0; padding: 2px 1px 3px; }
+.survey-tag.is-below::after { top: auto; bottom: 100%; }
+.survey-tag.is-below { transform: translate(0, 4px); }

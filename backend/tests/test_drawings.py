@@ -17,6 +17,7 @@ the count.
 
 import json
 import math
+from types import SimpleNamespace
 
 import pytest
 
@@ -26,13 +27,15 @@ from backend.app.drawing_geometry import (
     slice_extrusion,
 )
 from backend.app.drawing_standard import (
-    DrawingStandard, LineType, PLAN_STANDARD, Scale, Stroke, Tone, Weight,
+    DrawingStandard, LineType, PLAN_STANDARD, SECTION_STANDARD, Scale, Stroke, Tone,
+    Weight,
 )
 from backend.app.drawing_sheet import PAPER_MM, drawing_area, humanise
 from backend.app.drawings import (
-    CAPTION_MM, DrawingSet, Mark, PLAN_CUT_HEIGHT_M, WALL_KINDS, _clip_marks,
-    _cut_lengthwise, _plan_centre, _shaft_geometry, building_section, floor_plans,
-    issue_drawings, resolve_section_offset,
+    CAPTION_MM, Drawing, DrawingAudit, DrawingSet, Mark, PLAN_CUT_HEIGHT_M,
+    WALL_KINDS, _clip_marks,
+    _cut_lengthwise, _plan_centre, _shaft_geometry, building_section, compile_drawing,
+    floor_plans, issue_drawings, resolve_section_offset,
 )
 from backend.app.geometry import BoxGeometry, ExtrusionGeometry, QuadGeometry, Vector2, v3
 from backend.app.models import ArchitecturalScore, AudioFeatures
@@ -135,6 +138,13 @@ def test_a_smaller_scale_sheds_information(model):
     assert DrawingStandard(scale=Scale(200)).draws('primary_structure')
 
 
+def test_stage_platform_survives_the_student_review_plan_scale():
+    standard = DrawingStandard(scale=Scale(200))
+    role = standard.role_of('stage_platform')
+    assert role == 'circulation'
+    assert standard.draws(role)
+
+
 # --- the cut ----------------------------------------------------------------------
 
 def test_a_plane_through_a_box_returns_its_section():
@@ -164,6 +174,39 @@ def test_cutting_a_flat_panel_gives_a_line_not_an_area():
     cut = slice_convex(quad_solid(quad), plane, frame)
     assert len(cut) == 2
     assert math.dist(cut[0], cut[1]) == pytest.approx(3.0, rel=1e-6)
+
+
+def test_thick_quad_section_is_a_real_band_from_the_emitted_panel():
+    """A panel's group depth must reach the cut, with no synthetic drawing geometry."""
+    quad = QuadGeometry(corners=(v3(0.0, -2.0, 0.0), v3(0.0, 2.0, 0.0),
+                                 v3(0.0, 2.0, 3.0), v3(0.0, -2.0, 3.0)))
+    group = SimpleNamespace(
+        kind='glazing_panel', thickness_m=0.20,
+        instances=[SimpleNamespace(id='PANEL-THICK', geometry=quad)],
+    )
+    model = SimpleNamespace(profiles={}, element_groups=[group])
+    plane, frame = section_frame((0.0, 0.0), 0.0)
+    solid = quad_solid(quad, 0.20)
+    assert len(solid.vertices) == 8
+    assert len(solid.edges) == 12
+
+    drawing = compile_drawing(model, plane, frame, SECTION_STANDARD,
+                              drawing_id='DWG-THICK-QUAD', title='Thick quad',
+                              kind='section')
+
+    assert len(drawing.marks) == 1
+    mark = drawing.marks[0]
+    assert mark.element_id == 'PANEL-THICK'
+    assert mark.state == 'cut'
+    assert mark.closed
+    u_span = (max(point[0] for point in mark.points)
+              - min(point[0] for point in mark.points))
+    v_span = (max(point[1] for point in mark.points)
+              - min(point[1] for point in mark.points))
+    assert u_span == pytest.approx(0.20, rel=1e-6)
+    assert v_span == pytest.approx(3.0, rel=1e-6)
+    assert drawing.audit.elements_drawn == 1
+    assert drawing.audit.elements_cut == 1
 
 
 def test_a_horizontal_cut_through_a_courtyard_plate_keeps_the_hole_open():
@@ -449,11 +492,69 @@ def test_the_set_is_issued_on_one_paper_size(issued):
         assert drawing.sheet is not None and drawing.sheet.paper == issued.paper
 
 
+def test_oversize_program_volume_is_recut_at_a_true_standard_scale(monkeypatch):
+    """A wide score-authored carrier still produces A-series sheets with honest ink."""
+
+    import backend.app.detail_sections as detail_module
+    import backend.app.drawings as drawing_module
+
+    level = SimpleNamespace(
+        id='L00', kind='occupied', z=0.0, voids=[],
+        plate=[Vector2(x=x, y=y) for x, y in ((0, 0), (130, 0), (130, 50), (0, 50))])
+    lattice = SimpleNamespace(
+        cutaway=False, levels=[level], massing_id='MAS-PROGRAM-VOLUME')
+    oversized = SimpleNamespace(
+        model_id='oversize-pv', score_id='score', typology='library', lattice=lattice,
+        structural_system_id='STR-SYS-STEEL-FRAME', facade_grammar_id='FCD-TEST',
+        envelope_tectonic_id='ENV-TEST', element_groups=[])
+
+    def fake_plans(_model, standard=PLAN_STANDARD, *, section_marks=()):
+        del section_marks
+        return [Drawing(
+            id='DWG-PLAN-L00', title='Floor plan — L00', kind='plan',
+            standard=standard, marks=[], annotations=[], extents=(0, 0, 130, 50),
+            audit=DrawingAudit(0, 0, 0, 0, {}, 0), subtitle='Model-derived plan')]
+
+    def fake_detail(width=4.0):
+        return Drawing(
+            id='DWG-DTL-TEST-20', title='Test detail', kind='detail',
+            standard=DrawingStandard(scale=Scale(20)), marks=[], annotations=[],
+            extents=(0, 0, width, 4), audit=DrawingAudit(0, 0, 0, 0, {}, 0),
+            subtitle='Model-derived 1:20 section')
+
+    monkeypatch.setattr(drawing_module, 'floor_plans', fake_plans)
+    detail = fake_detail()
+    monkeypatch.setattr(detail_module, 'compile_detail_sections',
+                        lambda _model: [detail])
+    issued = issue_drawings(oversized, sections=(), elevations=())
+
+    assert issued.paper == 'A1'
+    assert issued.plans[0].standard.scale.name == '1:200'
+    assert issued.details[0].standard.scale.name == '1:20'
+    assert [sheet.number for sheet in issued.sheets] == ['A-101', 'A-401']
+    assert issued.cover and 'A-000' in issued.cover
+    assert issued.manifest(oversized)['sheets'][0]['id'] == 'A-000'
+    area_x, area_y, area_w, area_h = drawing_area(issued.paper)
+    for sheet in issued.sheets:
+        for placement in sheet.placements:
+            width, height = placement.drawing.content_mm
+            assert area_x <= placement.x
+            assert area_y <= placement.y
+            assert placement.x + width <= area_x + area_w
+            assert placement.y + height + CAPTION_MM <= area_y + area_h
+
+    huge_detail = fake_detail(50.0)
+    monkeypatch.setattr(detail_module, 'compile_detail_sections',
+                        lambda _model: [huge_detail])
+    with pytest.raises(ValueError, match='cannot fit A0'):
+        issue_drawings(oversized, sections=(), elevations=())
+
+
 def test_every_drawing_is_placed_once_on_a_sheet_of_its_kind(issued):
     placed = [drawing.id for sheet in issued.sheets for drawing in sheet.drawings]
     assert sorted(placed) == sorted(drawing.id for drawing in issued.all)
     assert len(placed) == len(set(placed))
-    series = {'plan': 'A-1', 'elevation': 'A-2', 'section': 'A-3'}
+    series = {'plan': 'A-1', 'elevation': 'A-2', 'section': 'A-3', 'detail': 'A-4'}
     for sheet in issued.sheets:
         assert sheet.number.startswith(series[sheet.kind]), sheet.number
         assert all(drawing.kind == sheet.kind for drawing in sheet.drawings)

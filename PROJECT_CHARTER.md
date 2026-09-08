@@ -1,5 +1,27 @@
 # Project Charter — Music to Architecture
 
+## Current delivery scope — portfolio demonstrator
+
+User clarification, 2026-09-08: this project is a job-search demonstration of tool
+building and design-intent computation, not a professionally deployable architectural
+product. This scope governs prioritization where older implementation notes demand
+professional-product completeness.
+
+- Prioritize visibly distinct music-driven architectural candidates, a legible Program
+  Volume protocol, coordinated downstream systems, and a concise reproducible story.
+- The model must avoid conspicuous errors: major intersections, floating primary
+  elements, site/volume overflow, missing roofs/floors, and visibly broken circulation.
+  Evaluate these with targeted geometry checks and actual presentation views.
+- Keep Blender, Rhino and model-derived student drawings as the demonstration
+  deliverables. Native-file readability and correspondence to the shown model matter;
+  professional acceptance and construction readiness are not demonstration gates.
+- Preserve unresolved professional findings honestly, but do not let comprehensive
+  code compliance, load verification, waterproofing, fabrication or concealed
+  connection detailing block the portfolio demonstration. Do not upgrade unknowns
+  to passes or describe conceptual work as safe or construction-ready.
+- Prefer one convincing end-to-end example and a small matched diversity comparison
+  over additional rule systems, report counts or exhaustive component refinement.
+
 ## North Star
 
 This project must demonstrate the following professional value:

@@ -36,6 +36,8 @@ import math
 from typing import Callable, Literal
 
 from pydantic import BaseModel, Field
+from shapely.geometry import Polygon, box
+from shapely.ops import unary_union
 
 from .geometry import BoxGeometry, ExtrusionGeometry, MemberGeometry, QuadGeometry
 from .mesh_primitives import box_mesh, member_mesh
@@ -96,6 +98,7 @@ class Solid:
     z0: float
     z1: float
     footprint: object | None = None
+    walking_faces: tuple = ()
 
     @property
     def plan_area(self) -> float:
@@ -147,6 +150,9 @@ class SpatialIndex:
                     continue
                 solid = Solid(instance.id, group.kind, group.subsystem,
                               group.semantic_layer, instance.level_id, *bounds, footprint=_polygon(instance.geometry))
+                if group.kind == 'ramp' and isinstance(instance.geometry, MemberGeometry):
+                    solid.walking_faces = _ramp_top_faces(instance.geometry, model.profiles)
+                    solid.footprint = unary_union([face[0] for face in solid.walking_faces])
                 self.solids.append(solid)
                 self.by_kind[group.kind].append(solid)
 
@@ -248,6 +254,50 @@ WALKING = {'ramp', 'ramp_landing', 'stair_landing', 'stair_half_landing',
            'floor_slab', 'podium_slab'}
 
 
+def _ramp_top_faces(geometry, profiles):
+    """Upward triangles of the emitted sweep, including its real end transitions."""
+    vertices, faces = member_mesh(geometry.model_dump(), {
+        key: value.model_dump() for key, value in profiles.items()})
+    result = []
+    for face in faces:
+        for k in range(1, len(face) - 1):
+            a, b, c = [vertices[i] for i in (face[0], face[k], face[k + 1])]
+            u = [b[i] - a[i] for i in range(3)]
+            v = [c[i] - a[i] for i in range(3)]
+            nx, ny, nz = (u[1]*v[2]-u[2]*v[1], u[2]*v[0]-u[0]*v[2],
+                          u[0]*v[1]-u[1]*v[0])
+            if nz <= 1e-10:
+                continue
+            result.append((Polygon([(p[0], p[1]) for p in (a, b, c)]),
+                           (-nx/nz, -ny/nz, a[2]+(nx*a[0]+ny*a[1])/nz)))
+    return tuple(result)
+
+
+def _walking_step(a: Solid, b: Solid) -> float:
+    """Maximum local height difference over the shared walking footprint.
+
+    Plane differences are affine; their extrema occur at intersection vertices.
+    Flat decks keep their exact footprint holes. No slope or step is waived.
+    """
+    def faces(solid):
+        footprint = solid.footprint if solid.footprint is not None else box(
+            solid.x0, solid.y0, solid.x1, solid.y1)
+        return solid.walking_faces or ((footprint, (0, 0, solid.z1)),)
+    if not (a.walking_faces or b.walking_faces):
+        return abs(a.z1 - b.z1)
+    step = 0.0
+    for pa, ha in faces(a):
+        for pb, hb in faces(b):
+            overlap = pa.intersection(pb)
+            pieces = [overlap] if overlap.geom_type == 'Polygon' else getattr(overlap, 'geoms', ())
+            for piece in pieces:
+                if piece.geom_type != 'Polygon' or piece.area <= 1e-10:
+                    continue
+                for x, y in piece.exterior.coords:
+                    step = max(step, abs((ha[0]-hb[0])*x + (ha[1]-hb[1])*y + ha[2]-hb[2]))
+    return step
+
+
 def rule_walking_surfaces_meet_flush(index: SpatialIndex) -> list[Finding]:
     """You step from one onto the other, so their tops are the same height.
 
@@ -258,7 +308,9 @@ def rule_walking_surfaces_meet_flush(index: SpatialIndex) -> list[Finding]:
     """
     findings: list[Finding] = []
     seen: set[tuple[str, str]] = set()
-    surfaces = [solid for kind in WALKING for solid in index.by_kind.get(kind, ())]
+    # Sorted: the kinds are a set, and a finding order that changed with the hash
+    # seed made the report differ between two runs of one model.
+    surfaces = [solid for kind in sorted(WALKING) for solid in index.by_kind.get(kind, ())]
     for solid in surfaces:
         for other in index.near(solid):
             if other.kind not in WALKING:
@@ -267,7 +319,7 @@ def rule_walking_surfaces_meet_flush(index: SpatialIndex) -> list[Finding]:
             if key in seen or plan_overlap(solid, other) <= TOUCH_M2:
                 continue
             seen.add(key)
-            step = abs(solid.z1 - other.z1)
+            step = _walking_step(solid, other)
             # Surfaces that overlap in plan and are a storey apart are a floor above a
             # floor, not a joint. Only near-coincident tops are meant to be flush.
             if step <= FLUSH_M or step > 0.5:
@@ -544,3 +596,175 @@ RULES = RULES + (SpatialRule(
     'SP-ROOM-OUTSIDE-SUPPORT',
     'Room footprints are contained in the actual same-level floor support, including holes.',
     'violation', rule_room_support),)
+
+
+# ---------------------------------------------------------------------------
+# Program Volume physical-boundary gates (decisions 0024 and 0025)
+# ---------------------------------------------------------------------------
+
+_PV_INTERNAL_LAYERS = {'structure', 'program', 'circulation'}
+_PV_NON_BUILDING_KINDS = {'figure', 'earth', 'site_context'}
+_PV_ROOF_KINDS = {'roof_deck', 'parapet'}
+_PV_PRIMARY_FACADE_KINDS = {
+    'glazing_panel', 'spandrel_panel', 'solid_wall_panel', 'wall_panel',
+    'backing_panel', 'field_panel', 'facet_panel', 'facet_glazing',
+    'lattice_cell', 'order_field',
+}
+_PV_PRIMARY_FACADE_SUBSYSTEMS = {
+    'curtain_wall', 'backing_skin', 'bearing_wall', 'panel_field',
+    'lattice_screen',
+}
+
+
+def _unknown(rule_id: str, elements: tuple[str, ...], detail: str) -> Finding:
+    """Record a Program Volume check whose physical geometry cannot be measured."""
+    return Finding(
+        rule_id=rule_id,
+        severity='warning',
+        elements=elements,
+        measure=0.0,
+        unit='unmeasured',
+        detail=detail,
+    )
+
+
+def _program_volume_regions(model):
+    contract = getattr(model, 'program_volume_model', None)
+    if contract is None:
+        return None, {}, {}
+    regions = {
+        union.level_id: Polygon(union.boundary, holes=union.voids)
+        for union in contract.level_unions
+    }
+    levels = {level.id: level for level in contract.levels}
+    return contract, regions, levels
+
+
+def _program_region_for(element, regions, contract, model):
+    if element.level_id in regions:
+        return regions[element.level_id]
+    lattice = getattr(model, 'lattice', None)
+    roof = getattr(lattice, 'roof', None)
+    if element.level_id == getattr(roof, 'id', None) and contract.levels:
+        return regions.get(contract.levels[-1].id)
+    # L00 is the open/support storey below the first authored occupied volume. Its
+    # frame may stand below that volume, but it cannot spread beyond its footprint.
+    if element.level_id == 'L00' and contract.levels:
+        return regions.get(contract.levels[0].id)
+    return None
+
+
+def _physical_projection(element, model):
+    """Measured primitive footprint and z interval, including real sections."""
+    from .physical_geometry import physical_projection
+
+    try:
+        projection = physical_projection(
+            element.geometry,
+            getattr(model, 'profiles', {}),
+            thickness_m=getattr(element, 'thickness_m', None),
+        )
+        return projection, None
+    except ValueError as exc:
+        return None, str(exc)
+
+
+def rule_program_volume_internal_containment(index: SpatialIndex) -> list[Finding]:
+    """Keep every physical internal element inside its authored storey union.
+
+    The projection includes the real member section and rotated boxes. Centre points
+    therefore cannot hide a column or stair whose body crosses the massing boundary.
+    Roof and exterior-approach parts have their own control volumes and are excluded by
+    explicit identity, never by a broad subsystem guess.
+    """
+    rule_id = 'PV-INTERNAL-SOLID-CONTAINMENT'
+    contract, regions, _levels = _program_volume_regions(index.model)
+    if contract is None:
+        return []
+    exceptions = set()
+    circulation = getattr(index.model, 'circulation_plan', None)
+    if circulation is not None:
+        exceptions.update(circulation.exterior_exception_ids)
+    findings: list[Finding] = []
+    for element in index.model.elements:
+        if (element.semantic_layer not in _PV_INTERNAL_LAYERS
+                or element.kind in _PV_NON_BUILDING_KINDS
+                or element.kind in _PV_ROOF_KINDS
+                or element.kind == 'footing'
+                or element.id in exceptions):
+            continue
+        allowed = _program_region_for(element, regions, contract, index.model)
+        if allowed is None:
+            findings.append(_unknown(
+                rule_id, (element.id,),
+                f'{element.kind} has no Program Volume region for {element.level_id}.'))
+            continue
+        projection, error = _physical_projection(element, index.model)
+        if projection is None:
+            findings.append(_unknown(
+                rule_id, (element.id,),
+                f'{element.kind} physical projection could not be measured: {error}'))
+            continue
+        footprint, _z = projection
+        outside = footprint.difference(allowed.buffer(1.0e-5, join_style=2)).area
+        if outside <= 1.0e-5:
+            continue
+        share = outside / max(footprint.area, 1.0e-9)
+        findings.append(Finding(
+            rule_id=rule_id, severity='violation', elements=(element.id,),
+            measure=outside, unit='m2',
+            detail=(f'{element.kind} {element.id} has {outside:.4f} m2 '
+                    f'({share:.1%}) of its physical plan projection outside the '
+                    f'{element.level_id} Program Volume union.')))
+    return findings
+
+
+def rule_program_volume_facade_collar(index: SpatialIndex) -> list[Finding]:
+    """Project the shared FacadeControl validator into the spatial report."""
+    rule_id = 'PV-FACADE-COLLAR'
+    contract, _regions, _levels = _program_volume_regions(index.model)
+    if contract is None:
+        return []
+    control = getattr(getattr(index.model, 'lattice', None), 'facade_control', None)
+    if control is None:
+        return [_unknown(
+            rule_id, (),
+            'Program Volume model has no FacadeControl resolved from score, tectonic '
+            'and facade grammar.')]
+
+    from .facade_control import validate_facade_collar
+
+    lineage = []
+    source_digest = contract.digest()
+    if control.program_volume_source_digest != source_digest:
+        lineage.append(Finding(
+            rule_id=rule_id, severity='violation', elements=(), measure=1.0,
+            unit='digest_mismatch',
+            detail=('FacadeControl references Program Volume digest '
+                    f'{control.program_volume_source_digest}, while the attached '
+                    f'authoring artifact is {source_digest}; facade validation cannot '
+                    'be credited to a different form source.')))
+    records = validate_facade_collar(
+        control, index.model.elements, getattr(index.model, 'profiles', {}))
+    return lineage + [Finding(
+        rule_id=rule_id,
+        severity=('violation' if record.status == 'failed' else 'warning'),
+        elements=((record.element_id,) if record.element_id else ()),
+        measure=record.measure,
+        unit=record.unit,
+        detail=record.detail,
+    ) for record in records]
+
+
+RULES = RULES + (
+    SpatialRule(
+        'PV-INTERNAL-SOLID-CONTAINMENT',
+        'Physical structure, rooms and internal circulation remain inside their '
+        'authored Program Volume union, except named exterior approach parts.',
+        'violation', rule_program_volume_internal_containment),
+    SpatialRule(
+        'PV-FACADE-COLLAR',
+        'Primary facade bodies stay on/outboard of the Program Volume boundary and '
+        'within the declared offset plus their measured physical half-breadth.',
+        'violation', rule_program_volume_facade_collar),
+)

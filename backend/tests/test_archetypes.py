@@ -15,18 +15,32 @@ import json
 from pathlib import Path
 
 import pytest
+from shapely.geometry import Polygon, box
+from shapely.ops import unary_union
 
 from backend.app.archetypes import (
     C_VALUE_DESIGN_M, C_VALUE_MIN_M, ROW_DEPTH_M, STAGE_RISE_M, CarveRefusal,
-    derive_bowl,
+    carve_museum, carve_theatre, derive_bowl,
 )
-from backend.app.compiler_v3 import compile_building_model_v3
+from backend.app.briefs import brief_for
+from backend.app.compiler_v3 import compile_building_model_v3, core_anchors
+from backend.app.datums import build_lattice, compile_datum_set
+from backend.app.geometry import ExtrusionGeometry
+from backend.app.massing import MASSING_FAMILIES
 from backend.app.models import ArchitecturalScore, AudioFeatures
+from backend.app.plan_regions import usable_region
+from backend.app.program_massing import datums_for, lattice_for
+from backend.app.program_volumes import organize_program_volumes
 
 ROOT = Path(__file__).parents[2]
 DEMO = ROOT / 'artifacts' / 'v3_demo'
 V2_DEMO = (ROOT / 'artifacts' / 'integrated_demo'
            / 'building-b7ad95fa45a6-library-steel-international-v1')
+PV_GRAMMARS = (
+    'PVG-STACKED-BANDS',
+    'PVG-TERRACED-WEAVE',
+    'PVG-SPLIT-BRIDGE',
+)
 
 
 @pytest.fixture(scope='module')
@@ -70,6 +84,64 @@ def test_the_rake_only_ever_rises():
         assert far.distance_m - near.distance_m == pytest.approx(ROW_DEPTH_M)
 
 
+def test_stage_clearance_reaches_a_shifted_upper_east_facade(template):
+    """A drifting bar leaves no detached floor sliver beyond its east-end stage."""
+
+    datums = compile_datum_set(template)
+    base = MASSING_FAMILIES['MAS-BAR-PODIUM']
+    massing = base.model_copy(update={
+        'plan_x_m': round(base.plan_x_m * 1.5, 3),
+        'plan_y_m': round(base.plan_y_m * 1.5, 3),
+    })
+    lattice = build_lattice(datums, massing, cutaway=False)
+    carve = carve_theatre(
+        lattice, datums, brief_for('theater', storeys=len(lattice.occupied)))
+
+    assert not isinstance(carve, CarveRefusal)
+    first_cut_level = min(carve.removed)
+    level = lattice.level(first_cut_level)
+    stage_cut = max(carve.removed[first_cut_level], key=lambda rect: rect[2])
+    assert stage_cut[2] >= max(point.x for point in level.plate)
+
+
+@pytest.mark.parametrize('grammar', PV_GRAMMARS)
+def test_program_volume_theatre_carve_consumes_its_exact_owner_pair(template, grammar):
+    volumes = organize_program_volumes(
+        template, 'theater', grammar_id=grammar)
+    massing = volumes.to_program_massing()
+    datums = datums_for(massing, template)
+    lattice = lattice_for(massing, datums)
+    if lattice.given_cores:
+        core_anchors(lattice, datums)
+    carve = carve_theatre(
+        lattice, datums, brief_for('theater', storeys=len(lattice.occupied)))
+
+    assert not isinstance(carve, CarveRefusal), getattr(carve, 'reason', None)
+    owners = {
+        space_id: box(*region.resolve_bounds(lattice))
+        for region in lattice.program_volume_regions
+        for space_id in region.space_ids
+        if space_id in ('SP-AUDITORIUM', 'SP-STAGE')
+    }
+    assert set(owners) == {'SP-AUDITORIUM', 'SP-STAGE'}
+    assert owners['SP-AUDITORIUM'].buffer(1e-6).covers(box(*carve.house))
+    assert owners['SP-STAGE'].buffer(1e-6).covers(box(*carve.stage))
+    assert carve.house[1:4:2] == pytest.approx(carve.stage[1:4:2])
+    assert carve.house[2] == pytest.approx(carve.stage[0])
+
+    cuts_by_level = {
+        level_index: unary_union([box(*rect) for rect in cuts])
+        for level_index, cuts in carve.removed.items()
+    }
+    level_by_id = {level.id: level.index for level in lattice.occupied}
+    for region in lattice.program_volume_regions:
+        if region.role not in ('program', 'archetype'):
+            continue
+        cut = cuts_by_level.get(level_by_id[region.level_id])
+        if cut is not None:
+            assert cut.intersection(box(*region.resolve_bounds(lattice))).area <= 1e-6
+
+
 def test_a_shallow_house_holds_fewer_rows_not_steeper_ones():
     deep = derive_bowl(house_w_m=42.0)
     shallow = derive_bowl(house_w_m=25.0)
@@ -106,13 +178,71 @@ def test_the_bowl_is_geometry_not_a_flat_zone(theatre):
     assert any(e.kind == 'proscenium_wall' for e in theatre.elements)
 
 
+def test_stage_access_pocket_is_removed_from_the_emitted_stage_zone(theatre):
+    """The service route takes a pocket from the stage without overlapping it."""
+    stage_zone = next(
+        instance for group in theatre.element_groups if group.kind == 'program_zone'
+        for instance in group.instances if instance.id.endswith('-SP-STAGE'))
+    assert isinstance(stage_zone.geometry, ExtrusionGeometry)
+    assert len(stage_zone.geometry.boundary) > 4
+    stage_access_ids = {
+        instance.id for group in theatre.element_groups
+        if group.subsystem == 'stage_access' for instance in group.instances}
+    overlaps = theatre.spatial.by_rule('SP-SUBSYSTEM-OVERLAP')
+    assert not [finding for finding in overlaps
+                if stage_access_ids & set(finding.elements)]
+
+
+def test_stage_access_arrives_on_the_stage_without_impersonating_a_floor_landing(
+        theatre):
+    """The raised working platform keeps its host level without claiming its datum."""
+    access = [element for element in theatre.elements
+              if element.subsystem == 'stage_access']
+    top = next(element for element in access
+               if element.id == 'PRG-STG-ACCESS-L01-TOP')
+    stage = next(element for element in theatre.elements
+                 if element.id == 'PRG-STG-L01')
+
+    assert top.kind == 'stage_platform'
+    assert top.level_id == 'L01'
+    assert not [element for element in access if element.kind == 'stair_landing']
+    assert top.position.z + top.dimensions.z / 2 == pytest.approx(
+        stage.position.z + stage.dimensions.z / 2)
+
+
+def test_entry_landing_cedes_floor_from_seating_bands(theatre):
+    """One shared approach boundary keeps the landing exposed and both bands intact."""
+    landing = next(element for element in theatre.elements
+                   if element.id == 'CIR-LND-ENTRY')
+    landing_plan = box(
+        landing.position.x - landing.dimensions.x / 2,
+        landing.position.y - landing.dimensions.y / 2,
+        landing.position.x + landing.dimensions.x / 2,
+        landing.position.y + landing.dimensions.y / 2)
+    risers = [element for element in theatre.elements
+              if element.kind == 'auditorium_riser']
+    bands_by_row = {}
+    for riser in risers:
+        bands_by_row.setdefault(riser.lattice_index['row'], set()).add(
+            riser.lattice_index['band'])
+        riser_plan = box(
+            riser.position.x - riser.dimensions.x / 2,
+            riser.position.y - riser.dimensions.y / 2,
+            riser.position.x + riser.dimensions.x / 2,
+            riser.position.y + riser.dimensions.y / 2)
+        assert landing_plan.intersection(riser_plan).area <= 1e-8, riser.id
+    assert bands_by_row
+    assert all(bands == {0, 1} for bands in bands_by_row.values())
+
+
 def test_every_row_is_measured_and_every_measured_row_sees(theatre):
     report = theatre.archetype
     risers = [e for e in theatre.elements if e.kind == 'auditorium_riser']
-    assert len(report.sightlines) == len(risers)
+    row_count = len({riser.lattice_index['row'] for riser in risers})
+    assert len(report.sightlines) == row_count
     measured = [record for record in report.sightlines
                 if record.c_measured_m is not None]
-    assert len(measured) == len(risers) - 1
+    assert len(measured) == row_count - 1
     for record in measured:
         assert record.c_measured_m >= C_VALUE_MIN_M - 1e-3, record
     assert not [f for f in report.findings if f.gate_id == 'ARCH-SIGHTLINE']
@@ -121,14 +251,32 @@ def test_every_row_is_measured_and_every_measured_row_sees(theatre):
 def test_the_claimed_plates_are_actually_gone(theatre):
     report = theatre.archetype
     assert not [f for f in report.findings if f.gate_id == 'ARCH-CLAIM-UNCUT']
-    # The house needs more clear height than one storey gives, so at least one
-    # upper plate must carry a void over it.
     ground = theatre.lattice.occupied[0]
+    stations = [*theatre.lattice.y_lines, *(point.y for point in ground.plate)]
+    assert all(any(abs(edge - station) <= 0.001 for station in stations)
+               for edge in (report.house[1], report.house[3]))
+    # The house needs more clear height than one storey gives, so at least one
+    # upper plate must have the exact claimed footprint subtracted from it.
     f2f = theatre.lattice.occupied[1].z - ground.z if \
         len(theatre.lattice.occupied) > 1 else 99.0
+    claimed = []
+    for level in theatre.lattice.occupied[1:]:
+        rise = level.z - ground.z
+        cuts = []
+        if rise < report.clear_house_m + 0.3:
+            cuts.append(box(*report.house))
+        if rise < report.clear_stage_m + 0.3:
+            cuts.append(box(*report.stage))
+        if cuts:
+            claimed.append((level, cuts))
     if report.clear_house_m > f2f:
-        voided = [level for level in theatre.lattice.occupied[1:] if level.voids]
-        assert voided, 'a claim above the first storey must cut a plate'
+        assert claimed, 'a claim above the first storey must cut a plate'
+    for level, cuts in claimed:
+        remaining = usable_region(level)
+        assert remaining.intersection(unary_union(cuts)).area <= 1e-5
+        assert remaining.geom_type == 'Polygon', (level.index, remaining.geom_type)
+        assert remaining.is_valid and not remaining.is_empty
+        assert remaining.area >= 120.0
 
 
 def test_the_colonnade_in_the_bowl_is_reported_not_hidden(theatre):
@@ -136,8 +284,12 @@ def test_the_colonnade_in_the_bowl_is_reported_not_hidden(theatre):
     phase 0016 owes. Until it lands, the gate must say so -- and the day it lands,
     this test flips to asserting the finding is gone."""
     hx0, hy0, hx1, hy1 = theatre.archetype.house
+    base_z = theatre.lattice.occupied[0].z
+    clear_top = base_z + theatre.archetype.clear_house_m
     inside = [e for e in theatre.elements
               if e.kind in ('column', 'piloti_column')
+              and min(max(p.z for p in e.geometry.path), clear_top)
+                  - max(min(p.z for p in e.geometry.path), base_z) > 1e-6
               and hx0 + 0.3 < e.position.x < hx1 - 0.3
               and hy0 + 0.3 < e.position.y < hy1 - 0.3]
     findings = [f for f in theatre.archetype.findings
@@ -215,6 +367,40 @@ def test_the_galleries_are_a_sequence_on_the_roof_lit_plate(museum):
         'the party wall must be built, or the enfilade gate measured nothing'
 
 
+@pytest.mark.parametrize('grammar', PV_GRAMMARS)
+def test_program_volume_museum_carve_consumes_owner_pair_not_structural_grid(
+        template, grammar):
+    volumes = organize_program_volumes(template, 'museum', grammar_id=grammar)
+    massing = volumes.to_program_massing()
+    datums = datums_for(massing, template)
+    lattice = lattice_for(massing, datums)
+    if lattice.given_cores:
+        core_anchors(lattice, datums)
+    brief = brief_for('museum', storeys=len(lattice.occupied))
+    carve = carve_museum(lattice, datums, brief)
+
+    assert not isinstance(carve, CarveRefusal), getattr(carve, 'reason', None)
+    owners = {
+        space_id: box(*region.resolve_bounds(lattice))
+        for region in lattice.program_volume_regions
+        for space_id in region.space_ids
+        if space_id in ('SP-GALLERY-A', 'SP-GALLERY-B')
+    }
+    assert set(owners) == {'SP-GALLERY-A', 'SP-GALLERY-B'}
+    for space_id, rect in carve.rooms.items():
+        assert owners[space_id].buffer(1e-6).covers(box(*rect))
+
+    changed = lattice.model_copy(update={
+        'y_lines': [value + (0.317 if index % 2 else -0.193)
+                    for index, value in enumerate(lattice.y_lines)],
+    })
+    repeated = carve_museum(changed, datums, brief)
+    assert not isinstance(repeated, CarveRefusal), getattr(repeated, 'reason', None)
+    assert repeated.rooms == carve.rooms
+    assert repeated.party_axis == carve.party_axis
+    assert repeated.party_pos == carve.party_pos
+
+
 def test_the_reading_room_is_daylit_and_double_height(library):
     report = library.archetype
     assert not [f for f in report.findings
@@ -222,12 +408,15 @@ def test_the_reading_room_is_daylit_and_double_height(library):
     zones = {z.space_id: z for z in library.program_allocation.zones}
     (space_id, rect), = report.rooms.items()
     assert zones[space_id].area_satisfied
-    # The plate above the room really is open: the claim gate passed, and the
-    # voided level must carry a hole overlapping the room.
+    # The plate above the room really is open. An edge-touching claim becomes a
+    # notch in the outer ring; an interior claim remains a hole.
     host_index = zones[space_id].level_index
     above = next(level for level in library.lattice.occupied
                  if level.index > host_index)
-    assert above.voids, 'the double height claim left no void above the room'
+    remaining = usable_region(above)
+    assert remaining.intersection(box(*rect)).area <= 1e-5
+    assert remaining.geom_type == 'Polygon'
+    assert remaining.is_valid and not remaining.is_empty
 
 
 def test_the_pavilion_hall_is_the_full_height_volume(pavilion):
@@ -238,6 +427,27 @@ def test_the_pavilion_hall_is_the_full_height_volume(pavilion):
     storey = (pavilion.lattice.occupied[1].z - pavilion.lattice.occupied[0].z
               if len(pavilion.lattice.occupied) > 1 else 0.0)
     assert report.clear_m > storey, 'the hall must be taller than one storey'
+    hall_id = next(iter(report.rooms))
+    zone = next(zone for zone in pavilion.program_allocation.zones
+                if zone.space_id == hall_id)
+    assert zone.area_satisfied
+
+
+def test_pavilion_upper_floors_and_ceiling_offsets_stay_connected(pavilion):
+    """The exact hall notch and its true 150 mm ceiling offset are both buildable."""
+    hall = box(*next(iter(pavilion.archetype.rooms.values())))
+    ground = pavilion.lattice.occupied[0]
+    stations = [*pavilion.lattice.y_lines, *(point.y for point in ground.plate)]
+    assert all(any(abs(edge - station) <= 0.001 for station in stations)
+               for edge in (hall.bounds[1], hall.bounds[3]))
+    for level in pavilion.lattice.occupied[1:]:
+        remaining = usable_region(level)
+        assert remaining.intersection(hall).area <= 1e-5
+        assert remaining.geom_type == 'Polygon', (level.index, remaining.geom_type)
+        assert remaining.is_valid and not remaining.is_empty
+        ceiling = Polygon(remaining.exterior.coords).buffer(-0.15, join_style=2)
+        assert ceiling.geom_type == 'Polygon', (level.index, ceiling.geom_type)
+        assert ceiling.is_valid and not ceiling.is_empty
 
 
 def test_the_other_carves_do_not_break_their_buildings(museum, library, pavilion):

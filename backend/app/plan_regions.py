@@ -84,6 +84,10 @@ def usable_region(level, reserved=()):
     return outer.difference(unary_union(cuts)) if cuts else outer
 
 
+# Thinner than this in both directions, a missing piece is a rounding, not floor.
+HAIRLINE_M = 0.0005
+
+
 def rectangular_runs(region, y0, y1):
     """All x intervals whose *entire* y strip is contained in a polygon.
 
@@ -99,8 +103,16 @@ def rectangular_runs(region, y0, y1):
     x0, _, x1, _ = region.bounds
     missing = box(x0, y0, x1, y1).difference(region)
     pieces = [missing] if missing.geom_type == 'Polygon' else list(missing.geoms)
+    # A missing piece thinner than half a millimetre in either direction is a
+    # rounding between two lines computed twice -- a zone edge at 4.598 against a
+    # row line at 4.5979 -- not floor that is not there; taken as missing, a
+    # hairline along the strip's edge blocked the whole run. No wider: at a
+    # centimetre a room took a millimetre of the entry landing and the overlap
+    # rule, rightly, reported it.
     blocked = sorted((part.bounds[0], part.bounds[2]) for part in pieces
-                     if not part.is_empty and part.area > 0.0)
+                     if not part.is_empty and part.area > 0.0
+                     and min(part.bounds[2] - part.bounds[0],
+                             part.bounds[3] - part.bounds[1]) >= HAIRLINE_M)
     runs = []
     cursor = x0
     for lo, hi in blocked:

@@ -211,6 +211,9 @@ def test_only_calculated_members_claim_to_be_sized(model):
     sized = [e for e in model.elements if e.sizing_status == 'sized_by_calculation']
     assert sized
     tiers = {'secondary_joist', 'heavy_joist', 'clt_panel'}
+    # The stair core walls carry a bearing-wall screening check (decision 0022):
+    # their own weight and the floor they carry against an ACI empirical capacity.
+    tiers.add('core_wall')
     kinds = {e.kind for e in sized}
     assert {'column', 'piloti_column', 'primary_beam'} <= kinds
     assert kinds - {'column', 'piloti_column', 'primary_beam'} <= tiers
@@ -374,11 +377,20 @@ def test_fewer_storeys_buy_a_wider_plate(features, score):
         features, score_with(score, tempo_of_change=1.0), **pin)
     assert len(tight.lattice.occupied) < len(roomy.lattice.occupied)
     assert tight.lattice.plan_x_m > roomy.lattice.plan_x_m
-    for model in (tight, roomy):
-        assert not model.program_allocation.unplaced, (
-            f'{len(model.lattice.occupied)} storeys left '
-            f'{[u.space_id for u in model.program_allocation.unplaced]} unplaced')
-        assert model.program_allocation.fulfilment > 0.95
+    assert not roomy.program_allocation.unplaced, (
+        f'{len(roomy.lattice.occupied)} storeys left '
+        f'{[u.space_id for u in roomy.program_allocation.unplaced]} unplaced')
+    assert roomy.program_allocation.fulfilment > 0.95
+    # The tight score runs the slab to its size bound. Since the cores became walled
+    # volumes the corridors reach at a door (decision 0022), that plate houses about
+    # nine tenths of the brief; what does not fit is reported unplaced at the bound,
+    # never housed by growing past the family or by laying rooms over the cores.
+    assert tight.program_allocation.fulfilment > 0.85, (
+        f'{[u.space_id for u in tight.program_allocation.unplaced]} unplaced at '
+        f'{tight.program_allocation.fulfilment:.2f}')
+    if tight.program_allocation.unplaced:
+        assert any('held at the bound' in reason
+                   for reason in tight.selection.massing_reason)
 
 
 def test_a_taller_score_fits_the_whole_brief(features, score):
@@ -451,14 +463,17 @@ def test_room_proportions_move_with_the_score(features, score):
     narrow = compile_building_model_v3(
         features, score_with(score, density=1.0), **pin)
     wide = compile_building_model_v3(features, score_with(score, density=0.0), **pin)
-    assert len(narrow.lattice.y_lines) != len(wide.lattice.y_lines)
+    # The module rows differ; the structural lines may not, since they also carry
+    # the core faces (decision 0022).
+    rows = lambda model: model.lattice.band_lines or model.lattice.y_lines
+    assert len(rows(narrow)) != len(rows(wide))
 
-    for model in (narrow, wide):
-        lines = [round(line, 3) for line in model.lattice.y_lines]
-        for zone in model.program_allocation.zones:
-            assert round(zone.y0, 3) in lines and round(zone.y1, 3) in lines, (
-                f'{zone.space_id} runs from {zone.y0} to {zone.y1}, which is not a '
-                f'span of whole bays on {lines}')
+    # The first statement in the docstring is no longer literally true and is not
+    # asserted: rooms lay out on the module rows (`band_lines`, decision 0022), not
+    # on every structural line, and inside a row the public-circulation plan and
+    # the room's own area set its edges. What remains testable is the second
+    # statement -- the rooms' rectangles answer the grid -- which is the mechanism
+    # the test exists for.
 
     def shapes(model):
         return {zone.space_id: (round(zone.x1 - zone.x0, 2),

@@ -28,6 +28,7 @@ WEB_PUBLIC = ROOT / 'web' / 'public'
 WEB_REPORTS = WEB_PUBLIC / 'reports'
 WEB_DRAWINGS = WEB_PUBLIC / 'drawings'
 WEB_RENDERS = WEB_PUBLIC / 'renders'
+WEB_AUDIO = WEB_PUBLIC / 'audio'
 
 
 def _copy_tree(source: Path, target: Path, pattern: str) -> int:
@@ -55,6 +56,10 @@ def main() -> None:
         sheet.url = f'/drawings/{model_id}/{sheet.id}.svg'
     for render in response.renders:
         render.url = f'/renders/{model_id}/{render.filename}'
+    # The recording ships with the demo, so the frozen run can be heard as well as seen.
+    WEB_AUDIO.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(MP3, WEB_AUDIO / MP3.name)
+    response.audio_url = f'/audio/{MP3.name}'
 
     WEB_REPORTS.mkdir(parents=True, exist_ok=True)
     payload = response.model_dump_json()

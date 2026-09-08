@@ -14,7 +14,7 @@ import hashlib
 from pathlib import Path
 
 
-COMPILER_VERSION = '3.5.0'
+COMPILER_VERSION = '3.12.0'
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -25,6 +25,7 @@ def compiler_source_fingerprint(root: Path | None = None) -> str:
     files = [
         *project.glob('backend/app/**/*.py'),
         *project.glob('blender/**/*.py'),
+        *project.glob('rhino/**/*.py'),
     ]
     digest = hashlib.sha256()
     for path in sorted((path for path in files if path.is_file()),

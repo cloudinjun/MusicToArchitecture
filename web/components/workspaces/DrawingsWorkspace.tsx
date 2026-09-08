@@ -22,9 +22,9 @@ import { Empty, Panel, Pill, StackedBar, Stat, StatGrid } from '../ui';
 const ZOOMS = [1, 1.5, 2, 3, 4];
 
 const KIND_LABEL: Record<DrawingSheetRef['kind'], string> = {
-  cover: 'Cover', plan: 'Plans', elevation: 'Elevations', section: 'Sections',
+  cover: 'Cover', plan: 'Plans', elevation: 'Elevations', section: 'Sections', detail: 'Details',
 };
-const KIND_ORDER: DrawingSheetRef['kind'][] = ['cover', 'plan', 'elevation', 'section'];
+const KIND_ORDER: DrawingSheetRef['kind'][] = ['cover', 'plan', 'elevation', 'section', 'detail'];
 
 export function DrawingsWorkspace({ run }: { run: GenerationResponse | null }) {
   const sheets = useMemo(() => run?.drawing_sheets ?? [], [run]);
@@ -52,6 +52,9 @@ export function DrawingsWorkspace({ run }: { run: GenerationResponse | null }) {
     .filter((group) => group.items.length > 0);
   const drawingsOnSheet = active?.drawings ?? [];
   const omitted = drawingsOnSheet[0]?.omitted_by_scale ?? active?.omitted_by_scale ?? {};
+  const detailDrawing = drawingsOnSheet.find((drawing) => drawing.detail_readiness) ?? null;
+  const detailReadiness = detailDrawing?.detail_readiness ?? null;
+  const detailAudit = detailDrawing?.detail_audit ?? null;
 
   return (
     <div className="stack">
@@ -143,6 +146,38 @@ export function DrawingsWorkspace({ run }: { run: GenerationResponse | null }) {
                   </div>
                 )}
               </div>
+            </Panel>
+          )}
+
+          {detailReadiness && (
+            <Panel
+              title="Detail readiness"
+              sub={detailDrawing?.title}
+              note={detailReadiness.limitations.join(' ')}
+            >
+              <StatGrid>
+                <Stat label="Drawing" value={<Pill tone="ok">{detailReadiness.drawing_status}</Pill>}
+                  foot="projected from the compiled model" />
+                <Stat label="D3" value={
+                  <Pill tone={detailReadiness.d3_status === 'blocked' ? 'bad' : 'unknown'}>
+                    {detailReadiness.d3_status.replace(/_/g, ' ')}
+                  </Pill>
+                } foot="student design-review gate" />
+                <Stat label="Assemblies" value={compact(detailAudit?.assemblies.length ?? 0)}
+                  foot="traceable through assembly IDs" />
+                <Stat label="Material roles" value={compact(detailAudit?.material_roles.length ?? 0)}
+                  foot="visible roles in this cut" />
+              </StatGrid>
+              {detailReadiness.unresolved.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  <p className="section-label">Professional follow-on</p>
+                  <div className="chip-row" style={{ marginTop: 8 }}>
+                    {detailReadiness.unresolved.map((item) => (
+                      <span className="chip" key={item}>{titleCase(item)}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </Panel>
           )}
         </div>

@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from backend.app.geometry import BoxGeometry, ExtrusionGeometry, v2, v3
+from backend.app.geometry import BoxGeometry, ExtrusionGeometry, MemberGeometry, v2, v3
 from backend.app.geometry_review import (
     check_intercore_stair_overlap,
     check_invalid_plan_rings,
@@ -25,11 +25,12 @@ def _group(kind, *instances, subsystem='test', semantic_layer='circulation'):
                            semantic_layer=semantic_layer)
 
 
-def _model(*groups):
+def _model(*groups, profiles=None):
     return SimpleNamespace(
         element_groups=list(groups),
         lattice=SimpleNamespace(levels=[]),
         program_allocation=SimpleNamespace(cores_unreserved=[]),
+        profiles=profiles or {},
     )
 
 
@@ -77,6 +78,43 @@ def test_head_clearance_uses_obstacle_underside_and_names_review_convention():
     assert findings[0].severity == 'violation'
     assert findings[0].measure == pytest.approx(1.2)
     assert 'design-review convention' in findings[0].detail
+
+
+def _rolled_member(element_id, z, profile='TRAN'):
+    return _instance(element_id, 'external_strut', MemberGeometry(
+        path=[v3(-2.0, 0.0, z), v3(2.0, 0.0, z)],
+        profile=profile, roll=v3(1.0, 0.0, 0.0)))
+
+
+def test_known_rolled_member_envelope_can_prove_generous_headroom():
+    tread = _box('CIR-TRD-A01-S001', 'stair_tread', v3(0, 0, 0.5), v3(1, 1, 0.2))
+    strut = _rolled_member('ENV-STR-HIGH', 5.0)
+    findings = check_stair_head_clearance(_model(
+        _group('stair_tread', tread), _group('external_strut', strut),
+        profiles={'TRAN': SimpleNamespace(depth_m=0.140, width_m=0.075)}))
+    assert findings == []
+
+
+def test_known_rolled_member_near_threshold_stays_unevaluated():
+    tread = _box('CIR-TRD-A01-S001', 'stair_tread', v3(0, 0, 0.5), v3(1, 1, 0.2))
+    # Tread top is 0.6 m; the 79.4 mm circular section envelope puts the
+    # conservative underside just below the 2.0 m review threshold.
+    strut = _rolled_member('ENV-STR-NEAR', 2.67)
+    findings = check_stair_head_clearance(_model(
+        _group('stair_tread', tread), _group('external_strut', strut),
+        profiles={'TRAN': SimpleNamespace(depth_m=0.140, width_m=0.075)}))
+    assert len(findings) == 1
+    assert findings[0].severity == 'warning'
+    assert findings[0].unit == 'unevaluated'
+
+
+def test_rolled_member_with_unknown_profile_stays_unevaluated():
+    tread = _box('CIR-TRD-A01-S001', 'stair_tread', v3(0, 0, 0.5), v3(1, 1, 0.2))
+    strut = _rolled_member('ENV-STR-UNKNOWN', 5.0, profile='MISSING')
+    findings = check_stair_head_clearance(_model(
+        _group('stair_tread', tread), _group('external_strut', strut)))
+    assert len(findings) == 1
+    assert findings[0].severity == 'warning'
 
 
 def test_lift_and_distinct_core_tread_collisions_are_measured_in_3d():

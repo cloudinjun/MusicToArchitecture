@@ -23,10 +23,30 @@ from backend.app.ada import (
     MIN_LANDING_LENGTH_M, MIN_TURN_LANDING_M, plan_switchback_ramp,
 )
 from backend.app.compiler_v3 import compile_building_model_v3
+from backend.app.approach import plan_boundary_switchback
 from backend.app.massing import MASSING_FAMILIES
 from backend.app.models import ArchitecturalScore, AudioFeatures
 
 ROOT = Path(__file__).parents[2]
+
+
+@pytest.mark.parametrize('preference', ['edge_parallel', 'terrace_return', 'notch_switchback'])
+def test_boundary_ramp_requires_depth_and_preserves_its_arrival_side(preference):
+    arguments = dict(edge_length_m=38.0, fraction=0.5, flight_width_m=2.4,
+                     rise_m=5.4, preference=preference)
+    feasible = plan_boundary_switchback(**arguments, approach_depth_m=20.0)
+    assert feasible.ramp is not None
+    # Refusal follows the actual planned footprint, not the former extra landing.
+    depth = feasible.ramp.footprint_y_m
+    assert plan_boundary_switchback(**arguments, approach_depth_m=depth-0.001).ramp is None
+    assert plan_boundary_switchback(**arguments, approach_depth_m=depth+0.001).ramp is not None
+    assert feasible.ramp.compliance() == []
+    assert feasible.ramp.rise_m == pytest.approx(5.4)
+    top = next(landing for landing in feasible.ramp.landings if landing.kind == 'top')
+    low, high = feasible.sides[feasible.order[0]]
+    assert low <= top.x <= high
+    assert plan_boundary_switchback(**arguments, approach_depth_m=20.0,
+                                   apron_depth_m=1.0).ramp is None
 DEMO = ROOT / 'artifacts' / 'v3_demo'
 V2_DEMO = (ROOT / 'artifacts' / 'integrated_demo'
            / 'building-b7ad95fa45a6-library-steel-international-v1')
@@ -47,6 +67,24 @@ def template() -> ArchitecturalScore:
 # ---------------------------------------------------------------------------
 # The planner
 # ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize('rise', [0.3, 1.5])
+@pytest.mark.parametrize('width', [0.915, 2.4])
+@pytest.mark.parametrize('direction', [-1, 1])
+def test_reserved_depth_matches_actual_decks_and_landings(rise, width, direction):
+    args = dict(rise_m=rise, width_m=width, x_min=0, x_max=14,
+                y_start=3, z_base=0, direction_y=direction)
+    plan = plan_switchback_ramp(**args, y_available=30)
+    assert plan is not None
+    intervals = [(r.y-plan.pitch_m/2, r.y+plan.pitch_m/2) for r in plan.runs]
+    intervals += [(p.y-p.size_y/2, p.y+p.size_y/2) for p in plan.landings]
+    depth = max(b for _, b in intervals)-min(a for a, _ in intervals)
+    assert plan.footprint_y_m == pytest.approx(depth)
+    assert min(a for a, _ in intervals) == pytest.approx(3 if direction > 0 else 3-depth)
+    exact = plan_switchback_ramp(**args, y_available=depth+1e-9)
+    assert exact is not None and exact.compliance() == []
+    assert plan_switchback_ramp(**args, y_available=depth-1e-4) is None
+
 
 @pytest.mark.parametrize('rise', [0.2, 0.45, 1.2, 3.0, 5.4, 8.0])
 def test_a_plan_that_is_returned_is_a_plan_that_complies(rise):

@@ -29,7 +29,7 @@ from pydantic import BaseModel, Field
 
 MaterialFamily = Literal[
     'steel', 'concrete', 'timber', 'glass', 'masonry', 'plaster', 'ground',
-    'fabric', 'diagram',
+    'fabric', 'diagram', 'insulation', 'membrane', 'board',
 ]
 
 
@@ -99,6 +99,27 @@ MATERIALS: dict[str, MaterialSpec] = {spec.id: spec for spec in (
     _spec('glass', 'glass', 'sealed double unit', '#b3c7d0', 0.08,
           'Vision glass. Transmission is what makes it glass rather than a pale panel.',
           transmission=0.84),
+    _spec('roof_deck_substrate', 'steel', 'profiled roof deck substrate', '#9a9c9f', 0.48,
+          'The visible 180 mm structural roof substrate zone used by the shared roof '
+          'section convention; deck gauge, profile and capacity require selection.',
+          metallic=0.28),
+    _spec('roof_vapour_control', 'membrane', 'vapour-control sheet', '#4b5158', 0.58,
+          'A 3 mm visible vapour-control layer for student-detail coordination; '
+          'condensation analysis and product selection remain open.'),
+    _spec('roof_insulation', 'insulation', 'tapered rigid insulation', '#d8c97e', 0.82,
+          'The conventional insulation/fall build-up. The model carries its average '
+          'depth; drainage design and thermal performance remain open.'),
+    _spec('roof_cover_board', 'board', 'high-density cover board', '#c2bda9', 0.76,
+          'A 15 mm cover board separating insulation from the weathering layer.'),
+    _spec('roof_waterproofing', 'membrane', 'dark roof membrane', '#3b3c3e', 0.34,
+          'A 5 mm visible weathering membrane for student detail sections; laps, '
+          'upstands, outlets, penetrations and warranty remain professional work.'),
+    _spec('roof_parapet_substrate', 'board', 'cementitious parapet substrate', '#d8d7d4', 0.68,
+          'The solid parapet carrier inside the controlled roof perimeter; framing, '
+          'fire performance and attachment remain unresolved.'),
+    _spec('roof_coping', 'steel', 'folded metal coping', '#b9bab9', 0.36,
+          'A conventional folded-metal coping volume. Joints, drips, cleats, movement '
+          'and fixing design require professional review.', metallic=0.32),
     _spec('accent_red', 'steel', 'signal paint', '#b31915', 0.55,
           'The one saturated colour, for what a building marks out: handrails, doors.'),
     _spec('furn', 'fabric', 'upholstery and worktop', '#b3afa8', 0.72,
@@ -161,6 +182,9 @@ REVIT_MATERIAL_CLASS: dict[str, str] = {
     'ground': 'Generic',
     'fabric': 'Generic',
     'diagram': 'Generic',
+    'insulation': 'Generic',
+    'membrane': 'Generic',
+    'board': 'Generic',
 }
 
 

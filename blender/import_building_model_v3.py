@@ -29,12 +29,14 @@ from pathlib import Path
 
 import bpy
 
-# Pure vertex builders shared with the backend: no Shapely is imported by these
-# functions, so Blender's bundled Python does not acquire a backend dependency.
+# Share the exact portable bodies, including concave footprints and their holes.
+# Blender's Python dependencies are isolated from its bundled installation.
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPOSITORY_ROOT))
-from backend.app.mesh_primitives import box_mesh, member_mesh
+from blender.runtime_dependencies import require_polygon_runtime
+_POLYGON_RUNTIME = require_polygon_runtime()
+from backend.app.mesh_primitives import box_mesh, member_mesh, extrusion_mesh
 
 
 MATERIALS = {
@@ -62,6 +64,27 @@ MATERIALS = {
     'ground':           ((0.512, 0.516, 0.524, 1.0), 0.90, 1.0),
     'ground_light':     ((0.735, 0.735, 0.730, 1.0), 0.86, 1.0),
 }
+
+# The legacy project made the program-volume contract readable with three primary
+# colours.  Service is a fourth category in schema 3.0 and remains distinct rather
+# than being folded into private.  These are review materials only: canonical GLB
+# materials still come from the model's own material table above.
+PROGRAM_VOLUME_COLOURS = {
+    'private': (1.0, 0.0, 0.0, 0.62),
+    'public': (0.0, 0.0, 1.0, 0.62),
+    'circulation': (0.0, 1.0, 0.0, 0.62),
+    'service': (1.0, 0.55, 0.0, 0.62),
+}
+
+PROGRAM_VOLUME_COLLECTION = 'Program_Volumes'
+PROGRAM_VOLUME_RENDER = '06_program_volumes.png'
+PROGRAM_STRUCTURE_RENDER = '07_program_structure.png'
+PROGRAM_FACADE_RENDER = '08_program_facade.png'
+
+# The three protocol renders use one automatically framed camera specification.
+# Their only change is layer visibility, so structure/facade comparisons cannot be
+# manufactured by choosing a more flattering view for one stage.
+PROGRAM_VOLUME_REVIEW_CAMERA = 'program_volume_bounds'
 
 VIEWS = [
     ('01_three_quarter', (62.0, -78.0, 44.0), (0.0, -2.0, 12.0), 62, (1600, 1100)),
@@ -141,32 +164,8 @@ def add_member(bucket: MeshBucket, geometry, profiles: dict) -> None:
     bucket.push(*member_mesh(geometry, profiles))
 
 
-def _keyhole(boundary, holes):
-    polygon = [(p['x'], p['y']) for p in boundary]
-    for hole in holes:
-        reversed_hole = [(p['x'], p['y']) for p in reversed(hole)]
-        best = None
-        for i, outer in enumerate(polygon):
-            for j, inner in enumerate(reversed_hole):
-                distance = (outer[0] - inner[0]) ** 2 + (outer[1] - inner[1]) ** 2
-                if best is None or distance < best[0]:
-                    best = (distance, i, j)
-        _, i, j = best
-        polygon = (polygon[:i + 1] + reversed_hole[j:] + reversed_hole[:j + 1]
-                   + polygon[i:])
-    return polygon
-
-
 def add_extrusion(bucket: MeshBucket, geometry) -> None:
-    polygon = _keyhole(geometry['boundary'], geometry.get('holes') or [])
-    z0, z1 = geometry['z_base'], geometry['z_top']
-    n = len(polygon)
-    verts = [(x, y, z0) for x, y in polygon] + [(x, y, z1) for x, y in polygon]
-    faces = [tuple(range(n - 1, -1, -1)), tuple(range(n, 2 * n))]
-    for k in range(n):
-        m = (k + 1) % n
-        faces.append((k, m, n + m, n + k))
-    bucket.push(verts, faces)
+    bucket.push(*extrusion_mesh(geometry))
 
 
 def add_quad(bucket: MeshBucket, geometry) -> None:
@@ -281,6 +280,35 @@ def make_materials(model: dict | None = None) -> dict:
     return made
 
 
+def make_program_volume_materials() -> dict:
+    """Transparent category colours for the common Program Volume protocol.
+
+    They intentionally live outside the model material registry.  The full-height
+    boxes are an inspectable projection of the contract, not another set of building
+    elements, and therefore never enter the canonical GLB.
+    """
+    made = {}
+    for category, rgba in PROGRAM_VOLUME_COLOURS.items():
+        material = bpy.data.materials.new(f'PV_{category}')
+        material.use_nodes = True
+        bsdf = material.node_tree.nodes['Principled BSDF']
+        _set(bsdf, ('Base Color',), rgba)
+        _set(bsdf, ('Roughness',), 0.68)
+        _set(bsdf, ('Alpha',), rgba[3])
+        material.diffuse_color = rgba
+        # Blender 4.2+ replaced blend_method with surface_render_method.  Supporting
+        # both keeps the saved review scene readable in the project's Blender 5 build
+        # and in older review installations.
+        for attribute, value in (('surface_render_method', 'DITHERED'),
+                                 ('blend_method', 'BLEND')):
+            try:
+                setattr(material, attribute, value)
+            except (AttributeError, TypeError):
+                pass
+        made[category] = material
+    return made
+
+
 def build(model: dict, materials: dict) -> dict:
     profiles = model['profiles']
     buckets: dict[tuple[str, str, str, str], MeshBucket] = {}
@@ -333,9 +361,160 @@ def build(model: dict, materials: dict) -> dict:
         obj['mta:kinds'] = ','.join(sorted(kinds[(layer, subsystem, category, material)]))
         obj['mta:element_count'] = bucket.count
         obj['mta:authority'] = 'presentation_only'
+        obj['mta:exportable'] = True
         layers[layer].objects.link(obj)
         stats[name] = {'elements': bucket.count, 'faces': len(bucket.faces),
                        'layer': layer, 'subsystem': subsystem, 'category': category}
+    return stats
+
+
+def build_program_volumes(model: dict) -> dict:
+    """Build the authoritative volume contract, with legacy allocation as fallback.
+
+    A Program Volume candidate carries ``program_volume_model`` and each review box
+    is read exactly from its grid indices and explicit z interval. Older model files
+    have no such contract, so their measured allocation is still projected as the
+    legacy review view. Invalid authoritative references fail the export loudly.
+    """
+    contract = model.get('program_volume_model')
+    records = []
+    if contract:
+        grid = contract['grid']
+        levels = {level['id']: level for level in contract['levels']}
+        for volume in contract['volumes']:
+            if volume['level_id'] not in levels:
+                raise ValueError(
+                    f"Program Volume {volume['id']} names unknown {volume['level_id']}")
+            level = levels[volume['level_id']]
+            i0, j0, i1, j1 = volume['grid_rect']
+            try:
+                x0, x1 = grid['x_lines'][i0], grid['x_lines'][i1]
+                y0, y1 = grid['y_lines'][j0], grid['y_lines'][j1]
+            except IndexError as error:
+                raise ValueError(
+                    f"Program Volume {volume['id']} has a grid index outside the contract") \
+                    from error
+            records.append({
+                'id': volume['id'], 'level_id': volume['level_id'],
+                'category': volume['category'], 'role': volume['role'],
+                'space_ids': list(volume.get('space_ids', [])),
+                'label': volume['id'], 'space_type': volume['role'],
+                'x0': x0, 'y0': y0, 'x1': x1, 'y1': y1,
+                'z0': level['z_base'], 'z1': level['z_top'],
+                'area_required_m2': volume.get('target_area_m2', 0.0),
+                'area_delivered_m2': volume.get('gross_area_m2', 0.0),
+                'derived_from': f"program_volume_model.volumes[{volume['id']}]",
+            })
+        source = ['program_volume_model.volumes', 'program_volume_model.grid',
+                  'program_volume_model.levels']
+        protocol = contract.get('schema_version', 'mta.program_volumes/1.0')
+    else:
+        lattice_levels = model['lattice']['levels']
+        by_id = {level['id']: (index, level)
+                 for index, level in enumerate(lattice_levels)}
+        for zone in model['program_allocation']['zones']:
+            found = by_id.get(zone['level_id'])
+            if found is None:
+                continue
+            position, level = found
+            if position + 1 >= len(lattice_levels):
+                continue
+            upper = lattice_levels[position + 1]
+            records.append({
+                'id': zone['space_id'], 'level_id': level['id'],
+                'category': zone['category'], 'role': 'program',
+                'space_ids': [zone['space_id']], 'label': zone['label'],
+                'space_type': zone['space_type'],
+                'x0': zone['x0'], 'y0': zone['y0'],
+                'x1': zone['x1'], 'y1': zone['y1'],
+                'z0': level['z'], 'z1': upper['z'],
+                'area_required_m2': zone['area_required_m2'],
+                'area_delivered_m2': zone['area_delivered_m2'],
+                'derived_from': f"program_allocation.zones[{zone['space_id']}]",
+            })
+        source = ['program_allocation.zones', 'lattice.levels']
+        protocol = 'program_volume/legacy-allocation-projection'
+
+    root = bpy.data.collections.new(PROGRAM_VOLUME_COLLECTION)
+    bpy.context.scene.collection.children.link(root)
+    root['mta:authority'] = 'presentation_only'
+    root['mta:protocol'] = protocol
+    root['mta:source_lattice_schema'] = model['lattice'].get('schema_version', '')
+    root['mta:source_allocation_schema'] = model['program_allocation'].get(
+        'schema_version', '')
+    root.hide_render = True
+
+    materials = make_program_volume_materials()
+    floors = {}
+    categories = {}
+    stats = {'source': source, 'objects': 0, 'by_level': {}, 'by_category': {}}
+    for record in records:
+        width = float(record['x1']) - float(record['x0'])
+        depth = float(record['y1']) - float(record['y0'])
+        height = float(record['z1']) - float(record['z0'])
+        if min(width, depth, height) <= 0.0:
+            raise ValueError(f"Program Volume {record['id']} has a non-positive dimension")
+
+        level_id = record['level_id']
+        floor = floors.get(level_id)
+        if floor is None:
+            floor = bpy.data.collections.new(f'Floor_{level_id}')
+            root.children.link(floor)
+            floor['mta:level_id'] = level_id
+            floor['mta:z_base'] = float(record['z0'])
+            floor['mta:z_top'] = float(record['z1'])
+            floors[level_id] = floor
+
+        category = str(record['category'])
+        category_key = (level_id, category)
+        group = categories.get(category_key)
+        if group is None:
+            group = bpy.data.collections.new(f'{level_id}_{category}')
+            floor.children.link(group)
+            group['mta:level_id'] = level_id
+            group['mta:category'] = category
+            categories[category_key] = group
+
+        geometry = {
+            'type': 'box',
+            'center': {
+                'x': (float(record['x0']) + float(record['x1'])) / 2.0,
+                'y': (float(record['y0']) + float(record['y1'])) / 2.0,
+                'z': (float(record['z0']) + float(record['z1'])) / 2.0,
+            },
+            'size': {'x': width, 'y': depth, 'z': height},
+            'rotation_z': 0.0,
+        }
+        verts, faces = box_mesh(geometry)
+        safe_id = ''.join(ch if ch.isalnum() or ch in '-_' else '_'
+                          for ch in record['id'])
+        name = f'{level_id}_{category}_{safe_id}'
+        mesh = bpy.data.meshes.new(f'{name}_mesh')
+        mesh.from_pydata(verts, [], faces)
+        mesh.validate(verbose=False)
+        mesh.update(calc_edges=True)
+        mesh.shade_flat()
+        obj = bpy.data.objects.new(name, mesh)
+        obj.data.materials.append(materials.get(category, materials['service']))
+        obj['mta:model_id'] = model['model_id']
+        obj['mta:score_id'] = model['score_id']
+        obj['mta:authority'] = 'presentation_only'
+        obj['mta:exportable'] = False
+        obj['mta:review_stage'] = 'program_volume_massing'
+        obj['mta:derived_from'] = record['derived_from']
+        obj['mta:volume_id'] = record['id']
+        obj['mta:space_ids'] = ','.join(record['space_ids'])
+        obj['mta:space_type'] = record['space_type']
+        obj['mta:role'] = record['role']
+        obj['mta:label'] = record['label']
+        obj['mta:level_id'] = level_id
+        obj['mta:category'] = category
+        obj['mta:area_required_m2'] = float(record['area_required_m2'])
+        obj['mta:area_delivered_m2'] = float(record['area_delivered_m2'])
+        group.objects.link(obj)
+        stats['objects'] += 1
+        stats['by_level'][level_id] = stats['by_level'].get(level_id, 0) + 1
+        stats['by_category'][category] = stats['by_category'].get(category, 0) + 1
     return stats
 
 
@@ -390,21 +569,84 @@ def setup_scene():
     return camera
 
 
-def render_views(camera, out_dir: Path) -> list[str]:
+def _review_clip_distances(depths) -> tuple[float, float]:
+    """Keep all reviewed geometry with useful depth precision at building scale."""
+    near, far = min(depths), max(depths)
+    if not (math.isfinite(near) and math.isfinite(far) and near > 0):
+        raise ValueError('Review geometry must lie in front of its camera')
+    # A millimetre near plane wastes almost the entire perspective depth buffer
+    # before a building hundreds of metres away. Thin roof layers then z-fight.
+    return near * .25, far * 1.25
+
+
+def _set_review_clipping(camera, corners) -> dict:
+    bpy.context.view_layer.update()
+    inverse = camera.matrix_world.inverted()
+    depths = [-(inverse @ point).z for point in corners]
+    camera.data.clip_start, camera.data.clip_end = _review_clip_distances(depths)
+    return {'near_m': camera.data.clip_start, 'far_m': camera.data.clip_end,
+            'nearest_geometry_m': min(depths), 'farthest_geometry_m': max(depths)}
+
+
+def _fit_review_camera(camera, scene, layers, location, target, lens, resolution,
+                       *, extra_objects=()) -> dict:
+    """Fit the selected building layers with Blender's native camera solver."""
+    from mathutils import Vector
+    from bpy_extras.object_utils import world_to_camera_view
+
+    root = bpy.data.collections['MTA_v3']
+    objects = [obj for layer in root.children if layer.name in layers and layer.name != 'site'
+               for obj in layer.all_objects if obj.type == 'MESH']
+    objects.extend(obj for obj in extra_objects if obj.type == 'MESH')
+    corners = [obj.matrix_world @ Vector(corner) for obj in objects for corner in obj.bound_box]
+    if not corners:
+        raise RuntimeError('No building geometry for the requested review view')
+    lows = Vector(tuple(min(p[k] for p in corners) for k in range(3)))
+    highs = Vector(tuple(max(p[k] for p in corners) for k in range(3)))
+    centre = (lows+highs)/2
+    direction = (Vector(location)-Vector(target)).normalized()
+    span = (highs-lows).length
+    scene.render.resolution_x, scene.render.resolution_y = resolution
+    camera.data.type = 'PERSP'
+    camera.data.lens = lens
+    camera.location = centre+direction*span
+    point_at(camera, centre)
+    bpy.context.view_layer.update()
+    fitted, _ = camera.camera_fit_coords(
+        bpy.context.evaluated_depsgraph_get(), [value for p in corners for value in p])
+    camera.location = fitted+direction*span*.12
+    clipping = _set_review_clipping(camera, corners)
+    bpy.context.view_layer.update()
+    projected = [world_to_camera_view(scene,camera,p) for p in corners]
+    if any(p.z <= 0 or not (0 <= p.x <= 1 and 0 <= p.y <= 1) for p in projected):
+        raise RuntimeError('Native review framing leaves building geometry outside the image')
+    return {'method':'native_camera_fit_coords', 'location':list(camera.location),
+            'target':list(centre), 'lens':lens, 'resolution':list(resolution),
+            'bounds':{'minimum':list(lows),'maximum':list(highs)},
+            'all_bounds_in_frame':True, 'clipping':clipping}
+
+
+def render_views(camera, out_dir: Path) -> tuple[list[str], dict, dict]:
     scene = bpy.context.scene
-    written = []
+    written, visibility, cameras = [], {}, {}
+    all_layers = [layer.name for layer in bpy.data.collections['MTA_v3'].children]
     for name, location, target, lens, (rx, ry) in VIEWS:
-        camera.location = location
-        camera.data.lens = lens
-        point_at(camera, target)
-        scene.render.resolution_x, scene.render.resolution_y = rx, ry
-        scene.render.filepath = str(out_dir / f'{name}.png')
+        # The legacy filename is retained; its structure-only scope is explicit
+        # in the manifest. A complete facade must not hide the entire frame view.
+        layers = ['structure'] if name == '03_structure_closeup' else all_layers
+        _set_semantic_visibility(layers)
+        filename = f'{name}.png'
+        cameras[filename] = _fit_review_camera(
+            camera, scene, layers, location, target, lens, (rx,ry))
+        scene.render.filepath = str(out_dir / filename)
         bpy.ops.render.render(write_still=True)
-        written.append(f'{name}.png')
-    return written
+        written.append(filename)
+        visibility[filename] = sorted(layers)
+    _set_semantic_visibility(all_layers)
+    return written, visibility, cameras
 
 
-def _set_semantic_visibility(visible_layers, *, program_zones_only=False) -> None:
+def _set_semantic_visibility(visible_layers, *, program_volumes=False) -> None:
     root = bpy.data.collections.get('MTA_v3')
     if root is None:
         raise RuntimeError('MTA_v3 semantic collection is missing')
@@ -414,15 +656,57 @@ def _set_semantic_visibility(visible_layers, *, program_zones_only=False) -> Non
     if missing:
         raise RuntimeError(f'missing semantic layers: {sorted(missing)}')
     for collection in root.children:
-        collection.hide_render = collection.name not in visible
+        collection.hide_render = program_volumes or collection.name not in visible
         for obj in collection.objects:
             obj.hide_render = False
-    if program_zones_only:
-        program = bpy.data.collections.get('program')
-        if program is None:
-            raise RuntimeError('program semantic collection is missing')
-        for obj in program.objects:
-            obj.hide_render = obj.get('mta:subsystem') != 'zones'
+    review = bpy.data.collections.get(PROGRAM_VOLUME_COLLECTION)
+    if review is not None:
+        review.hide_render = not program_volumes
+
+
+def _set_program_review_visibility(visible_layers) -> None:
+    """Show Program Volumes together with selected semantic layers.
+
+    ``_set_semantic_visibility`` retains the existing standalone/semantic-layer
+    behavior.  This small adapter composes the review collection back on top of a
+    selected canonical layer, so the protocol overlays share exactly one camera
+    and the canonical GLB export flags remain untouched.
+    """
+    _set_semantic_visibility(visible_layers, program_volumes=False)
+    review = bpy.data.collections.get(PROGRAM_VOLUME_COLLECTION)
+    if review is None:
+        raise RuntimeError('Program Volume review collection is missing')
+    review.hide_render = False
+
+
+def _set_program_volume_review_camera(camera, scene) -> dict:
+    """Frame the complete Program Volume stack and return its serialisable spec."""
+    from mathutils import Vector
+
+    review = bpy.data.collections.get(PROGRAM_VOLUME_COLLECTION)
+    objects = [obj for obj in review.all_objects if obj.type == 'MESH'] if review else []
+    corners = [obj.matrix_world @ Vector(corner)
+               for obj in objects for corner in obj.bound_box]
+    if not corners:
+        raise RuntimeError('Program Volume review camera has no volume geometry to frame')
+    lows = [min(point[axis] for point in corners) for axis in range(3)]
+    highs = [max(point[axis] for point in corners) for axis in range(3)]
+    target = tuple((lows[axis] + highs[axis]) / 2.0 for axis in range(3))
+    spans = tuple(highs[axis] - lows[axis] for axis in range(3))
+    # Use the same native fit and projected-bound verification as the whole-model
+    # views. A fixed multiple of the largest span ignores lens and image aspect.
+    # Frame every overlay once so the three protocol views retain one camera.
+    building = bpy.data.collections['MTA_v3']
+    spec = _fit_review_camera(
+        camera, scene, [layer.name for layer in building.children if layer.name != 'site'],
+        (1.,1.,.45), (0.,0.,0.), 58, (1600,1100), extra_objects=objects)
+    return {
+        **spec,
+        'id': PROGRAM_VOLUME_REVIEW_CAMERA,
+        'bounds': {'minimum': lows, 'maximum': highs, 'span': list(spans)},
+        'framed_bounds': spec['bounds'],
+        'distance': (camera.location-Vector(spec['target'])).length,
+    }
 
 
 def render_semantic_layers(camera, out_dir: Path) -> tuple[list[str], dict[str, list[str]]]:
@@ -430,7 +714,8 @@ def render_semantic_layers(camera, out_dir: Path) -> tuple[list[str], dict[str, 
     written = []
     visibility = {}
     for name, layers, location, target, lens, (rx, ry) in SEMANTIC_LAYER_VIEWS:
-        _set_semantic_visibility(layers, program_zones_only=name == '01_program')
+        show_program_volumes = name == '01_program'
+        _set_semantic_visibility(layers, program_volumes=show_program_volumes)
         camera.location = location
         camera.data.lens = lens
         point_at(camera, target)
@@ -438,15 +723,61 @@ def render_semantic_layers(camera, out_dir: Path) -> tuple[list[str], dict[str, 
         scene.render.filepath = str(out_dir / f'{name}.png')
         bpy.ops.render.render(write_still=True)
         written.append(f'{name}.png')
-        visibility[f'{name}.png'] = list(layers)
+        visibility[f'{name}.png'] = (
+            ['program_volume_contract'] if show_program_volumes else list(layers))
     _set_semantic_visibility(
         collection.name for collection in bpy.data.collections['MTA_v3'].children)
     return written, visibility
 
 
+def render_program_volumes(camera, out_dir: Path) -> str:
+    """Render the mandatory pre-system Program Volume stage."""
+    scene = bpy.context.scene
+    _set_semantic_visibility((), program_volumes=True)
+    _set_program_volume_review_camera(camera, scene)
+    scene.render.filepath = str(out_dir / PROGRAM_VOLUME_RENDER)
+    bpy.ops.render.render(write_still=True)
+    _set_semantic_visibility(
+        collection.name for collection in bpy.data.collections['MTA_v3'].children)
+    return PROGRAM_VOLUME_RENDER
+
+
+def render_program_volume_overlays(camera, out_dir: Path) -> tuple[list[str], dict[str, dict]]:
+    """Render the two protocol overlays from the standalone Program Volume camera.
+
+    These views are deliberately fixed to the same camera as
+    ``06_program_volumes.png``.  The first isolates the structure relationship;
+    the second isolates the outboard facade/envelope relationship.  Both retain
+    the review boxes as a presentation-only collection and therefore cannot leak
+    into the canonical GLB.
+    """
+    scene = bpy.context.scene
+    views = (
+        (PROGRAM_STRUCTURE_RENDER, ('structure',), 'structure'),
+        (PROGRAM_FACADE_RENDER, ('envelope',), 'envelope'),
+    )
+    written = []
+    metadata = {}
+    for filename, layers, relationship in views:
+        _set_program_review_visibility(layers)
+        camera_spec = _set_program_volume_review_camera(camera, scene)
+        scene.render.filepath = str(out_dir / filename)
+        bpy.ops.render.render(write_still=True)
+        written.append(filename)
+        metadata[filename] = {
+            'camera': camera_spec,
+            'semantic_layers': list(layers),
+            'program_volume_contract': PROGRAM_VOLUME_COLLECTION,
+            'relationship': relationship,
+        }
+    _set_semantic_visibility(
+        collection.name for collection in bpy.data.collections['MTA_v3'].children)
+    return written, metadata
+
+
 def export_glb(path: Path) -> None:
     for obj in bpy.data.objects:
-        obj.select_set(obj.type == 'MESH')
+        obj.select_set(obj.type == 'MESH' and obj.get('mta:exportable', False))
     bpy.ops.export_scene.gltf(
         filepath=str(path), export_format='GLB', use_selection=True,
         export_apply=True, export_extras=True, export_cameras=False,
@@ -476,17 +807,31 @@ def main() -> None:
     render_dir.mkdir(parents=True, exist_ok=True)
     blend_path.parent.mkdir(parents=True, exist_ok=True)
     model = json.loads(model_path.read_text(encoding='utf-8'))
+    source_model_sha256 = hashlib.sha256(json.dumps(
+        model, sort_keys=True, separators=(',', ':'), ensure_ascii=False,
+        allow_nan=False).encode('utf-8')).hexdigest()
 
     clear_scene()
     materials = make_materials(model)
     stats = build(model, materials)
+    program_volume_stats = build_program_volumes(model)
     camera = setup_scene()
+    bpy.context.scene['mta:model_id'] = model['model_id']
+    bpy.context.scene['mta:source_model_sha256'] = source_model_sha256
+    program_volume_review = {}
+    review_cameras = {}
     if render_mode == 'study':
-        renders = render_views(camera, render_dir)
-        render_visibility = {
-            render: sorted({group['semantic_layer'] for group in model['element_groups']})
-            for render in renders
-        }
+        renders, render_visibility, review_cameras = render_views(camera, render_dir)
+        program_render = render_program_volumes(camera, render_dir)
+        renders.append(program_render)
+        render_visibility[program_render] = ['program_volume_contract']
+        overlay_renders, program_volume_review = render_program_volume_overlays(
+            camera, render_dir)
+        renders.extend(overlay_renders)
+        render_visibility.update({
+            filename: ['program_volume_contract', *metadata['semantic_layers']]
+            for filename, metadata in program_volume_review.items()
+        })
     elif render_mode == 'semantic_layers':
         renders, render_visibility = render_semantic_layers(camera, render_dir)
     else:
@@ -501,17 +846,31 @@ def main() -> None:
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
         manifest_path.write_text(json.dumps({
             'producer': 'blender_headless_5_v3',
+            'blender_version': bpy.app.version_string,
             'authority': 'presentation_only',
             'model_id': model['model_id'],
+            'source_model_sha256': source_model_sha256,
+            'source_hash_basis': 'canonical_json_sort_keys_utf8',
+            'native_blend_path': str(blend_path),
+            'native_blend_sha256': sha256(blend_path),
             'score_id': model['score_id'],
             'element_count': sum(len(g['instances']) for g in model['element_groups']),
             'element_groups': len(model['element_groups']),
             'merged_objects': len(stats),
             'total_faces': sum(s['faces'] for s in stats.values()),
             'objects': stats,
+            'program_volume_contract': {
+                'collection': PROGRAM_VOLUME_COLLECTION,
+                'exportable': False,
+                'review_camera': PROGRAM_VOLUME_REVIEW_CAMERA,
+                'review_renders': program_volume_review,
+                **program_volume_stats,
+            },
             'renders': renders,
+            'render_sha256': {name: sha256(render_dir / name) for name in renders},
             'render_mode': render_mode,
             'render_visibility': render_visibility,
+            'review_cameras': review_cameras,
             'glb_sha256': sha256(glb_path) if glb_path else None,
         }, indent=2), encoding='utf-8')
 

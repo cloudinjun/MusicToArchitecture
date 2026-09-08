@@ -417,6 +417,9 @@ class ModelAssetV3(BaseModel):
     model_json_path: str
     asset_sha256: str = Field(pattern=r'^[0-9a-f]{64}$')
     manifest_sha256: str = Field(pattern=r'^[0-9a-f]{64}$')
+    native_blend_sha256: str = Field(pattern=r'^[0-9a-f]{64}$')
+    source_model_sha256: str = Field(pattern=r'^[0-9a-f]{64}$')
+    source_hash_basis: Literal['canonical_json_sort_keys_utf8'] = 'canonical_json_sort_keys_utf8'
     element_count: int
     merged_object_count: int
     face_count: int
@@ -430,7 +433,7 @@ class DrawingOnSheetRef(BaseModel):
 
     id: str
     title: str
-    kind: Literal['plan', 'section', 'elevation']
+    kind: Literal['plan', 'section', 'elevation', 'detail']
     scale: str
     subtitle: str = ''
     content_mm: list[float] = Field(default_factory=list)
@@ -438,6 +441,11 @@ class DrawingOnSheetRef(BaseModel):
     elements_cut: int = 0
     elements_drawn: int = 0
     omitted_by_scale: dict[str, int] = Field(default_factory=dict)
+    # Present only on model-derived detail cuts. Kept as JSON-shaped evidence here so
+    # the drawing module owns the readiness schema and this transport model stays free
+    # of a circular dependency on the cutter.
+    detail_audit: dict[str, object] | None = None
+    detail_readiness: dict[str, object] | None = None
 
 
 class DrawingSheetRef(BaseModel):
@@ -450,7 +458,7 @@ class DrawingSheetRef(BaseModel):
 
     id: str
     title: str
-    kind: Literal['plan', 'section', 'elevation', 'cover']
+    kind: Literal['plan', 'section', 'elevation', 'detail', 'cover']
     scale: str
     subtitle: str = ''
     url: str
@@ -502,6 +510,10 @@ class GenerationResponse(BaseModel):
     generated_at: str = ''
     compiler_source_sha256: str = ''
     elapsed_seconds: float | None = None
+    # Where the music itself can be fetched back, so the run can be heard beside the
+    # building it produced: `/api/runs/{run_id}/audio` for a stored live run, a
+    # `web/public` path for the frozen demo, None for a run whose audio was not kept.
+    audio_url: str | None = None
     audio_features: AudioFeatures
     architectural_score: ArchitecturalScore
     building_model: BuildingModel
@@ -514,6 +526,9 @@ class GenerationResponse(BaseModel):
     # v3 is the member-level model the viewport draws. Neither derives from the other,
     # so a v3 failure never blocks the accepted-state chain.
     model_asset_v3: ModelAssetV3 | None = None
+    stage_errors: dict[str, str] = Field(default_factory=dict)
+    # Explicit v3 input; v2 remains a parallel legacy companion, not site evidence.
+    project_brief: dict | None = None
     translation_report: 'TranslationReport | None' = None
     datum_coverage: float | None = None
     datum_waiting_on: list[str] = Field(default_factory=list)

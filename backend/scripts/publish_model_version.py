@@ -20,11 +20,17 @@ import copy
 import hashlib
 import json
 import shutil
+import os
+from contextlib import contextmanager
+from tempfile import TemporaryDirectory
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from backend.app.version import COMPILER_VERSION, compiler_source_fingerprint
+from backend.app.asset_lineage import (
+    SOURCE_HASH_BASIS, validate_blender_lineage, validate_render_lineage,
+)
 from backend.scripts.measure_visual_geometry import measure as measure_visual_geometry
 
 
@@ -33,6 +39,23 @@ DEFAULT_DEMO = ROOT / "web" / "public" / "reports" / "demo_run.json"
 VERSIONS = ROOT / "artifacts" / "model_versions"
 LATEST = VERSIONS / "latest"
 ARCHIVE = VERSIONS / "archive"
+
+
+@contextmanager
+def _publication_lock():
+    """One writer across Codex windows; a stale lock requires explicit inspection."""
+    VERSIONS.mkdir(parents=True, exist_ok=True)
+    lock = VERSIONS / '.publication.lock'
+    try:
+        stream = lock.open('x', encoding='utf-8')
+    except FileExistsError as error:
+        raise ValueError(f'Another publication owns {lock}; inspect its recorded process') from error
+    try:
+        with stream:
+            json.dump({'pid': os.getpid(), 'created_at': datetime.now(timezone.utc).isoformat()}, stream)
+        yield
+    finally:
+        lock.unlink()
 
 
 def _sha256(path: Path) -> str:
@@ -222,6 +245,12 @@ def _collect_bundle(
     glb = _from_url(ROOT, asset_v3["asset_url"])
     glb_manifest = _from_url(ROOT, asset_v3["manifest_url"])
     blend = _inside(ROOT, ROOT / asset_v3["native_blend_path"])
+    export_manifest = json.loads(glb_manifest.read_text(encoding="utf-8"))
+    source_hash, blend_hash = validate_blender_lineage(model, export_manifest, blend, glb)
+    if (asset_v3.get("source_model_sha256") != source_hash
+            or asset_v3.get("source_hash_basis") != SOURCE_HASH_BASIS
+            or asset_v3.get("native_blend_sha256") != blend_hash):
+        raise ValueError("payload Blender lineage is stale or missing")
     expected_hashes = {
         glb: asset_v3["asset_sha256"],
         glb_manifest: asset_v3["manifest_sha256"],
@@ -261,6 +290,9 @@ def _collect_bundle(
 
     for render in payload.get("renders", []):
         source = _from_url(ROOT, render["url"])
+        if source.name != render["filename"]:
+            raise ValueError("render filename and URL disagree")
+        validate_render_lineage(export_manifest, source)
         assets.append(_asset(source, destination, f"renders/{render['filename']}",
                              f"render:{render['id']}", "presentation_only"))
     for sheet in payload.get("drawing_sheets", []):
@@ -523,6 +555,12 @@ def _publish_web_latest(payload: dict[str, Any], archive_dir: Path) -> None:
 
 def publish(demo_path: Path = DEFAULT_DEMO, *, rhino_3dm: Path | None = None,
             rhino_manifest: Path | None = None) -> dict[str, Any]:
+    with _publication_lock():
+        return _publish(demo_path, rhino_3dm=rhino_3dm, rhino_manifest=rhino_manifest)
+
+
+def _publish(demo_path: Path, *, rhino_3dm: Path | None,
+             rhino_manifest: Path | None) -> dict[str, Any]:
     demo_path = _inside(ROOT, demo_path)
     payload = json.loads(demo_path.read_text(encoding="utf-8"))
     scratch = VERSIONS / ".archive-next"
@@ -530,6 +568,8 @@ def publish(demo_path: Path = DEFAULT_DEMO, *, rhino_3dm: Path | None = None,
         shutil.rmtree(scratch)
     scratch.mkdir(parents=True)
     manifest = _collect_bundle(payload, demo_path, scratch, rhino_3dm, rhino_manifest)
+    if manifest['compiler_source_sha256'] != compiler_source_fingerprint():
+        raise ValueError('Compiler source changed during publication')
     _write_json(scratch / "manifest.json", manifest)
     _verify_bundle(scratch, manifest)
     archive_dir = ARCHIVE / manifest["version_id"]
@@ -558,6 +598,115 @@ def publish(demo_path: Path = DEFAULT_DEMO, *, rhino_3dm: Path | None = None,
     }
     _write_json(VERSIONS / "latest.json", pointer)
     return pointer
+
+
+def archive_candidate(demo_path: Path, *, rhino_3dm: Path,
+                      rhino_manifest: Path, review_directory: Path) -> dict[str, Any]:
+    """Store both native files and their evidence without granting Rhino acceptance.
+
+    Candidate packages never enter latest or the public demo. Their own pointer is
+    labelled candidate, and every package directory is immutable.
+    """
+    with _publication_lock():
+        demo_path, rhino_3dm, rhino_manifest, review_directory = (
+            _inside(ROOT, path) for path in
+            (demo_path, rhino_3dm, rhino_manifest, review_directory))
+        payload = json.loads(demo_path.read_text(encoding='utf-8'))
+        model_file = _inside(ROOT, ROOT / payload['model_asset_v3']['model_json_path'])
+        rhino = json.loads(rhino_manifest.read_text(encoding='utf-8'))
+        expected = {
+            'status': 'geometry_candidate', 'authority': 'candidate',
+            'representation': 'complete', 'run_id': payload['run_id'],
+            'model_id': payload['analysis']['model_id'],
+            'source_sha256': _sha256(model_file), 'geometry_sha256': _sha256(rhino_3dm),
+        }
+        if rhino_3dm.suffix.lower() != '.3dm' or any(
+                rhino.get(key) != value for key, value in expected.items()):
+            raise ValueError('Rhino candidate does not match the complete model and run')
+        required_checks = ('file_geometry', 'saved_file_reopened', 'source_identity',
+                           'geometry_serialization')
+        if any(rhino.get('verification', {}).get(key) != 'passed' for key in required_checks):
+            raise ValueError('Rhino candidate file verification is incomplete')
+        review_path = review_directory / 'views_manifest.json'
+        review = json.loads(review_path.read_text(encoding='utf-8'))
+        binding = review.get('source', {})
+        expected_review = {
+            'model_id': expected['model_id'], 'run_id': expected['run_id'],
+            'source_model_sha256': payload['model_asset_v3']['source_model_sha256'],
+            'native_blend_sha256': payload['model_asset_v3']['native_blend_sha256'],
+        }
+        if any(binding.get(key) != value for key, value in expected_review.items()):
+            raise ValueError('Diagnostic review does not belong to this model and run')
+        if (review.get('status') != 'rendered_pending_visual_review'
+                or binding.get('run_contract_sha256') != _sha256(demo_path)
+                or not review.get('views')):
+            raise ValueError('Diagnostic review is incomplete or its run contract is stale')
+        with TemporaryDirectory(prefix='.candidate-', dir=VERSIONS) as temp:
+            stage = Path(temp)
+            manifest = _collect_bundle(payload, demo_path, stage, None, None)
+            additions = [
+                _asset(demo_path, stage, 'contracts/generation_response.json',
+                       'original_run_contract', 'validation_report'),
+                _asset(rhino_3dm, stage, 'rhino/model.3dm', 'rhino_candidate_model', 'candidate'),
+                _asset(rhino_manifest, stage, 'rhino/candidate_manifest.json',
+                       'rhino_candidate_manifest', 'candidate'),
+                _asset(review_path, stage, 'review/views_manifest.json',
+                       'diagnostic_review_manifest', 'diagnostic_presentation_only'),
+            ]
+            snapshot_manifest = ROOT / 'source_snapshot.json'
+            if snapshot_manifest.is_file():
+                from backend.scripts.freeze_generation_source import verify
+                snapshot = verify(ROOT)
+                manifest['source_inventory_sha256'] = snapshot['inventory_sha256']
+                additions.append(_asset(snapshot_manifest, stage, 'contracts/source_snapshot.json',
+                                        'generation_source_inventory', 'validation_report'))
+            judgment_path = review_directory / 'visual_review.json'
+            if judgment_path.is_file():
+                judgment = json.loads(judgment_path.read_text(encoding='utf-8'))
+                if judgment.get('source') != binding:
+                    raise ValueError('Visual judgment belongs to a different evidence source')
+                reviewed = judgment.get('reviewed_images', {})
+                hashes = {view['image']:view['image_sha256'] for view in review['views']}
+                if reviewed != hashes:
+                    raise ValueError('Visual judgment does not cover these exact diagnostic images')
+                additions.append(_asset(judgment_path, stage, 'review/visual_review.json',
+                                        'visual_judgment', 'validation_report'))
+            for view in review['views']:
+                filename = view['image']
+                if Path(filename).name != filename:
+                    raise ValueError('Review images must use local filenames')
+                source = review_directory / filename
+                if _sha256(source) != view['image_sha256'] or view.get('source') != binding:
+                    raise ValueError(f'Diagnostic image is stale: {source}')
+                additions.append(_asset(source, stage, f'review/{filename}',
+                                        'diagnostic_view', 'diagnostic_presentation_only'))
+            manifest['assets'] = sorted(manifest['assets'] + additions, key=lambda a: a['path'])
+            manifest['bundle_sha256'] = _bundle_signature(manifest['assets'])
+            manifest['version_id'] = f"{manifest['version_id'].rsplit('-', 1)[0]}-{manifest['bundle_sha256'][:12]}"
+            manifest['status'] = 'archived_candidate'
+            manifest['authority']['rhino'].update(
+                status='candidate', authority='candidate',
+                files=['rhino/model.3dm', 'rhino/candidate_manifest.json'],
+                blocked_by=['RHINO_INTERACTIVE_ACCEPTANCE_NOT_RECORDED'])
+            _write_json(stage / 'rhino/status.json', manifest['authority']['rhino'])
+            _write_json(stage / 'manifest.json', manifest)
+            _verify_recorded_assets(stage, manifest)
+            if manifest['compiler_source_sha256'] != compiler_source_fingerprint():
+                raise ValueError('Compiler source changed during candidate archiving')
+            target = VERSIONS / 'candidates' / manifest['version_id']
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if target.exists():
+                existing = json.loads((target / 'manifest.json').read_text(encoding='utf-8'))
+                _verify_recorded_assets(target, existing)
+                if existing['bundle_sha256'] != manifest['bundle_sha256']:
+                    raise ValueError('Immutable candidate already differs')
+            else:
+                stage.replace(target)
+        pointer = {key: manifest[key] for key in (
+            'version_id', 'run_id', 'v3_model_id', 'compiler_source_sha256', 'bundle_sha256')}
+        pointer.update(status='candidate', manifest=f"candidates/{manifest['version_id']}/manifest.json")
+        _write_json(VERSIONS / 'current_candidate.json', pointer)
+        return pointer
 
 
 def check() -> dict[str, Any]:
@@ -592,15 +741,58 @@ def check() -> dict[str, Any]:
     }
 
 
+def adopt_snapshot_candidate(snapshot: Path, candidate: Path) -> dict[str, Any]:
+    """Expose a frozen run's candidate pair in the shared version directory."""
+    from backend.scripts.freeze_generation_source import verify
+    snapshot, candidate = _inside(ROOT,snapshot), _inside(ROOT,candidate)
+    candidate.relative_to(snapshot/'artifacts/model_versions/candidates')
+    metadata = verify(snapshot)
+    manifest = json.loads((candidate/'manifest.json').read_text(encoding='utf-8'))
+    if (manifest.get('status') != 'archived_candidate'
+            or manifest.get('compiler_source_sha256') != metadata['compiler_source_sha256']):
+        raise ValueError('Candidate does not belong to the fixed source snapshot')
+    _verify_recorded_assets(candidate,manifest)
+    if manifest['bundle_sha256'] != _bundle_signature(manifest['assets']):
+        raise ValueError('Candidate inventory is stale')
+    with _publication_lock():
+        target = VERSIONS/'candidates'/manifest['version_id']
+        if target.exists():
+            existing = json.loads((target/'manifest.json').read_text(encoding='utf-8'))
+            if existing['bundle_sha256'] != manifest['bundle_sha256']:
+                raise ValueError('Immutable candidate already differs')
+            _verify_recorded_assets(target,existing)
+        else:
+            with TemporaryDirectory(prefix='.adopt-',dir=VERSIONS) as temp:
+                stage = Path(temp)/'bundle'
+                shutil.copytree(candidate,stage)
+                _verify_recorded_assets(stage,manifest)
+                stage.replace(target)
+        pointer = {key:manifest[key] for key in (
+            'version_id','run_id','v3_model_id','compiler_source_sha256','bundle_sha256')}
+        pointer.update(status='candidate',manifest=f"candidates/{manifest['version_id']}/manifest.json",
+            source_snapshot=snapshot.relative_to(ROOT).as_posix(),
+            source_inventory_sha256=metadata['inventory_sha256'])
+        _write_json(VERSIONS/'current_candidate.json',pointer)
+        return pointer
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--demo", type=Path, default=DEFAULT_DEMO)
     parser.add_argument("--rhino-3dm", type=Path)
     parser.add_argument("--rhino-manifest", type=Path)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument('--archive-candidate', action='store_true')
+    parser.add_argument('--review-directory', type=Path)
     args = parser.parse_args()
-    result = check() if args.check else publish(
-        args.demo, rhino_3dm=args.rhino_3dm, rhino_manifest=args.rhino_manifest)
+    if args.archive_candidate:
+        if not all((args.rhino_3dm, args.rhino_manifest, args.review_directory)):
+            parser.error('--archive-candidate requires Rhino files and --review-directory')
+        result = archive_candidate(args.demo, rhino_3dm=args.rhino_3dm,
+            rhino_manifest=args.rhino_manifest, review_directory=args.review_directory)
+    else:
+        result = check() if args.check else publish(
+            args.demo, rhino_3dm=args.rhino_3dm, rhino_manifest=args.rhino_manifest)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 

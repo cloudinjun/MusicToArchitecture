@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
@@ -20,7 +20,9 @@ from .blender_export import BlenderExportError
 from .drawings import DRAWING_DIRECTORY
 from .models import GenerationResponse, RunSummary
 from .pipeline import RENDER_DIRECTORY, compile_generation
-from .run_store import list_runs, load_run, store_run
+from .project_brief import ProjectBrief
+from .legacy_program_layout import LegacyLayoutControls
+from .run_store import audio_path, list_runs, load_run, store_audio, store_run
 
 MAX_UPLOAD_BYTES = 30 * 1024 * 1024
 
@@ -83,7 +85,9 @@ def run(run_id: str) -> GenerationResponse:
 
 
 @app.post("/api/generate", response_model=GenerationResponse)
-async def generate(file: UploadFile = File(...)) -> GenerationResponse:
+async def generate(file: UploadFile = File(...),
+                   project_brief: str | None = Form(None),
+                   layout_controls: str | None = Form(None)) -> GenerationResponse:
     filename = Path(file.filename or "upload.mp3").name
     if Path(filename).suffix.lower() != ".mp3":
         raise HTTPException(status_code=415, detail="Only MP3 uploads are supported")
@@ -95,23 +99,49 @@ async def generate(file: UploadFile = File(...)) -> GenerationResponse:
         raise HTTPException(status_code=413, detail="The MP3 exceeds the 30 MB MVP limit")
 
     try:
+        inputs = {}
+        if project_brief is not None:
+            inputs['project_brief'] = ProjectBrief.model_validate_json(project_brief)
+        if layout_controls is not None:
+            inputs['legacy_controls'] = LegacyLayoutControls.model_validate_json(layout_controls)
+        if layout_controls is not None and project_brief is None:
+            raise ValueError('layout_controls requires project_brief')
         with TemporaryDirectory(prefix="music-to-architecture-") as temp_dir:
             audio_path = Path(temp_dir) / "source.mp3"
             audio_path.write_bytes(payload)
-            response = await asyncio.to_thread(compile_generation, audio_path, filename)
+            response = await asyncio.to_thread(compile_generation, audio_path, filename, **inputs)
     except BlenderExportError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+    except RuntimeError as error:
+        # The pipeline's own refusals — a run whose compiler source changed underneath
+        # it — carry their reason, and the reason is what the person should read: it
+        # says to run again, which "could not be decoded" does not.
+        raise HTTPException(status_code=409, detail=str(error)) from error
     except Exception as error:
         raise HTTPException(
             status_code=422,
             detail="The MP3 could not be decoded or analyzed") from error
 
-    # Kept so the run can be reopened and compared. A storage failure is not a
+    # Kept so the run can be reopened and compared — the recording with it, so the
+    # run can be heard beside the building it produced. A storage failure is not a
     # generation failure: the caller already has the payload in hand.
     try:
+        if await asyncio.to_thread(store_audio, response.run_id, payload) is not None:
+            response.audio_url = f"/api/runs/{response.run_id}/audio"
         await asyncio.to_thread(store_run, response)
     except OSError:
         pass
     return response
+
+
+@app.get("/api/runs/{run_id}/audio")
+def run_audio(run_id: str) -> FileResponse:
+    """The MP3 a stored run was compiled from, for playback beside its model."""
+    path = audio_path(run_id)
+    if path is None:
+        raise HTTPException(status_code=400, detail="Malformed run id")
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="No recording is stored for that run")
+    return FileResponse(path, media_type="audio/mpeg", filename=f"{run_id}.mp3")

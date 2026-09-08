@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1760" height="692" viewBox="0 0 1760 692" font-family="'Times New Roman','Liberation Serif','Nimbus Roman',serif">
+<rect width="1760" height="692" fill="#ffffff"/>
+<text x="30" y="30" font-size="17" font-weight="bold" fill="#000" letter-spacing="1.2">MEASURE</text>
+<line x1="30" y1="42" x2="410" y2="42" stroke="#000" stroke-width="1"/>
+<rect x="30" y="54" width="380" height="32" fill="#595959"/>
+<text x="220.0" y="75" font-size="15" fill="#ffffff" text-anchor="middle">Twelve features, ten dimensions</text>
+<image x="30" y="100" width="380" height="253" preserveAspectRatio="xMidYMid slice" xlink:href="assets/01_score_strip.png"/>
+<rect x="30" y="100" width="380" height="253" fill="none" stroke="#bfbfbf" stroke-width="1"/>
+<text x="30" y="373" font-size="13" fill="#000">Recording read as six measures</text>
+<image x="30" y="395" width="380" height="253" preserveAspectRatio="xMidYMid slice" xlink:href="assets/02_signature.png"/>
+<rect x="30" y="395" width="380" height="253" fill="none" stroke="#bfbfbf" stroke-width="1"/>
+<text x="30" y="668" font-size="13" fill="#000">Ten dimensions, one signature</text>
+<line x1="420" y1="384.0" x2="451.0" y2="384.0" stroke="#6b6b6b" stroke-width="2"/><polygon points="460,384.0 451.0,379.4 451.0,388.6" fill="#6b6b6b"/>
+<text x="470" y="30" font-size="17" font-weight="bold" fill="#000" letter-spacing="1.2">REGISTER</text>
+<line x1="470" y1="42" x2="850" y2="42" stroke="#000" stroke-width="1"/>
+<rect x="470" y="54" width="380" height="32" fill="#595959"/>
+<text x="660.0" y="75" font-size="15" fill="#ffffff" text-anchor="middle">Datums, lattice, volumes</text>
+<image x="470" y="100" width="380" height="253" preserveAspectRatio="xMidYMid slice" xlink:href="assets/03_program_volumes.png"/>
+<rect x="470" y="100" width="380" height="253" fill="none" stroke="#bfbfbf" stroke-width="1"/>
+<text x="470" y="373" font-size="13" fill="#000">Full-height room volumes</text>
+<image x="470" y="395" width="380" height="253" preserveAspectRatio="xMidYMid slice" xlink:href="assets/04_program_layer.png"/>
+<rect x="470" y="395" width="380" height="253" fill="none" stroke="#bfbfbf" stroke-width="1"/>
+<text x="470" y="668" font-size="13" fill="#000">Rooms allocated on every plate</text>
+<line x1="860" y1="384.0" x2="891.0" y2="384.0" stroke="#6b6b6b" stroke-width="2"/><polygon points="900,384.0 891.0,379.4 891.0,388.6" fill="#6b6b6b"/>
+<text x="910" y="30" font-size="17" font-weight="bold" fill="#000" letter-spacing="1.2">COMPILE</text>
+<line x1="910" y1="42" x2="1290" y2="42" stroke="#000" stroke-width="1"/>
+<rect x="910" y="54" width="380" height="32" fill="#595959"/>
+<text x="1100.0" y="75" font-size="15" fill="#ffffff" text-anchor="middle">Union, plates, elements</text>
+<image x="910" y="100" width="380" height="253" preserveAspectRatio="xMidYMid slice" xlink:href="assets/05_structure_layer.png"/>
+<rect x="910" y="100" width="380" height="253" fill="none" stroke="#bfbfbf" stroke-width="1"/>
+<text x="910" y="373" font-size="13" fill="#000">Gravity frame, sized members</text>
+<image x="910" y="395" width="380" height="253" preserveAspectRatio="xMidYMid slice" xlink:href="assets/06_building.png"/>
+<rect x="910" y="395" width="380" height="253" fill="none" stroke="#bfbfbf" stroke-width="1"/>
+<text x="910" y="668" font-size="13" fill="#000">21,886 elements</text>
+<line x1="1300" y1="384.0" x2="1331.0" y2="384.0" stroke="#6b6b6b" stroke-width="2"/><polygon points="1340,384.0 1331.0,379.4 1331.0,388.6" fill="#6b6b6b"/>
+<text x="1350" y="30" font-size="17" font-weight="bold" fill="#000" letter-spacing="1.2">ISSUE</text>
+<line x1="1350" y1="42" x2="1730" y2="42" stroke="#000" stroke-width="1"/>
+<rect x="1350" y="54" width="380" height="32" fill="#595959"/>
+<text x="1540.0" y="75" font-size="15" fill="#ffffff" text-anchor="middle">Model, sheets, reports</text>
+<image x="1350" y="100" width="380" height="253" preserveAspectRatio="xMidYMid slice" xlink:href="assets/07_sheet.png"/>
+<rect x="1350" y="100" width="380" height="253" fill="none" stroke="#bfbfbf" stroke-width="1"/>
+<text x="1350" y="373" font-size="13" fill="#000">13 sheets, one paper size</text>
+<image x="1350" y="395" width="380" height="253" preserveAspectRatio="xMidYMid slice" xlink:href="assets/08_workbench.png"/>
+<rect x="1350" y="395" width="380" height="253" fill="none" stroke="#bfbfbf" stroke-width="1"/>
+<text x="1350" y="668" font-size="13" fill="#000">Every report on one model</text>
+</svg>

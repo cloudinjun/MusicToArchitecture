@@ -43,6 +43,9 @@ import pathlib
 import math
 import re
 
+from shapely.geometry import LineString as PlanLineString
+from shapely.geometry.base import BaseGeometry
+
 from .datums import Lattice
 from .drawing_geometry import (
     Plane, Point2, Solid, ViewFrame, box_solid, convex_hull, extrusion_rings,
@@ -61,6 +64,7 @@ from .drawing_standard import (
 from .geometry import (
     BoxGeometry, ExtrusionGeometry, MemberGeometry, ProfileSpec, QuadGeometry, Vector2,
 )
+from .physical_geometry import PhysicalProjection, physical_projection
 from .version import COMPILER_VERSION
 
 
@@ -187,16 +191,24 @@ class DrawingAudit:
 class Drawing:
     id: str
     title: str
-    kind: str                    # 'plan' | 'section' | 'elevation'
+    kind: str                    # 'plan' | 'section' | 'elevation' | 'detail'
     standard: DrawingStandard
     marks: list[Mark]
     annotations: list[Annotation]
     extents: tuple[float, float, float, float]   # u_min, v_min, u_max, v_max, metres
     audit: DrawingAudit
     subtitle: str = ''
+    # Annotation omissions are separate from element coverage: the physical door,
+    # room or stair may still be drawn while a symbol cannot be derived honestly.
+    annotation_findings: list[str] = field(default_factory=list)
     # How the drawing is issued. None until the set lays itself out, in which case the
     # sheet is sized to its content and carries the plain title line.
     sheet: SheetSpec | None = None
+    # Detail-only evidence. Kept on the drawing because one sheet may compose several
+    # scales and each crop earns its own audit/readiness status.
+    detail_audit: object | None = None
+    detail_readiness: object | None = None
+    detail_cut: tuple[str, float, float] | None = None  # spec id, bearing, offset
 
     @property
     def content_mm(self) -> tuple[float, float]:
@@ -332,6 +344,7 @@ class Drawing:
     def _title_block(self, width: float, height: float, block_mm: float,
                      margin_mm: float) -> str:
         top = height - block_mm
+        subtitle = _caption_summary(self)
         return (
             f'<g font-family="Helvetica, Arial, sans-serif">'
             f'<line x1="{margin_mm:.2f}" y1="{top:.2f}" '
@@ -340,9 +353,9 @@ class Drawing:
             f'<text x="{margin_mm:.2f}" y="{top + 8:.2f}" font-size="4.2" '
             f'fill="#000000">{_escape(self.title)}</text>'
             f'<text x="{margin_mm:.2f}" y="{top + 14:.2f}" font-size="2.6" '
-            f'fill="#3a3a3a">{_escape(self.subtitle)}</text>'
+            f'fill="#3a3a3a">{_escape(subtitle)}</text>'
             f'<text x="{width - margin_mm:.2f}" y="{top + 8:.2f}" font-size="3.4" '
-            f'fill="#000000" text-anchor="end">{self.standard.scale.name} @ A1</text>'
+            f'fill="#000000" text-anchor="end">{self.standard.scale.name}</text>'
             f'<text x="{width - margin_mm:.2f}" y="{top + 14:.2f}" font-size="2.4" '
             f'fill="#3a3a3a" text-anchor="end">{_escape(self.id)}</text>'
             f'</g>')
@@ -352,15 +365,36 @@ def _escape(text: str) -> str:
     return (text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'))
 
 
+def _caption_summary(drawing: Drawing, max_chars: int = 96) -> str:
+    """A sheet caption, while the full trace remains in the manifest.
+
+    Selection rationales and readiness evidence are intentionally verbose in JSON.
+    Printing that whole record on one SVG line made the text cross the drawing and the
+    frame.  The sheet carries the bounded reading; the manifest beside it carries the
+    complete sentence.
+    """
+    if drawing.detail_readiness is not None:
+        status = str(getattr(drawing.detail_readiness, 'status', '')).replace('_', ' ')
+        summary = (f'Model-derived {drawing.standard.scale.name} section · '
+                   f'{status} · professional review required')
+        return (summary if len(summary) <= max_chars
+                else summary[:max_chars - 1].rstrip() + '…')
+    clauses = [clause.strip() for clause in drawing.subtitle.split(' · ') if clause.strip()]
+    summary = ' · '.join(clauses[:2])
+    return (summary if len(summary) <= max_chars
+            else summary[:max_chars - 1].rstrip() + '…')
+
+
 # --- turning elements into solids --------------------------------------------------
 
-def _solids_for(geometry, profiles: dict[str, ProfileSpec]) -> list[Solid]:
+def _solids_for(geometry, profiles: dict[str, ProfileSpec],
+                thickness_m: float | None = None) -> list[Solid]:
     if isinstance(geometry, MemberGeometry):
         return member_solids(geometry, profiles.get(geometry.profile))
     if isinstance(geometry, BoxGeometry):
         return [box_solid(geometry)]
     if isinstance(geometry, QuadGeometry):
-        return [quad_solid(geometry)]
+        return [quad_solid(geometry, thickness_m)]
     return []
 
 
@@ -467,7 +501,8 @@ def compile_drawing(
     if spread <= 1e-6:
         for group in model.element_groups:
             for instance in group.instances:
-                for solid in _solids_for(instance.geometry, profiles):
+                for solid in _solids_for(instance.geometry, profiles,
+                                         getattr(group, 'thickness_m', None)):
                     for vertex in solid.vertices:
                         spread = max(spread, frame.depth(vertex))
     if keep is not None:
@@ -490,7 +525,8 @@ def compile_drawing(
                 outside += 1
                 continue
             produced = _marks_for(instance, group.kind, role, standard, plane, frame,
-                                  spread, profiles, keep, above_reach)
+                                  spread, profiles, getattr(group, 'thickness_m', None),
+                                  keep, above_reach)
             if produced is None:
                 outside += 1
                 continue
@@ -503,7 +539,16 @@ def compile_drawing(
                 outside += 1
 
     if clip_rect is not None:
+        produced_ids = {mark.element_id for mark in marks}
         marks = _clip_marks(marks, clip_rect)
+        visible_ids = {mark.element_id for mark in marks}
+        # A detail crop is still a complete account of its view. Elements that
+        # reached the projection but were wholly removed by the crop belong to the
+        # outside-cut bucket; retaining the pre-clip counters made a clipped detail
+        # claim it had drawn elements for which no mark remained on the sheet.
+        outside += len(produced_ids - visible_ids)
+        drawn = len(visible_ids)
+        cut_count = len({mark.element_id for mark in marks if mark.state == 'cut'})
 
     if not marks:
         raise ValueError(f'{drawing_id}: the cut plane passes through nothing')
@@ -596,6 +641,7 @@ def _clip_marks(marks, rect):
 def _marks_for(instance, kind: str, role: DrawingRole, standard: DrawingStandard,
                plane: Plane, frame: ViewFrame, spread: float,
                profiles: dict[str, ProfileSpec],
+               thickness_m: float | None,
                keep: tuple[float, float] | None,
                above_reach: float | None) -> list[Mark] | None:
     geometry = instance.geometry
@@ -637,7 +683,7 @@ def _marks_for(instance, kind: str, role: DrawingRole, standard: DrawingStandard
                 for ring in extrusion_rings(geometry, frame) if len(ring) >= 3]
 
     # --- everything else is one or more convex solids ---------------------------
-    solids = _solids_for(geometry, profiles)
+    solids = _solids_for(geometry, profiles, thickness_m)
     if not solids:
         return None
     any_in_range = False
@@ -780,7 +826,9 @@ def floor_plans(model, standard: DrawingStandard = PLAN_STANDARD, *,
                    else f'Floor plan — {level.id}'),
             subtitle=(f'{level.kind} level, cut {cut_height:.2f} m above '
                       f'FFL {level.z:+.3f} m · overhead shown dashed · '
-                      f'loose furniture at the lightest weight'),
+                      + ('loose furniture at the lightest weight'
+                         if standard.draws('furniture') else
+                         'loose furniture omitted by the issued scale')),
             kind='plan', keep=keep,
             above_reach=1.4 if roof else OVERHEAD_REACH_M,
             clip_rect=_plate_rect(level.plate, frame, cut_z,
@@ -961,7 +1009,8 @@ def building_elevation(model, bearing_deg: float, *, name: str,
                 points = [(point.x, point.y) for point in geometry.boundary]
             else:
                 points = [(vertex[0], vertex[1])
-                          for solid in _solids_for(geometry, profiles)
+                          for solid in _solids_for(geometry, profiles,
+                                                   getattr(group, 'thickness_m', None))
                           for vertex in solid.vertices]
             for x, y in points:
                 nearest = min(nearest, (x - centre[0]) * view[0] + (y - centre[1]) * view[1])
@@ -1064,6 +1113,43 @@ def _pretty(program: str) -> str:
     return program.replace('_', ' ').title()
 
 
+def _program_zone_projection(geometry) -> PhysicalProjection:
+    """Read a program zone from its emitted primitive, including holes and rotation."""
+
+    if not isinstance(geometry, (BoxGeometry, ExtrusionGeometry)):
+        raise ValueError(
+            f'program_zone requires box or extrusion geometry, got '
+            f'{type(geometry).__name__}')
+    return physical_projection(geometry)
+
+
+def _linear_parts(geometry: BaseGeometry) -> list[BaseGeometry]:
+    if geometry.geom_type == 'LineString':
+        return [geometry] if geometry.length > 1.0e-6 else []
+    return [part for child in getattr(geometry, 'geoms', ())
+            for part in _linear_parts(child)]
+
+
+def _section_zone_spans(
+        footprint: BaseGeometry, plane: Plane, frame: ViewFrame) -> list[BaseGeometry]:
+    """Continuous pieces of a real room footprint crossed by a vertical section."""
+
+    ox, oy = plane.origin[:2]
+    dx, dy = frame.right[:2]
+    min_x, min_y, max_x, max_y = footprint.bounds
+    reach = 1.0 + max(
+        math.hypot(x - ox, y - oy)
+        for x in (min_x, max_x) for y in (min_y, max_y))
+    cut = footprint.intersection(PlanLineString([
+        (ox - dx * reach, oy - dy * reach),
+        (ox + dx * reach, oy + dy * reach),
+    ]))
+    return sorted(
+        (part for part in _linear_parts(cut)
+         if footprint.contains(part.interpolate(0.5, normalized=True))),
+        key=lambda part: part.bounds)
+
+
 def annotate_rooms(drawing: Drawing, model, level) -> None:
     """Room name and area, from the program zone that owns the space.
 
@@ -1085,8 +1171,9 @@ def annotate_rooms(drawing: Drawing, model, level) -> None:
         for instance in group.instances:
             if instance.level_id != level.id:
                 continue
-            box = instance.geometry
-            anchor = (box.center.x, box.center.y)
+            projection = _program_zone_projection(instance.geometry)
+            point = projection.footprint.representative_point()
+            anchor = (float(point.x), float(point.y))
             if not (u0 <= anchor[0] <= u1 and v0 <= anchor[1] <= v1):
                 continue
             if any(_inside_ring(anchor, ring) for ring in level.voids):
@@ -1118,30 +1205,25 @@ def annotate_section_rooms(drawing: Drawing, model, plane: Plane, frame: ViewFra
     above = {level.id: (ordered[i + 1].z if i + 1 < len(ordered) else level.z + 3.5)
              for i, level in enumerate(ordered)}
     u0, v0, u1, v1 = drawing.extents
-    nx, ny = abs(plane.normal[0]), abs(plane.normal[1])
-    rx, ry = abs(frame.right[0]), abs(frame.right[1])
     for group in model.element_groups:
         if group.kind != 'program_zone':
             continue
         for instance in group.instances:
-            box = instance.geometry
             level = levels.get(instance.level_id)
             if level is None:
                 continue
-            centre = (box.center.x, box.center.y, box.center.z)
-            half_normal = nx * box.size.x / 2.0 + ny * box.size.y / 2.0
-            if abs(plane.signed(centre)) > half_normal:
-                continue
-            across = rx * box.size.x + ry * box.size.y
-            if across < 3.0:
-                continue
-            u = frame.project(centre)[0]
             v = level.z + (above[level.id] - level.z) * 0.42
-            if not (u0 <= u <= u1 and v0 <= v <= v1):
-                continue
-            drawing.annotations.append(Annotation(
-                'text', label, text=_pretty(group.program).upper(),
-                anchor=(u, v), size_mm=2.6, weight=600))
+            projection = _program_zone_projection(instance.geometry)
+            for span in _section_zone_spans(projection.footprint, plane, frame):
+                if span.length < 3.0:
+                    continue
+                point = span.interpolate(0.5, normalized=True)
+                u = frame.project((float(point.x), float(point.y), level.z))[0]
+                if not (u0 <= u <= u1 and v0 <= v <= v1):
+                    continue
+                drawing.annotations.append(Annotation(
+                    'text', label, text=_pretty(group.program).upper(),
+                    anchor=(u, v), size_mm=2.6, weight=600))
 
 
 def annotate_lifts(drawing: Drawing, model, cut_z: float) -> None:
@@ -1188,7 +1270,7 @@ def annotate_doors(drawing: Drawing, model, level) -> None:
     """
     swing = Stroke(Weight.THIN, Tone.NEAR)
     arc = Stroke(Weight.FINE, Tone.MIDDLE)
-    zones = {instance.id: instance.geometry
+    zones = {instance.id: _program_zone_projection(instance.geometry).footprint
              for group in model.element_groups if group.kind == 'program_zone'
              for instance in group.instances}
     for group in model.element_groups:
@@ -1210,15 +1292,32 @@ def annotate_doors(drawing: Drawing, model, level) -> None:
             zone_id = ('PRG-ZON-' + instance.id.split('PRG-PRT-')[-1]
                        .rsplit('-', 2)[0])
             zone = zones.get(zone_id)
-            sense = 1.0
-            if zone is not None:
-                toward = (zone.center.x - centre[0], zone.center.y - centre[1])
-                if toward[0] * across[0] + toward[1] * across[1] < 0:
-                    sense = -1.0
             hinge = (centre[0] - along[0] * leaf / 2.0,
                      centre[1] - along[1] * leaf / 2.0)
-            tip = (hinge[0] + across[0] * leaf * sense,
-                   hinge[1] + across[1] * leaf * sense)
+            if zone is None:
+                drawing.annotation_findings.append(
+                    f'{instance.id}: door swing unresolved; served program zone '
+                    f'{zone_id} is absent.')
+                continue
+            # Read the opening side from the emitted room footprint. A carved access
+            # pocket can leave both candidate leaves outside the named zone; in that
+            # case the drawing omits the swing symbol instead of inventing a side.
+            candidates = []
+            for candidate_sense in (1.0, -1.0):
+                candidate_tip = (
+                    hinge[0] + across[0] * leaf * candidate_sense,
+                    hinge[1] + across[1] * leaf * candidate_sense)
+                overlap = zone.intersection(
+                    PlanLineString([hinge, candidate_tip])).length
+                candidates.append((float(overlap), candidate_sense, candidate_tip))
+            candidates.sort(reverse=True)
+            if (candidates[0][0] <= 1.0e-4
+                    or abs(candidates[0][0] - candidates[1][0]) <= 1.0e-4):
+                drawing.annotation_findings.append(
+                    f'{instance.id}: door swing unresolved; emitted room geometry '
+                    'does not select one opening side.')
+                continue
+            _, sense, tip = candidates[0]
             drawing.annotations.append(Annotation('line', swing, [hinge, tip]))
             # A quarter arc from the open leaf back to the closed jamb.
             steps = 8
@@ -1708,12 +1807,20 @@ class Sheet:
                 title.split('— ', 1)[-1] for title in titles)
         if self.kind == 'elevation':
             return ' and '.join(title.split(' ')[0] for title in titles) + ' elevations'
+        if self.kind == 'detail':
+            return 'Details — ' + ', '.join(titles)
         return 'Sections ' + ' and '.join(title.split(' ', 1)[-1] for title in titles)
+
+    @property
+    def scale_name(self) -> str:
+        """One shared scale, or the conventional title-block wording for a mixed sheet."""
+        scales = {drawing.standard.scale.name for drawing in self.drawings}
+        return next(iter(scales)) if len(scales) == 1 else 'As noted'
 
     @property
     def subtitle(self) -> str:
         if len(self.placements) == 1:
-            return self.drawings[0].subtitle
+            return _caption_summary(self.drawings[0])
         return (f'{len(self.placements)} drawings on this sheet, each with its own '
                 f'caption, scale bar and audit · '
                 + ' · '.join(drawing.id for drawing in self.drawings))
@@ -1739,7 +1846,7 @@ class Sheet:
         parts.append(frame_and_title(
             self.spec, title=self.title, subtitle=self.subtitle,
             drawing_id=' · '.join(drawing.id for drawing in self.drawings),
-            scale_name=self.drawings[0].standard.scale.name, kind=self.kind))
+            scale_name=self.scale_name, kind=self.kind))
         parts.append('</svg>')
         return '\n'.join(parts)
 
@@ -1750,13 +1857,17 @@ class Sheet:
         content_w, content_h = drawing.content_mm
         top = placement.y + content_h + 4.0
         rule = Stroke(Weight.MEDIUM, Tone.CUT)
+        prefix = f'{drawing.standard.scale.name} · {drawing.id} · '
+        # Helvetica averages about 0.62 em per character. Bound the printable summary
+        # to this drawing's width; the unabridged sentence remains in index.json.
+        max_summary = max(24, int(content_w / (2.2 * 0.62)) - len(prefix))
         parts = [f'<g font-family="{FONT}">',
                  sheet_line(placement.x, top, placement.x + content_w, top, rule),
                  sheet_text(placement.x, top + 5.2, 3.6, drawing.title.upper(),
                             weight=700, spacing=0.4),
                  sheet_text(placement.x, top + 9.2, 2.2,
-                            f'{drawing.standard.scale.name} · {drawing.id} · '
-                            f'{drawing.subtitle}', colour=INK_SOFT),
+                            prefix + _caption_summary(drawing, max_summary),
+                            colour=INK_SOFT),
                  '</g>']
         return '\n'.join(parts)
 
@@ -1794,6 +1905,11 @@ def _pack(drawings: list[Drawing], area: tuple[float, float, float, float]
     for drawing in drawings:
         w, h = drawing.content_mm
         h_total = h + CAPTION_MM
+        if w > area_w + 1e-6 or h_total > area_h + 1e-6:
+            raise ValueError(
+                f'{drawing.id} at {drawing.standard.scale.name} needs '
+                f'{w:.1f} × {h_total:.1f} mm including its caption; the shared '
+                f'drawing area is {area_w:.1f} × {area_h:.1f} mm')
         fits_in_row = (row and row_w + SHEET_GUTTER_MM + w <= area_w
                        and used_h + max(row_h, h_total) <= area_h)
         fits_new_row = (not row or used_h + row_h + SHEET_GUTTER_MM + h_total <= area_h)
@@ -1848,6 +1964,13 @@ def _merge_keys(keys: list[KeyPlan]) -> KeyPlan:
     return merged
 
 
+def _redrawn_content_mm(drawing: Drawing, denominator: int) -> tuple[float, float]:
+    """Paper size of this drawing when the same model marks are redrawn at a new scale."""
+    factor = drawing.standard.scale.denominator / denominator
+    width, height = drawing.content_mm
+    return (width * factor, height * factor)
+
+
 @dataclass
 class DrawingSet:
     """Every drawing issued for one model, and what they collectively cover."""
@@ -1856,6 +1979,7 @@ class DrawingSet:
     plans: list[Drawing]
     sections: list[Drawing]
     elevations: list[Drawing] = field(default_factory=list)
+    details: list[Drawing] = field(default_factory=list)
     section_cuts: tuple[tuple[str, float, float], ...] = ()
     elevation_faces: tuple[tuple[str, float], ...] = ()
     identity: SetIdentity | None = None
@@ -1865,8 +1989,8 @@ class DrawingSet:
 
     @property
     def all(self) -> list[Drawing]:
-        """The cut drawings, in issue order: plans, then elevations, then sections."""
-        return self.plans + self.elevations + self.sections
+        """The cut drawings, in issue order: plans, elevations, sections, details."""
+        return self.plans + self.elevations + self.sections + self.details
 
     def lay_out(self, model) -> None:
         """Put the set on paper: one size, numbered sheets, key plans, a cover.
@@ -1884,7 +2008,9 @@ class DrawingSet:
             facade_grammar_id=getattr(model, 'facade_grammar_id', ''),
             envelope_tectonic_id=getattr(model, 'envelope_tectonic_id', ''),
             compiler_version=COMPILER_VERSION)
-        self.paper = paper_for([drawing.content_mm for drawing in self.all])
+        self.paper = paper_for([
+            (drawing.content_mm[0], drawing.content_mm[1] + CAPTION_MM)
+            for drawing in self.all])
         if self.paper is None:
             # Nothing standard holds the largest drawing at this scale. Each sheet
             # keeps its own size and the manifest says so; cropping would lose marks.
@@ -1905,11 +2031,18 @@ class DrawingSet:
         for index, drawing in enumerate(self.sections):
             name, bearing, offset = self.section_cuts[index]
             keyed[drawing.id] = _section_key(lattice, name, bearing, offset)
+        for drawing in self.details:
+            if drawing.detail_cut is None:
+                keyed[drawing.id] = _footprint_key(lattice)
+                continue
+            name, bearing, offset = drawing.detail_cut
+            keyed[drawing.id] = _section_key(lattice, name, bearing, offset)
 
         self.sheets = []
         for kind, drawings, series in (('plan', self.plans, 1),
                                        ('elevation', self.elevations, 2),
-                                       ('section', self.sections, 3)):
+                                       ('section', self.sections, 3),
+                                       ('detail', self.details, 4)):
             for index, placements in enumerate(_pack(drawings, area)):
                 number = f'A-{series}{index + 1:02d}'
                 key = _merge_keys([keyed[p.drawing.id] for p in placements])
@@ -1944,7 +2077,6 @@ class DrawingSet:
         from .drawing_sheet import cover_miniature_area
         area_x, area_y, area_w, area_h = cover_miniature_area(self.paper)
         denominator = 400
-        factor = self.all[0].standard.scale.denominator / denominator if self.all else 1.0
         gutter, caption = 8.0, 7.0
         parts = [f'<g font-family="{FONT}">']
         x = area_x
@@ -1952,8 +2084,9 @@ class DrawingSet:
         row_h = 0.0
         label = Stroke(Weight.THIN, Tone.CUT)
         for drawing in self.all:
-            w, h = drawing.content_mm
-            w, h = w * factor, h * factor
+            # Drawings on a detail sheet may be 1:20 and 1:10. The cover redraws each
+            # at 1:400, so its placement size follows that drawing's own denominator.
+            w, h = _redrawn_content_mm(drawing, denominator)
             if x > area_x and x + w > area_x + area_w:
                 x = area_x
                 y += row_h + gutter
@@ -2005,7 +2138,9 @@ class DrawingSet:
         faces = len(self.elevations)
         return (
             f'Plans, {faces} elevations and {len(self.sections)} sections, all cut or '
-            'projected from one model. Drawn means the element produced at least one '
+            f'projected from one model, plus {len(self.details)} student-review detail '
+            'sections. Detail readiness retains every missing layer and requires '
+            'professional review. Drawn means the element produced at least one '
             'mark on some sheet; an element wholly overpainted by nearer work is still '
             'drawn. On no cut is what no plane reached and no face showed.')
 
@@ -2031,7 +2166,7 @@ class DrawingSet:
 
     @staticmethod
     def _drawing_row(drawing: Drawing) -> dict:
-        return {
+        row = {
             'id': drawing.id,
             'title': drawing.title,
             'kind': drawing.kind,
@@ -2043,6 +2178,13 @@ class DrawingSet:
             'elements_drawn': drawing.audit.elements_drawn,
             'omitted_by_scale': drawing.audit.omitted_by_scale,
         }
+        if drawing.detail_audit is not None:
+            row['detail_audit'] = drawing.detail_audit.model_dump(mode='json')
+        if drawing.detail_readiness is not None:
+            row['detail_readiness'] = drawing.detail_readiness.model_dump(mode='json')
+        if drawing.annotation_findings:
+            row['annotation_findings'] = list(drawing.annotation_findings)
+        return row
 
     def _sheet_rows(self) -> list[dict]:
         """One row per issued sheet, each carrying the drawings placed on it.
@@ -2068,7 +2210,7 @@ class DrawingSet:
                 drawings = sheet.drawings
                 rows.append({
                     'id': sheet.id, 'sheet_number': sheet.number, 'kind': sheet.kind,
-                    'title': sheet.title, 'scale': drawings[0].standard.scale.name,
+                    'title': sheet.title, 'scale': sheet.scale_name,
                     'subtitle': sheet.subtitle, 'paper': self.paper,
                     'sheet_mm': [round(value, 1) for value in sheet.spec.paper_mm],
                     'content_mm': [round(value, 1) for value in sheet.spec.paper_mm],
@@ -2095,13 +2237,16 @@ class DrawingSet:
         """
         account = self.element_coverage(model)
         return {
-            'schema_version': 'mta.drawings/1.1',
+            'schema_version': 'mta.drawings/1.2',
             'model_id': self.model_id,
             'paper': self.paper or 'custom',
             'sheets': self._sheet_rows(),
             'element_account': account,
             'accounted_for': (account['drawn'] + account['omitted_by_scale']
                               + account['on_no_cut']) == account['total'],
+            'annotation_findings': [
+                {'drawing_id': drawing.id, 'findings': list(drawing.annotation_findings)}
+                for drawing in self.all if drawing.annotation_findings],
             'limitation': self.limitation,
         }
 
@@ -2127,20 +2272,47 @@ def issue_drawings(model, *, sections: tuple[tuple[str, float, float], ...] = (
     # marks on the plans and the sections themselves agree.
     resolved = tuple((name, bearing, resolve_section_offset(model, bearing, offset))
                      for name, bearing, offset in sections)
-    issued = DrawingSet(
-        model_id=model.model_id,
-        plans=floor_plans(model, section_marks=resolved),
-        elevations=[building_elevation(model, bearing, name=name)
-                    for name, bearing in elevations],
-        sections=[building_section(model, bearing, offset_m=offset, name=name,
-                                   requested_offset_m=requested)
-                  for (name, bearing, offset), (_, _, requested)
-                  in zip(resolved, sections)],
-        section_cuts=resolved, elevation_faces=tuple(elevations))
+    # Imported here to keep the core cutter independent of its selection policy.
+    from .detail_sections import compile_detail_sections
+    details = compile_detail_sections(model)
+    issued: DrawingSet | None = None
+    # 1:100 is the preferred building scale.  A music-derived Program Volume may grow
+    # beyond the 1145 mm A0 drawing area; re-cutting at a conventional smaller scale
+    # preserves every model-derived mark and its scale-aware audit while keeping the
+    # detail sections at 1:20.  Shrinking an existing SVG would also shrink ISO line
+    # weights and would leave its title-block scale false, so every fallback is a real
+    # compile of the same model reading.
+    for denominator in (100, 200, 500):
+        general = DrawingStandard(scale=Scale(denominator))
+        candidate = DrawingSet(
+            model_id=model.model_id,
+            plans=floor_plans(model, general, section_marks=resolved),
+            elevations=[building_elevation(model, bearing, name=name,
+                                          standard=general)
+                        for name, bearing in elevations],
+            sections=[building_section(model, bearing, offset_m=offset, name=name,
+                                       requested_offset_m=requested, standard=general)
+                      for (name, bearing, offset), (_, _, requested)
+                      in zip(resolved, sections)],
+            details=details,
+            section_cuts=resolved, elevation_faces=tuple(elevations))
+        candidate.lay_out(model)
+        issued = candidate
+        if issued.paper is not None:
+            break
+    assert issued is not None
+    if issued.paper is None:
+        largest = max(issued.all, key=lambda drawing: (
+            drawing.content_mm[0], drawing.content_mm[1]))
+        width, height = largest.content_mm
+        raise ValueError(
+            'The issued drawing set cannot fit A0 after true recompilation at '
+            f'1:100, 1:200 and 1:500; {largest.id} remains '
+            f'{width:.1f} × {height + CAPTION_MM:.1f} mm including its caption.')
     if model.lattice.cutaway:
         for drawing in issued.all:
             drawing.subtitle = 'DIAGNOSTIC CUTAWAY — NOT A COMPLETE BUILDING · ' + drawing.subtitle
-    issued.lay_out(model)
+        # The prefix changes only the authored caption. Geometry and layout stay fixed.
     return issued
 
 

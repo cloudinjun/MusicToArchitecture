@@ -149,12 +149,14 @@ def test_bim_handoff_report_reaches_the_bundle(model_v3) -> None:
     assert joined.bim_handoff.mapped_element_count == model_v3.element_count
 
 
-def test_the_accessible_route_has_two_outcomes_and_not_three(bundle, model_v3) -> None:
+def test_ramp_geometry_is_not_promoted_to_a_verified_accessible_route(
+        bundle, model_v3) -> None:
     tally = next(t for t in bundle.compliance.tallies if t.source == 'accessible_route')
     if model_v3.accessible_route is not None:
-        assert (tally.passed, tally.failed) == (1, 0)
+        assert (tally.passed, tally.failed, tally.unevaluated) == (0, 0, 1)
+        assert any('facade portal' in blocker for blocker in tally.blockers)
     else:
-        assert (tally.passed, tally.failed) == (0, 1)
+        assert (tally.passed, tally.failed, tally.unevaluated) == (0, 1, 0)
         assert tally.blockers, 'a stair was built and no reason was recorded'
 
 

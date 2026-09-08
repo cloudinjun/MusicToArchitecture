@@ -348,6 +348,9 @@ FRAME_TECTONICS: dict[str, FrameTectonic] = {
 # What the compiler can actually build
 # ---------------------------------------------------------------------------
 
+StructuralCompilerCapability = Literal['theatre_gravity_transfer']
+
+
 class SystemBuildability(BaseModel):
     """Whether `compiler_v3` can emit a given structural system, and honestly why not.
 
@@ -359,6 +362,7 @@ class SystemBuildability(BaseModel):
     system_id: str
     implemented: bool
     frame_tectonic: FrameTectonicId | None = None
+    compiler_capabilities: tuple[StructuralCompilerCapability, ...] = ()
     reason: str
 
 
@@ -367,6 +371,7 @@ SYSTEM_BUILDABILITY: dict[str, SystemBuildability] = {
         SystemBuildability(
             system_id='STR-SYS-STEEL-FRAME', implemented=True,
             frame_tectonic='FRM-STEEL',
+            compiler_capabilities=('theatre_gravity_transfer',),
             reason='Level lattice, rolled sections, joisted floor.'),
         SystemBuildability(
             system_id='STR-SYS-RC-FRAME-WALL', implemented=True,
